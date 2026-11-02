@@ -792,6 +792,188 @@ void ScriptEditorOrganizer::undockScriptTab(ScriptDockWidget* widget, int index,
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! returns the script dock widget that currently contains the given editor
+static ScriptDockWidget* ownerOfEditor(const ScriptEditorWidget* editor)
+{
+    for (QWidget* w = editor ? editor->parentWidget() : nullptr; w; w = w->parentWidget())
+    {
+        ScriptDockWidget* sdw = qobject_cast<ScriptDockWidget*>(w);
+
+        if (sdw)
+        {
+            return sdw;
+        }
+    }
+
+    return nullptr;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! moves the given editor to the tabs of the target script window (drag and drop of a tab)
+/*!
+    \param editor is the editor, that is currently a tab of any script window
+    \param target is the script window, where the editor is moved to
+    \param insertIndex is the tab index in the target window, where the editor is inserted (-1: append)
+
+    The source window is closed if it does not contain any further tab.
+*/
+void ScriptEditorOrganizer::moveScriptEditor(
+    ScriptEditorWidget* editor, ScriptDockWidget* target, int insertIndex)
+{
+    ScriptDockWidget* source = ownerOfEditor(editor);
+
+    if (!source || !target)
+    {
+        return;
+    }
+
+    const int sourceIndex = source->indexOfEditor(editor);
+
+    if (source == target)
+    {
+        // only change the order of the tabs
+        if (insertIndex < 0)
+        {
+            insertIndex = source->getTabCount();
+        }
+
+        if (insertIndex > sourceIndex)
+        {
+            insertIndex--;
+        }
+
+        source->moveEditorTab(sourceIndex, qBound(0, insertIndex, source->getTabCount() - 1));
+        return;
+    }
+
+    ScriptEditorWidget* e = source->removeEditor(sourceIndex);
+
+    if (!e)
+    {
+        return;
+    }
+
+    target->appendEditor(e);
+
+    if (insertIndex >= 0 && insertIndex < target->getTabCount() - 1)
+    {
+        target->moveEditorTab(target->getTabCount() - 1, insertIndex);
+        target->setCurrentIndex(insertIndex);
+    }
+
+    if (source->getTabCount() == 0)
+    {
+        source->close();
+    }
+
+    target->raiseAndActivate();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! moves the given editor to a new, docked script window.
+/*!
+    \param editor is the editor, that is currently a tab of any script window
+    \param area is the docking area of the main window. If splitTarget is given, this is the side of the splitTarget
+                at which the new window is placed (Left, Right, Top or Bottom).
+    \param splitTarget is an optional, docked script window, next to which the new window is placed.
+*/
+ScriptDockWidget* ScriptEditorOrganizer::moveScriptEditorToNewDock(
+    ScriptEditorWidget* editor, Qt::DockWidgetArea area, ScriptDockWidget* splitTarget)
+{
+    ScriptDockWidget* source = ownerOfEditor(editor);
+    QMainWindow* mainWin = qobject_cast<QMainWindow*>(AppManagement::getMainWindow());
+
+    if (!source || !mainWin || !m_dockAvailable)
+    {
+        return nullptr;
+    }
+
+    if (splitTarget == source && source->getTabCount() <= 1)
+    {
+        return nullptr; // the editor is already alone in its window
+    }
+
+    const bool split = splitTarget && splitTarget->docked();
+    ScriptDockWidget* newDock = createEmptyScriptDock(
+        true, split ? mainWin->dockWidgetArea(splitTarget) : area);
+
+    ScriptEditorWidget* e = source->removeEditor(source->indexOfEditor(editor));
+
+    if (!e)
+    {
+        return newDock;
+    }
+
+    newDock->appendEditor(e);
+
+    if (split)
+    {
+        const Qt::Orientation orientation =
+            (area == Qt::LeftDockWidgetArea || area == Qt::RightDockWidgetArea) ? Qt::Horizontal
+                                                                                 : Qt::Vertical;
+
+        if (area == Qt::RightDockWidgetArea || area == Qt::BottomDockWidgetArea)
+        {
+            mainWin->splitDockWidget(splitTarget, newDock, orientation);
+        }
+        else
+        {
+            mainWin->splitDockWidget(newDock, splitTarget, orientation);
+        }
+
+        newDock->show();
+        splitTarget->show();
+    }
+
+    if (source->getTabCount() == 0)
+    {
+        source->close();
+    }
+
+    newDock->raiseAndActivate();
+    return newDock;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! moves the given editor to a new, undocked script window, that is placed at the given global position.
+ScriptDockWidget* ScriptEditorOrganizer::moveScriptEditorToNewWindow(
+    ScriptEditorWidget* editor, const QPoint& globalPos)
+{
+    ScriptDockWidget* source = ownerOfEditor(editor);
+
+    if (!source)
+    {
+        return nullptr;
+    }
+
+    if (!source->docked() && source->getTabCount() <= 1)
+    {
+        // the editor is already alone in its own window. Move this window.
+        source->move(globalPos - QPoint(60, 15));
+        return source;
+    }
+
+    ScriptDockWidget* newWindow = createEmptyScriptDock(false);
+    ScriptEditorWidget* e = source->removeEditor(source->indexOfEditor(editor));
+
+    if (!e)
+    {
+        return newWindow;
+    }
+
+    newWindow->appendEditor(e);
+    newWindow->move(globalPos - QPoint(60, 15));
+
+    if (source->getTabCount() == 0)
+    {
+        source->close();
+    }
+
+    newWindow->raiseAndActivate();
+    return newWindow;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 //! slot invoked if empty new script window should be created and displayed
 /*!
     long description

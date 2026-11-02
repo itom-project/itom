@@ -6,7 +6,7 @@ Build on Fedora
 ======================
 
 This section describes how |itom| and its plugins are built on Fedora (tested with Fedora 25).
-For general information about building |itom| under linux, see the :ref:`build instructions for linux <build-Debian>`.
+For general information about building |itom| under linux, see the :ref:`build instructions for linux <build-debian>`.
 
 In the following, all required steps are indicated to get the dependencies, get the sources and compile itom by the command line.
 The folder structure is chosen to be equal than the one from the linux instructions, however itom will only be build in a release version.
@@ -22,7 +22,7 @@ for |itom| (comments after the hash-tag should not be copied to the command line
     sudo dnf install qt5 qt5-devel  # only Fedora < 35
     sudo dnf install qt5-qtbase-devel qt5-qtbase-static qt5-qttools-devel qt5-qttools-static qt5-qtwebengine-devel qt5-qtsvg-devel  # Fedora >= 35
     sudo dnf install opencv opencv-devel
-    
+
     sudo dnf install libv4l libv4l-devel #this is optional to get the video for linux drivers
     sudo dnf install libusb-devel systemd-devel #this is optional to get the libusb drivers
     sudo dnf install xerces-c xerces-c-devel xsd #this is optional to being able to compile the x3p plugin

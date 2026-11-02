@@ -20,6 +20,8 @@ import idc_test
 import plot_test
 import shape_test
 import multichannel_test
+import script_editor_textfiles_test
+
 if pyversion >= (3, 6):
     import itom_stubs_generator
     import itom_algorithm_stubs_generator
@@ -61,6 +63,11 @@ def suite():
                 itom_algorithm_stubs_generator.ItomAlgorithmsStubsGenTest
             )
         )
+    suite.addTest(
+        unittest.defaultTestLoader.loadTestsFromTestCase(
+            script_editor_textfiles_test.ScriptEditorTextFilesTest
+        )
+    )
     return suite
 
 

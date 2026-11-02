@@ -109,7 +109,15 @@ Some icons have two different representations, one for bright themes and
 one for dark themes. It is possible to switch between both themes by the drop-down box.
 Set this value to automatic, if the icon theme should be chosen automatically
 based on the selected style. If the basic background color is rather dark, the dark
-theme is chosen, else the bright theme.
+theme is chosen, else the bright theme. If one of the modern styles (modernLight or modernDark)
+is selected, the refined icons are chosen, too.
+
+Besides the classic icons, a refined version of the same icons is available for bright and dark
+backgrounds, or with an automatic selection of the variant. The motifs and colors are the same, but the
+gloss of the icons is reduced, the colors are calmer and, for dark backgrounds, black glyphs are lifted
+to stay visible. For the complete modern look,
+select the style modernDark or modernLight above and import the matching editor theme
+(ModernDark or ModernLight) in the section editor styles.
 
 Changes to style-sheets and icons are only effectuated after a restart of |itom|.
 

@@ -1181,7 +1181,7 @@ getExecFuncsInfo");
 
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyPlugin_userMutex_tryLock_doc, "tryLock(timeout = 3000) -> bool \n\
+PyDoc_STRVAR(PyPlugin_userMutex_tryLock_doc, "userMutexTryLock(timeout = 3000) -> bool \n\
 \n\
 Tries to lock the user mutex of this plugin. \n\
 \n\
@@ -1218,7 +1218,7 @@ See Also \n\
 unlock");
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyPlugin_userMutex_unlock_doc, "unlock() \n\
+PyDoc_STRVAR(PyPlugin_userMutex_unlock_doc, "userMutexUnlock() \n\
 \n\
 Tries to unlock the user mutex of this plugin. \n\
 \n\

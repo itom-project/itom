@@ -10,6 +10,7 @@ The following documents show the changelog for different versions of itom (based
 .. toctree::
     :maxdepth: 2
 
+    changelog_v5x.rst
     changelog_v4x.rst
     changelog_v3x.rst
     changelog_v2x.rst

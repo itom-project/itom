@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
 
-    In addition, as a special exception, the Institut für Technische
+    In addition, as a special exception, the Institut fÃ¼r Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -33,18 +33,6 @@
 #include <functional>
 #include <map>
 #include <vector>
-
-#ifdef USEOPENMP
-// disabled due to application hang on closing when using AddInManager dll
-#define USEOMP 0
-#else
-#define USEOMP 0
-#endif
-// need to implement this function, just for testing of openmp functionality
-int getMaximumThreadCount()
-{
-    return 2;
-}
 
 namespace ito {
 
@@ -632,7 +620,7 @@ DObjIterator DObjIterator::operator++(int)
     In order to handle huge matrices, the data object can divide one matrix into subparts in memory.
    Each subpart (called matrix-plane) is two-dimensional and covers data of the last two dimensions.
    Each of these matrix-planes is of type cv::Mat_<type> and can be used with every operator given
-   by the openCV-framework (version 2.3.1 or higher).
+   by the OpenCV framework (version 3.0 or higher).
 
     We assume to have a n-dimensional matrix A, where each dimension has its size s_i, hence A=[s_1,
    s_2, ..., s_(n-2), s_(n-1), s_n]
@@ -735,84 +723,80 @@ DObjIterator DObjIterator::operator++(int)
 #define CHECK_SAME_TYPE_AND_NUM_PLANES_AND_PLANE_SIZE(otherObject)                                 \
     if (m_type != otherObject.m_type)                                                              \
     {                                                                                              \
-        cv::error(cv::Exception(                                                                   \
-            CV_StsUnmatchedFormats, "dataObjects differ in type", "", __FILE__, __LINE__));        \
+        cv::error(                                                                   \
+            cv::Error::StsUnmatchedFormats, "dataObjects differ in type", "", __FILE__, __LINE__);        \
     }                                                                                              \
     else if ((m_dims == otherObject.m_dims) && (m_size != otherObject.m_size))                     \
     {                                                                                              \
-        cv::error(cv::Exception(                                                                   \
-            CV_StsUnmatchedSizes, "dataObjects differ in size", "", __FILE__, __LINE__));          \
+        CV_Error(cv::Error::StsUnmatchedSizes, "dataObjects differ in size");          \
     }                                                                                              \
     else if (getNumPlanes() != otherObject.getNumPlanes())                                         \
     {                                                                                              \
         /*dataObjects have different numbers of planes.*/                                          \
-        cv::error(cv::Exception(                                                                   \
-            CV_StsUnmatchedSizes,                                                                  \
+        cv::error(cv::Error::StsUnmatchedSizes,                                                                  \
             "dataObjects differ in size (non equal number of planes)",                             \
             "",                                                                                    \
             __FILE__,                                                                              \
-            __LINE__));                                                                            \
+            __LINE__);                                                                            \
     }                                                                                              \
     else if (m_dims > 0 && (get_mdata()[0]->size() != otherObject.get_mdata()[0]->size()))         \
     {                                                                                              \
         /*both objects have at least dimension two (same number of planes, and this->m_dims >      \
          * 0).*/                                                                                   \
         /*but the size of both planes (last two dimensions) is not equal.*/                        \
-        cv::error(cv::Exception(                                                                   \
-            CV_StsUnmatchedSizes,                                                                  \
+        cv::error(cv::Error::StsUnmatchedSizes,                                                                  \
             "dataObjects differ in size (non equal size of each plane)",                           \
             "",                                                                                    \
             __FILE__,                                                                              \
-            __LINE__));                                                                            \
+            __LINE__);                                                                            \
     }                                                                                              \
     else if (m_size.m_p[0] == 0 || m_size.m_p[1] == 0)                                             \
     {                                                                                              \
         /*One of the matrix dimensions is zeros, so matrix operations are meaningless*/            \
-        cv::error(cv::Exception(                                                                   \
-            CV_StsOutOfRange,                                                                      \
+        cv::error(cv::Error::StsOutOfRange,                                                                      \
             "one of the matrices dimension is zero, meaningless operation",                        \
             "",                                                                                    \
             __FILE__,                                                                              \
-            __LINE__));                                                                            \
+            __LINE__);                                                                            \
     }
 
 #define CHECK_NUM_PLANES_AND_PLANE_SIZE(otherObject)                                               \
     if ((m_dims == otherObject.m_dims) && (m_size != otherObject.m_size))                          \
     {                                                                                              \
-        cv::error(cv::Exception(                                                                   \
-            CV_StsUnmatchedSizes, "dataObjects differ in size", "", __FILE__, __LINE__));          \
+        cv::error(                                                                   \
+            cv::Error::StsUnmatchedSizes, "dataObjects differ in size", "", __FILE__, __LINE__);          \
     }                                                                                              \
     else if (getNumPlanes() != otherObject.getNumPlanes())                                         \
     {                                                                                              \
         /*dataObjects have different numbers of planes.*/                                          \
-        cv::error(cv::Exception(                                                                   \
-            CV_StsUnmatchedSizes,                                                                  \
+        cv::error(                                                                   \
+            cv::Error::StsUnmatchedSizes,                                                                  \
             "dataObjects differ in size (non equal number of planes)",                             \
             "",                                                                                    \
             __FILE__,                                                                              \
-            __LINE__));                                                                            \
+            __LINE__);                                                                            \
     }                                                                                              \
     else if (m_dims > 0 && (get_mdata()[0]->size() != otherObject.get_mdata()[0]->size()))         \
     {                                                                                              \
         /*both objects have at least dimension two (same number of planes, and this->m_dims >      \
          * 0).*/                                                                                   \
         /*but the size of both planes (last two dimensions) is not equal.*/                        \
-        cv::error(cv::Exception(                                                                   \
-            CV_StsUnmatchedSizes,                                                                  \
+        cv::error(                                                                   \
+            cv::Error::StsUnmatchedSizes,                                                                  \
             "dataObjects differ in size (non equal size of each plane)",                           \
             "",                                                                                    \
             __FILE__,                                                                              \
-            __LINE__));                                                                            \
+            __LINE__);                                                                            \
     }                                                                                              \
     else if (m_size.m_p[0] == 0 || m_size.m_p[1] == 0)                                             \
     {                                                                                              \
         /*One of the matrix dimensions is zeros, so matrix operations are meaningless*/            \
-        cv::error(cv::Exception(                                                                   \
-            CV_StsOutOfRange,                                                                      \
+        cv::error(                                                                   \
+            cv::Error::StsOutOfRange,                                                                      \
             "one of the matrices dimension is zero, meaningless operation",                        \
             "",                                                                                    \
             __FILE__,                                                                              \
-            __LINE__));                                                                            \
+            __LINE__);                                                                            \
     }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1251,8 +1235,7 @@ DataObject::DataObject(const cv::Mat& data) :
 
     if (data.dims != 2)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert, "DataObject only accepts a 2D cv::Mat.", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsAssert, "DataObject only accepts a 2D cv::Mat.");
     }
 
     switch (data.type())
@@ -1282,12 +1265,8 @@ DataObject::DataObject(const cv::Mat& data) :
         this->create(2, sizes, ito::tFloat64, &data, 1);
         break;
     default:
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "DataObject does not accept this type of cv::Mat.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert,
+            "DataObject does not accept this type of cv::Mat.");
     }
 }
 
@@ -1473,7 +1452,7 @@ ito::RetVal DataObject::matIdxToNum(const unsigned int* matIdx, int* matNum) con
 #if __ITODEBUG
         if (((int)matIdx[n] + m_roi[n]) >= m_osize[n])
         {
-            cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__, __LINE__));
+            CV_Error(cv::Error::StsAssert, "Index out of bounds");
         }
 #endif
         (*matNum) += ((int)matIdx[n] + m_roi[n]) * planeSize; // CAST_TODO
@@ -1521,7 +1500,7 @@ int DataObject::getStep(int index) const
 {
     if (index < 0 || index >= m_dims)
     {
-        cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsAssert, "Index out of bounds");
     }
 
     int step = 1;
@@ -1679,8 +1658,7 @@ void DataObject::createHeader(
 {
     if (dimensions == 1)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert, "number of dimensions must be at least 2", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsAssert, "number of dimensions must be at least 2");
     }
 
     m_dims = dimensions;
@@ -1750,7 +1728,7 @@ void DataObject::createHeader(
                     // last dimension
                     if (elemSize == 0)
                     {
-                        cv::Exception(CV_StsAssert, "elemSize is zero", "", __FILE__, __LINE__);
+                        cv::error(cv::Error::StsAssert, "elemSize is zero", "", __FILE__, __LINE__);
                     }
                     else if (steps[n - 1] != 0)
                     {
@@ -1788,8 +1766,7 @@ void DataObject::createHeaderWithROI(
 {
     if (dimensions == 1)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert, "number of dimensions must be at least 2", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsAssert, "number of dimensions must be at least 2");
     }
 
     m_dims = dimensions;
@@ -1920,20 +1897,14 @@ RetVal CreateFunc(
 
     if (!continuous && continuousDataPtr)
     {
-        cv::error(cv::Exception(
-            CV_BadDataPtr,
-            "data pointer must be empty if matrix is not continuous",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::BadDataPtr, "data pointer must be empty if matrix is not continuous");
     }
 
     // CV_USRTYPE1 support has been dropped in OpenCV 4.0
     /*
     if (cv::DataType<_Tp>::type == CV_USRTYPE1)
     {
-        cv::error(cv::Exception(CV_BadDepth, "unsupported type (e.g. uint32 not possible)", "",
-    __FILE__, __LINE__));
+        CV_Error(cv::Error::BadDepth, "unsupported type (e.g. uint32 not possible)");
     }*/
 
     dObj->m_owndata = (continuousDataPtr == NULL);
@@ -2032,8 +2003,8 @@ RetVal CreateFunc(
                 {
                     if (numMats > 0 && (std::numeric_limits<size_t>::max() / numMats) < matSize)
                     {
-                        cv::error(cv::Exception(
-                            CV_StsNoMem, ("Failed to allocate memory"), "", __FILE__, __LINE__));
+                        cv::error(
+                            cv::Error::StsNoMem, ("Failed to allocate memory"), "", __FILE__, __LINE__);
                     }
 
                     size_t bytesToAllocate = static_cast<size_t>(numMats) * matSize;
@@ -2042,8 +2013,8 @@ RetVal CreateFunc(
                                           // is destroyed. (done in FreeFunc and SecureFreeFunc)
                     if (dataPtr == NULL)
                     {
-                        cv::error(cv::Exception(
-                            CV_StsNoMem, ("Failed to allocate memory"), "", __FILE__, __LINE__));
+                        cv::error(
+                            cv::Error::StsNoMem, ("Failed to allocate memory"), "", __FILE__, __LINE__);
                     }
 
                     dObj->mdata_realloc(numMats);
@@ -2107,12 +2078,7 @@ void DataObject::create(
 
     if (type == ito::tUInt32)
     {
-        cv::error(cv::Exception(
-            CV_BadDepth,
-            "uint32 is an unsupported data type for dataObject.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::BadDepth, "uint32 is an unsupported data type for dataObject.");
     }
 
     if (dimensions <= 2)
@@ -2127,12 +2093,7 @@ void DataObject::create(
 
     if (!m_continuous && continuousDataPtr)
     {
-        cv::error(cv::Exception(
-            CV_BadDataPtr,
-            "data pointer must be empty if matrix is not continuous",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::BadDataPtr, "data pointer must be empty if matrix is not continuous");
     }
 
     fListCreateFunc[type](this, dimensions, sizes, m_continuous, continuousDataPtr, steps);
@@ -2269,12 +2230,7 @@ void DataObject::create(
 
     if (type == ito::tUInt32)
     {
-        cv::error(cv::Exception(
-            CV_BadDepth,
-            "uint32 is an unsupported data type for dataObject.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::BadDepth, "uint32 is an unsupported data type for dataObject.");
     }
 
     if (dimensions == 0 || dimensions == 2)
@@ -2284,8 +2240,7 @@ void DataObject::create(
     }
     else if (dimensions == 1)
     {
-        cv::error(cv::Exception(
-            CV_StsError, "DataObject with dimension = 1 not allowed.", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsError, "DataObject with dimension = 1 not allowed.");
     }
     else
     {
@@ -2335,7 +2290,7 @@ void DataObject::create(
         break;
 
     default:
-        cv::error(cv::Exception(CV_StsError, "unknown type.", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsError, "unknown type.");
         break;
     }
 
@@ -2346,12 +2301,7 @@ void DataObject::create(
 
     if (numMats != nrOfPlanes)
     {
-        cv::error(cv::Exception(
-            CV_BadImageSize,
-            "nrOfPlanes must be equal to the product of the first (n-2) dimensions.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::BadImageSize, "nrOfPlanes must be equal to the product of the first (n-2) dimensions.");
     }
 
     if ((type == ito::tComplex64) || (type == ito::tComplex128))
@@ -2362,44 +2312,22 @@ void DataObject::create(
 
             if ((int)planeSize.height != sizey || (int)planeSize.width != sizex)
             {
-                cv::error(cv::Exception(
-                    CV_BadImageSize,
-                    "image size of at least one cv::Mat-plane does not correspond to the given "
-                    "height and width.",
-                    "",
-                    __FILE__,
-                    __LINE__));
+                CV_Error(cv::Error::BadImageSize, "image size of at least one cv::Mat-plane does not correspond to the given height and width.");
             }
 
             if (planes[i].channels() != 2)
             {
-                cv::error(cv::Exception(
-                    CV_StsUnsupportedFormat,
-                    "at least one cv::Mat-plane has not two channels (complex type).",
-                    "",
-                    __FILE__,
-                    __LINE__));
+                CV_Error(cv::Error::StsUnsupportedFormat, "at least one cv::Mat-plane has not two channels (complex type).");
             }
 
             if ((planes[i].elemSize1() * 2) != requiredElemSize)
             {
-                cv::error(cv::Exception(
-                    CV_StsUnsupportedFormat,
-                    "the element size of at least one cv::Mat-plane does not correspond to the "
-                    "given dataObject-type.",
-                    "",
-                    __FILE__,
-                    __LINE__));
+                CV_Error(cv::Error::StsUnsupportedFormat, "the element size of at least one cv::Mat-plane does not correspond to the given dataObject-type.");
             }
 
             if (planes[i].data == NULL)
             {
-                cv::error(cv::Exception(
-                    CV_StsUnsupportedFormat,
-                    "data pointer of cv::Mat is zeros.",
-                    "",
-                    __FILE__,
-                    __LINE__));
+                CV_Error(cv::Error::StsUnsupportedFormat, "data pointer of cv::Mat is zeros.");
             }
         }
     }
@@ -2411,44 +2339,22 @@ void DataObject::create(
 
             if ((int)planeSize.height != sizey || (int)planeSize.width != sizex)
             {
-                cv::error(cv::Exception(
-                    CV_BadImageSize,
-                    "image size of at least one cv::Mat-plane does not correspond to the given "
-                    "height and width.",
-                    "",
-                    __FILE__,
-                    __LINE__));
+                CV_Error(cv::Error::BadImageSize, "image size of at least one cv::Mat-plane does not correspond to the given height and width.");
             }
 
             if (planes[i].channels() != cv::DataType<ito::Rgba32>::channels)
             {
-                cv::error(cv::Exception(
-                    CV_StsUnsupportedFormat,
-                    "at least one cv::Mat-plane has not four channels (RGBA type).",
-                    "",
-                    __FILE__,
-                    __LINE__));
+                CV_Error(cv::Error::StsUnsupportedFormat, "at least one cv::Mat-plane has not four channels (RGBA type).");
             }
 
             if ((planes[i].elemSize1() * cv::DataType<ito::Rgba32>::channels) != requiredElemSize)
             {
-                cv::error(cv::Exception(
-                    CV_StsUnsupportedFormat,
-                    "the element size of at least one cv::Mat-plane does not correspond to the "
-                    "given dataObject-type.",
-                    "",
-                    __FILE__,
-                    __LINE__));
+                CV_Error(cv::Error::StsUnsupportedFormat, "the element size of at least one cv::Mat-plane does not correspond to the given dataObject-type.");
             }
 
             if (planes[i].data == NULL)
             {
-                cv::error(cv::Exception(
-                    CV_StsUnsupportedFormat,
-                    "data pointer of cv::Mat is zeros.",
-                    "",
-                    __FILE__,
-                    __LINE__));
+                CV_Error(cv::Error::StsUnsupportedFormat, "data pointer of cv::Mat is zeros.");
             }
         }
     }
@@ -2460,44 +2366,22 @@ void DataObject::create(
 
             if ((int)planeSize.height != sizey || (int)planeSize.width != sizex)
             {
-                cv::error(cv::Exception(
-                    CV_BadImageSize,
-                    "image size of at least one cv::Mat-plane does not correspond to the given "
-                    "height and width.",
-                    "",
-                    __FILE__,
-                    __LINE__));
+                CV_Error(cv::Error::BadImageSize, "image size of at least one cv::Mat-plane does not correspond to the given height and width.");
             }
 
             if (planes[i].channels() != cv::DataType<ito::TimeDelta>::channels)
             {
-                cv::error(cv::Exception(
-                    CV_StsUnsupportedFormat,
-                    "at least one cv::Mat-plane has not four channels (TimeDelta type).",
-                    "",
-                    __FILE__,
-                    __LINE__));
+                CV_Error(cv::Error::StsUnsupportedFormat, "at least one cv::Mat-plane has not four channels (TimeDelta type).");
             }
 
             if ((planes[i].elemSize1() * cv::DataType<ito::TimeDelta>::channels) != requiredElemSize)
             {
-                cv::error(cv::Exception(
-                    CV_StsUnsupportedFormat,
-                    "the element size of at least one cv::Mat-plane does not correspond to the "
-                    "given dataObject-type.",
-                    "",
-                    __FILE__,
-                    __LINE__));
+                CV_Error(cv::Error::StsUnsupportedFormat, "the element size of at least one cv::Mat-plane does not correspond to the given dataObject-type.");
             }
 
             if (planes[i].data == NULL)
             {
-                cv::error(cv::Exception(
-                    CV_StsUnsupportedFormat,
-                    "data pointer of cv::Mat is zeros.",
-                    "",
-                    __FILE__,
-                    __LINE__));
+                CV_Error(cv::Error::StsUnsupportedFormat, "data pointer of cv::Mat is zeros.");
             }
         }
     }
@@ -2509,44 +2393,22 @@ void DataObject::create(
 
         if ((int)planeSize.height != sizey || (int)planeSize.width != sizex)
         {
-            cv::error(cv::Exception(
-                CV_BadImageSize,
-                "image size of at least one cv::Mat-plane does not correspond to the given "
-                "height and width.",
-                "",
-                __FILE__,
-                __LINE__));
+            CV_Error(cv::Error::BadImageSize, "image size of at least one cv::Mat-plane does not correspond to the given height and width.");
         }
 
         if (planes[i].channels() != cv::DataType<ito::DateTime>::channels)
         {
-            cv::error(cv::Exception(
-                CV_StsUnsupportedFormat,
-                "at least one cv::Mat-plane has not four channels (DateTime type).",
-                "",
-                __FILE__,
-                __LINE__));
+            CV_Error(cv::Error::StsUnsupportedFormat, "at least one cv::Mat-plane has not four channels (DateTime type).");
         }
 
         if ((planes[i].elemSize1() * cv::DataType<ito::DateTime>::channels) != requiredElemSize)
         {
-            cv::error(cv::Exception(
-                CV_StsUnsupportedFormat,
-                "the element size of at least one cv::Mat-plane does not correspond to the "
-                "given dataObject-type.",
-                "",
-                __FILE__,
-                __LINE__));
+            CV_Error(cv::Error::StsUnsupportedFormat, "the element size of at least one cv::Mat-plane does not correspond to the given dataObject-type.");
         }
 
         if (planes[i].data == NULL)
         {
-            cv::error(cv::Exception(
-                CV_StsUnsupportedFormat,
-                "data pointer of cv::Mat is zeros.",
-                "",
-                __FILE__,
-                __LINE__));
+            CV_Error(cv::Error::StsUnsupportedFormat, "data pointer of cv::Mat is zeros.");
         }
     }
     }
@@ -2558,44 +2420,22 @@ void DataObject::create(
 
             if ((int)planeSize.height != sizey || (int)planeSize.width != sizex)
             {
-                cv::error(cv::Exception(
-                    CV_BadImageSize,
-                    "image size of at least one cv::Mat-plane does not correspond to the given "
-                    "height and width.",
-                    "",
-                    __FILE__,
-                    __LINE__));
+                CV_Error(cv::Error::BadImageSize, "image size of at least one cv::Mat-plane does not correspond to the given height and width.");
             }
 
             if (planes[i].channels() != 1)
             {
-                cv::error(cv::Exception(
-                    CV_StsUnsupportedFormat,
-                    "at least one cv::Mat-plane has not one channel.",
-                    "",
-                    __FILE__,
-                    __LINE__));
+                CV_Error(cv::Error::StsUnsupportedFormat, "at least one cv::Mat-plane has not one channel.");
             }
 
             if (planes[i].elemSize1() != requiredElemSize)
             {
-                cv::error(cv::Exception(
-                    CV_StsUnsupportedFormat,
-                    "the element size of at least one cv::Mat-plane does not correspond to the "
-                    "given dataObject-type.",
-                    "",
-                    __FILE__,
-                    __LINE__));
+                CV_Error(cv::Error::StsUnsupportedFormat, "the element size of at least one cv::Mat-plane does not correspond to the given dataObject-type.");
             }
 
             if (planes[i].data == NULL)
             {
-                cv::error(cv::Exception(
-                    CV_StsUnsupportedFormat,
-                    "data pointer of cv::Mat is zeros.",
-                    "",
-                    __FILE__,
-                    __LINE__));
+                CV_Error(cv::Error::StsUnsupportedFormat, "data pointer of cv::Mat is zeros.");
             }
         }
     }
@@ -3155,15 +2995,14 @@ MAKEFUNCLIST(DeepCopyPartialFunc);
 /*!
     \param &rhs is the right-handed data object, where data is copied to.
     \return retOk
-    \throws cv::Exception(CV_StsAssert) if sizes or type of both matrices are not equal
+    \throws cv::Exception(cv::Error::StsAssert) if sizes or type of both matrices are not equal
     \sa DeepCopyPartialFunc
 */
 RetVal DataObject::deepCopyPartial(DataObject& copyTo) const
 {
     if (m_type != copyTo.m_type)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert, "DataObject - operands differ in type", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsAssert, "DataObject - operands differ in type");
     }
 
     // calc and compare squeezed dimensions
@@ -3202,12 +3041,7 @@ RetVal DataObject::deepCopyPartial(DataObject& copyTo) const
     {
         DELETE_AND_SET_NULL_ARRAY(thisSizes);
         DELETE_AND_SET_NULL_ARRAY(rhsSizes);
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "DataObject - operands differ in number of dimensions",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "DataObject - operands differ in number of dimensions");
     }
 
     for (int i = 0; i < thisDims; i++)
@@ -3216,8 +3050,7 @@ RetVal DataObject::deepCopyPartial(DataObject& copyTo) const
         {
             DELETE_AND_SET_NULL_ARRAY(thisSizes);
             DELETE_AND_SET_NULL_ARRAY(rhsSizes);
-            cv::error(cv::Exception(
-                CV_StsAssert, "DataObject - operands differ in size", "", __FILE__, __LINE__));
+            CV_Error(cv::Error::StsAssert, "DataObject - operands differ in size");
         }
     }
 
@@ -3559,15 +3392,13 @@ template <> RetVal OnesFunc<ito::Rgba32>(const int sizeY, const int sizeX, uchar
 
 template <> RetVal OnesFunc<ito::DateTime>(const int sizeY, const int sizeX, uchar** dstMat)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Ones constructor not defined for dtype ``datetime``.", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Ones constructor not defined for dtype ``datetime``.");
     return ito::retError;
 }
 
 template <> RetVal OnesFunc<ito::TimeDelta>(const int sizeY, const int sizeX, uchar** dstMat)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Ones constructor not defined for dtype ``timedelta``.", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Ones constructor not defined for dtype ``timedelta``.");
     return ito::retError;
 }
 
@@ -3765,12 +3596,7 @@ RetVal DataObject::nans(
     if (type != ito::tFloat32 && type != ito::tFloat64 && type != ito::tComplex64 &&
         type != ito::tComplex128)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "nans method is only allowed for float32, float64, complex64 or complex128",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "nans method is only allowed for float32, float64, complex64 or complex128");
     }
 
     freeData();
@@ -4270,18 +4096,12 @@ DataObject& DataObject::operator=(const cv::Mat& rhs)
 
     if (dataObjType == -1)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "data type of cv::Mat is not compatible to dataObject.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "data type of cv::Mat is not compatible to dataObject.");
     }
 
     if (rhs.dims != 2)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert, "cv::Mat must have two dimensions.", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsAssert, "cv::Mat must have two dimensions.");
     }
 
     freeData();
@@ -5203,12 +5023,7 @@ template <>
 RetVal AddScalarFunc<ito::DateTime>(
     const DataObject* dObjIn, ito::float64 scalar, DataObject* dObjOut)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert,
-        "Integer or float cannot be added or subtracted to datetime.",
-        "",
-        __FILE__,
-        __LINE__));
+    CV_Error(cv::Error::StsAssert, "Integer or float cannot be added or subtracted to datetime.");
 	return RetVal(retOk);
 }
 
@@ -5216,12 +5031,7 @@ template <>
 RetVal AddScalarFunc<ito::TimeDelta>(
     const DataObject* dObjIn, ito::float64 scalar, DataObject* dObjOut)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert,
-        "Integer or float cannot be added or subtracted to timedelta.",
-        "",
-        __FILE__,
-        __LINE__));
+    CV_Error(cv::Error::StsAssert, "Integer or float cannot be added or subtracted to timedelta.");
 	return RetVal(retOk);
 }
 
@@ -5252,13 +5062,7 @@ RetVal AddComplexScalarFunc(const DataObject* dObjIn, ito::complex128 scalar, Da
     }
     else
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "The given complex value cannot be converted to a real value. However the data object "
-            "is real.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "The given complex value cannot be converted to a real value. However the data object is real.");
     }
 
     return RetVal(retOk);
@@ -5375,13 +5179,7 @@ RetVal AddComplexScalarFunc<ito::Rgba32>(
     }
     else
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "The given complex value cannot be converted to a real value. However the rgba32 data "
-            "object only supports scalar operations with real scalars.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "The given complex value cannot be converted to a real value. However the rgba32 data object only supports scalar operations with real scalars.");
     }
 
     return RetVal(retOk);
@@ -5391,12 +5189,7 @@ template <>
 RetVal AddComplexScalarFunc<ito::DateTime>(
     const DataObject* dObjIn, ito::complex128 scalar, DataObject* dObjOut)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert,
-        "Integer or float cannot be added or subtracted to datetime.",
-        "",
-        __FILE__,
-        __LINE__));
+    CV_Error(cv::Error::StsAssert, "Integer or float cannot be added or subtracted to datetime.");
 	return RetVal(retOk);
 }
 
@@ -5404,12 +5197,7 @@ template <>
 RetVal AddComplexScalarFunc<ito::TimeDelta>(
     const DataObject* dObjIn, ito::complex128 scalar, DataObject* dObjOut)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert,
-        "Integer or float cannot be added or subtracted to timedelta.",
-        "",
-        __FILE__,
-        __LINE__));
+    CV_Error(cv::Error::StsAssert, "Integer or float cannot be added or subtracted to timedelta.");
 	return RetVal(retOk);
 }
 
@@ -5421,12 +5209,7 @@ template <typename _Tp>
 RetVal AddTimeDeltaScalarFunc(
     const DataObject* dObjIn, const ito::TimeDelta& scalar, DataObject* dObjOut)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert,
-        "A timedelta scalar can only be added or subtracted to a datetime or timedelta dataObject.",
-        "",
-        __FILE__,
-        __LINE__));
+    CV_Error(cv::Error::StsAssert, "A timedelta scalar can only be added or subtracted to a datetime or timedelta dataObject.");
 	return RetVal(retOk);
 }
 
@@ -5522,26 +5305,19 @@ DataObject& DataObject::operator+=(const DataObject& rhs)
     case ito::tDateTime:
         if (rhs.m_type != ito::tTimeDelta)
         {
-            cv::error(cv::Exception(
-                CV_StsUnmatchedFormats,
-                "Only a timedelta object can be added to a datetime object.", "",
-                __FILE__, __LINE__));
+            CV_Error(cv::Error::StsUnmatchedFormats, "Only a timedelta object can be added to a datetime object.");
         }
         break;
     case ito::tTimeDelta:
         if (rhs.m_type != ito::tTimeDelta)
         {
-            cv::error(cv::Exception(
-                CV_StsUnmatchedFormats,
-                "Only a timedelta object can be added to a timedelta object.", "",
-                __FILE__, __LINE__));
+            CV_Error(cv::Error::StsUnmatchedFormats, "Only a timedelta object can be added to a timedelta object.");
         }
         break;
     default:
         if (m_type != rhs.m_type)
         {
-            cv::error(cv::Exception(
-                CV_StsUnmatchedFormats, "dataObjects differ in type", "", __FILE__, __LINE__));
+            CV_Error(cv::Error::StsUnmatchedFormats, "dataObjects differ in type");
         }
         break;
     }
@@ -5586,26 +5362,19 @@ DataObject DataObject::operator+(const DataObject& rhs)
     case ito::tDateTime:
         if (rhs.m_type != ito::tTimeDelta)
         {
-            cv::error(cv::Exception(
-                CV_StsUnmatchedFormats,
-                "Only a timedelta object can be added to a datetime object.", "",
-                __FILE__, __LINE__));
+            CV_Error(cv::Error::StsUnmatchedFormats, "Only a timedelta object can be added to a datetime object.");
         }
         break;
     case ito::tTimeDelta:
         if (rhs.m_type != ito::tTimeDelta && rhs.m_type != ito::tDateTime)
         {
-            cv::error(cv::Exception(
-                CV_StsUnmatchedFormats,
-                "Only a timedelta or datetime object can be added to a timedelta object.", "",
-                __FILE__, __LINE__));
+            CV_Error(cv::Error::StsUnmatchedFormats, "Only a timedelta or datetime object can be added to a timedelta object.");
         }
         break;
     default:
         if (m_type != rhs.m_type)
         {
-            cv::error(cv::Exception(
-                CV_StsUnmatchedFormats, "dataObjects differ in type", "", __FILE__, __LINE__));
+            CV_Error(cv::Error::StsUnmatchedFormats, "dataObjects differ in type");
         }
         break;
     }
@@ -5842,26 +5611,19 @@ DataObject& DataObject::operator-=(const DataObject& rhs)
     case ito::tDateTime:
         if (rhs.m_type != ito::tTimeDelta && rhs.m_type != ito::tDateTime)
         {
-            cv::error(cv::Exception(
-                CV_StsUnmatchedFormats,
-                "Only a timedelta or datetime object can be subtracted from a datetime object.", "",
-                __FILE__, __LINE__));
+            CV_Error(cv::Error::StsUnmatchedFormats, "Only a timedelta or datetime object can be subtracted from a datetime object.");
         }
         break;
     case ito::tTimeDelta:
         if (rhs.m_type != ito::tTimeDelta)
         {
-            cv::error(cv::Exception(
-                CV_StsUnmatchedFormats,
-                "Only a timedelta object can be subtracted from a timedelta object.", "",
-                __FILE__, __LINE__));
+            CV_Error(cv::Error::StsUnmatchedFormats, "Only a timedelta object can be subtracted from a timedelta object.");
         }
         break;
     default:
         if (m_type != rhs.m_type)
         {
-            cv::error(cv::Exception(
-                CV_StsUnmatchedFormats, "dataObjects differ in type", "", __FILE__, __LINE__));
+            CV_Error(cv::Error::StsUnmatchedFormats, "dataObjects differ in type");
         }
         break;
     }
@@ -5908,26 +5670,19 @@ DataObject DataObject::operator-(const DataObject& rhs)
     case ito::tDateTime:
         if (rhs.m_type != ito::tTimeDelta && rhs.m_type != ito::tDateTime)
         {
-            cv::error(cv::Exception(
-                CV_StsUnmatchedFormats,
-                "Only a timedelta or datetime object can be subtracted from a datetime object.", "",
-                __FILE__, __LINE__));
+            CV_Error(cv::Error::StsUnmatchedFormats, "Only a timedelta or datetime object can be subtracted from a datetime object.");
         }
         break;
     case ito::tTimeDelta:
         if (rhs.m_type != ito::tTimeDelta)
         {
-            cv::error(cv::Exception(
-                CV_StsUnmatchedFormats,
-                "Only a timedelta object can be subtracted from a timedelta object.", "",
-                __FILE__, __LINE__));
+            CV_Error(cv::Error::StsUnmatchedFormats, "Only a timedelta object can be subtracted from a timedelta object.");
         }
         break;
     default:
         if (m_type != rhs.m_type)
         {
-            cv::error(cv::Exception(
-                CV_StsUnmatchedFormats, "dataObjects differ in type", "", __FILE__, __LINE__));
+            CV_Error(cv::Error::StsUnmatchedFormats, "dataObjects differ in type");
         }
         break;
     }
@@ -6031,37 +5786,25 @@ DataObject& DataObject::operator*=(const DataObject& rhs)
 {
     if (this->m_type != rhs.m_type)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert, "Data type of objects are different.", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsAssert, "Data type of objects are different.");
         return *this;
     }
 
     if (m_dims != rhs.m_dims)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "Number of dimensions of objects are different.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "Number of dimensions of objects are different.");
         return *this;
     }
 
     if (m_dims < 2)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert, "DataObjects must be at least two-dimensional.", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsAssert, "DataObjects must be at least two-dimensional.");
         return *this;
     }
 
     if ((m_size[m_dims - 1] != rhs.m_size[m_dims - 2]))
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "DataObject - matrix dimensions inappropriate for matrix multiplication.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "DataObject - matrix dimensions inappropriate for matrix multiplication.");
         return *this;
     }
 
@@ -6069,26 +5812,14 @@ DataObject& DataObject::operator*=(const DataObject& rhs)
     {
         if (getSize(i) != rhs.getSize(i))
         {
-            cv::error(cv::Exception(
-                CV_StsAssert,
-                "DataObject - the first n-2 dimensions of both objects must be the same for matrix "
-                "multiplication (n is the number of total dimensions).",
-                "",
-                __FILE__,
-                __LINE__));
+            CV_Error(cv::Error::StsAssert, "DataObject - the first n-2 dimensions of both objects must be the same for matrix multiplication (n is the number of total dimensions).");
             return *this;
         }
     }
 
     if (this->m_type != ito::tFloat32 && this->m_type != ito::tFloat64)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "matrix multiplication is only implemented for float32 and float64 (due to OpenCV or "
-            "BLAS restrictions)",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "matrix multiplication is only implemented for float32 and float64 (due to OpenCV or BLAS restrictions)");
     }
 
     if (m_size[m_dims - 1] ==
@@ -6127,37 +5858,25 @@ DataObject DataObject::operator*(const DataObject& rhs)
 {
     if (this->m_type != rhs.m_type)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert, "Data type of objects are different.", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsAssert, "Data type of objects are different.");
         return *this;
     }
 
     if (m_dims != rhs.m_dims)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "Number of dimensions of objects are different.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "Number of dimensions of objects are different.");
         return *this;
     }
 
     if (m_dims < 2)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert, "DataObjects must be at least two-dimensional.", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsAssert, "DataObjects must be at least two-dimensional.");
         return *this;
     }
 
     if ((m_size[m_dims - 1] != rhs.m_size[m_dims - 2]))
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "DataObject - matrix dimensions inappropriate for matrix multiplication.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "DataObject - matrix dimensions inappropriate for matrix multiplication.");
         return *this;
     }
 
@@ -6165,26 +5884,14 @@ DataObject DataObject::operator*(const DataObject& rhs)
     {
         if (getSize(i) != rhs.getSize(i))
         {
-            cv::error(cv::Exception(
-                CV_StsAssert,
-                "DataObject - the first n-2 dimensions of both objects must be the same for matrix "
-                "multiplication (n is the number of total dimensions).",
-                "",
-                __FILE__,
-                __LINE__));
+            CV_Error(cv::Error::StsAssert, "DataObject - the first n-2 dimensions of both objects must be the same for matrix multiplication (n is the number of total dimensions).");
             return *this;
         }
     }
 
     if (this->m_type != ito::tFloat32 && this->m_type != ito::tFloat64)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "matrix multiplication is only implemented for float32 and float64 (due to OpenCV or "
-            "BLAS restrictions)",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "matrix multiplication is only implemented for float32 and float64 (due to OpenCV or BLAS restrictions)");
     }
 
     int* sizes = new int[m_dims];
@@ -6359,8 +6066,7 @@ template <> RetVal OpScalarMulFunc<ito::Rgba32>(DataObject* src, const float64& 
 
 template <> RetVal OpScalarMulFunc<ito::DateTime>(DataObject* src, const float64& factor)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Scalar multiplication not supported for ``datetime``.", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Scalar multiplication not supported for ``datetime``.");
     return retError;
 }
 
@@ -6450,13 +6156,7 @@ template <typename _Tp> RetVal OpScalarComplexMulFunc(DataObject* src, const com
     }
     else
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "The given complex value cannot be converted to a real value. However the data object "
-            "is real.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "The given complex value cannot be converted to a real value. However the data object is real.");
     }
 
     return retOk;
@@ -6580,13 +6280,7 @@ template <> RetVal OpScalarComplexMulFunc<ito::Rgba32>(DataObject* src, const co
     }
     else
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "The given complex value cannot be converted to a real value. However the rgba32 data "
-            "object only supports scalar operations with real scalars.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "The given complex value cannot be converted to a real value. However the rgba32 data object only supports scalar operations with real scalars.");
     }
 
     return retOk;
@@ -6594,23 +6288,13 @@ template <> RetVal OpScalarComplexMulFunc<ito::Rgba32>(DataObject* src, const co
 
 template <> RetVal OpScalarComplexMulFunc<ito::DateTime>(DataObject* src, const complex128& factor)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert,
-        "Complex scalar multiplication not supported for DateTime.",
-        "",
-        __FILE__,
-        __LINE__));
+    CV_Error(cv::Error::StsAssert, "Complex scalar multiplication not supported for DateTime.");
     return retError;
 }
 
 template <> RetVal OpScalarComplexMulFunc<ito::TimeDelta>(DataObject* src, const complex128& factor)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert,
-        "Complex scalar multiplication not supported for TimeDelta.",
-        "",
-        __FILE__,
-        __LINE__));
+    CV_Error(cv::Error::StsAssert, "Complex scalar multiplication not supported for TimeDelta.");
     return retError;
 }
 
@@ -6708,8 +6392,7 @@ template <>
 void CmpFunc<ito::int8>(
     const DataObject* src1, const DataObject* src2, DataObject* dst, cv::CmpTypes cmpOp)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Compare operator not defined for int8.", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Compare operator not defined for int8.");
 }
 
 //! template specialisation for compare function of type complex64
@@ -6736,12 +6419,7 @@ void CmpFunc<ito::Rgba32>(
         };
         break;
     default:
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "This compare operator is not defined for rgba32.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "This compare operator is not defined for rgba32.");
     }
 
     int numMats = src1->getNumPlanes();
@@ -6813,12 +6491,7 @@ void CmpFunc<ito::complex64>(
         };
         break;
     default:
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "This compare operator is not defined for complex64.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "This compare operator is not defined for complex64.");
     }
 
     int numMats = src1->getNumPlanes();
@@ -6890,12 +6563,7 @@ void CmpFunc<ito::complex128>(
         };
         break;
     default:
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "This compare operator is not defined for complex128.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "This compare operator is not defined for complex128.");
     }
 
     int numMats = src1->getNumPlanes();
@@ -6981,12 +6649,7 @@ void CmpFunc<ito::DateTime>(
         };
         break;
     default:
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "This compare operator is not defined for DateTime.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "This compare operator is not defined for DateTime.");
     }
 
     int numMats = src1->getNumPlanes();
@@ -7069,12 +6732,7 @@ void CmpFunc<ito::TimeDelta>(
         };
         break;
     default:
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "This compare operator is not defined for TimeDelta.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "This compare operator is not defined for TimeDelta.");
     }
 
     int numMats = src1->getNumPlanes();
@@ -7131,8 +6789,7 @@ DataObject DataObject::operator<(DataObject& rhs)
 {
     if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
     {
-        cv::error(cv::Exception(
-            CV_StsAssert, "DataObject - operands differ in size or type", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsAssert, "DataObject - operands differ in size or type");
         return *this;
     }
 
@@ -7165,8 +6822,7 @@ DataObject DataObject::operator<=(DataObject& rhs)
 {
     if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
     {
-        cv::error(cv::Exception(
-            CV_StsAssert, "DataObject - operands differ in size or type", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsAssert, "DataObject - operands differ in size or type");
         return *this;
     }
 
@@ -7199,8 +6855,7 @@ DataObject DataObject::operator==(DataObject& rhs)
 {
     if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
     {
-        cv::error(cv::Exception(
-            CV_StsAssert, "DataObject - operands differ in size or type", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsAssert, "DataObject - operands differ in size or type");
         return *this;
     }
 
@@ -7222,8 +6877,7 @@ DataObject DataObject::operator!=(DataObject& rhs)
 {
     if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
     {
-        cv::error(cv::Exception(
-            CV_StsAssert, "DataObject - operands differ in size or type", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsAssert, "DataObject - operands differ in size or type");
         return *this;
     }
 
@@ -7246,7 +6900,7 @@ RetVal CmpFuncScalarComplex64(
 // template<> RetVal CmpFuncScalar<ito::complex128>(const DataObject * /*src*/, const float64
 // &/*value*/, DataObject * /*dst*/, int /*cmpOp*/)
 //{
-//  cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__,
+//  cv::error(cv::Error::StsAssert, "Not defined for input parameter type", "", __FILE__,
 //  __LINE__)); return ito::retOk;
 //}
 
@@ -7260,12 +6914,7 @@ RetVal CmpFuncScalarComplex128(
     }
     else if (src->getType() != ito::tComplex128)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "Only a complex64 or complex128 dataObject can be compared to a complex scalar.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "Only a complex64 or complex128 dataObject can be compared to a complex scalar.");
     }
 
     int numMats = src->getNumPlanes();
@@ -7355,12 +7004,7 @@ RetVal CmpFuncScalarComplex128(
     }
     else
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "Complex128 is not orderable. Use real, imag, or abs.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "Complex128 is not orderable. Use real, imag, or abs.");
     }
 
     return ito::retOk;
@@ -7373,7 +7017,7 @@ RetVal CmpFuncScalarComplex128(
 // template<> RetVal CmpFuncScalar<ito::complex64>(const DataObject * /*src*/, const float64
 // &/*value*/, DataObject * /*dst*/, int /*cmpOp*/)
 //{
-//   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__,
+//   cv::error(cv::Error::StsAssert, "Not defined for input parameter type", "", __FILE__,
 //   __LINE__)); return ito::retOk;
 //}
 
@@ -7389,12 +7033,7 @@ RetVal CmpFuncScalarComplex64(
     }
     else if (src->getType() != ito::tComplex64)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "Only a complex64 or complex128 dataObject can be compared to a complex scalar.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "Only a complex64 or complex128 dataObject can be compared to a complex scalar.");
     }
 
     int numMats = src->getNumPlanes();
@@ -7484,12 +7123,7 @@ RetVal CmpFuncScalarComplex64(
     }
     else
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "Complex64 is not orderable. Use real, imag, or abs.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "Complex64 is not orderable. Use real, imag, or abs.");
     }
 
     return ito::retOk;
@@ -7520,16 +7154,10 @@ RetVal CmpFuncScalar(const DataObject* src, const float64& value, DataObject* ds
     case ito::tDateTime:
     case ito::tTimeDelta:
     case ito::tRGBA32:
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "A scalar number cannot be compared to the dataObject with the given dtype.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "A scalar number cannot be compared to the dataObject with the given dtype.");
         break;
     case ito::tInt8:
-        cv::error(cv::Exception(
-            CV_StsAssert, "Compare operator not defined for int8.", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsAssert, "Compare operator not defined for int8.");
         break;
     }
 
@@ -7659,13 +7287,7 @@ void ScalarDateTimeCmp(
 {
     if (src1->getType() != ito::tDateTime)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "A scalar datetime value cannot only be compared to a dataObject of dtype "
-            "``datetime``.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "A scalar datetime value cannot only be compared to a dataObject of dtype ``datetime``.");
     }
 
     typedef ito::DateTime value_type;
@@ -7712,12 +7334,7 @@ void ScalarDateTimeCmp(
         };
         break;
     default:
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "This compare operator is not defined for DateTime.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "This compare operator is not defined for DateTime.");
     }
 
     int numMats = src1->getNumPlanes();
@@ -7846,13 +7463,7 @@ void ScalarTimeDeltaCmp(
 {
     if (src1->getType() != ito::tTimeDelta)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "A scalar timedelta value cannot only be compared to a dataObject of dtype "
-            "``timedelta``.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "A scalar timedelta value cannot only be compared to a dataObject of dtype ``timedelta``.");
     }
 
     typedef ito::TimeDelta value_type;
@@ -7891,12 +7502,7 @@ void ScalarTimeDeltaCmp(
         };
         break;
     default:
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "This compare operator is not defined for DateTime.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "This compare operator is not defined for DateTime.");
     }
 
     int numMats = src1->getNumPlanes();
@@ -8030,12 +7636,7 @@ void ScalarRgbaCmp(
 {
     if (src1->getType() != ito::tRGBA32)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "A scalar rgba value cannot only be compared to a dataObject of dtype ``rgba32``.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "A scalar rgba value cannot only be compared to a dataObject of dtype ``rgba32``.");
     }
 
     typedef ito::Rgba32 value_type;
@@ -8050,12 +7651,7 @@ void ScalarRgbaCmp(
         cmpFunc = [](const value_type& a, const value_type& b) { return (a == b) ? 0 : 255; };
         break;
     default:
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "This compare operator is not defined for Rgba32.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "This compare operator is not defined for Rgba32.");
     }
 
     int numMats = src1->getNumPlanes();
@@ -8223,8 +7819,7 @@ template <typename _Tp> RetVal ShiftLFunc(DataObject* src, const unsigned char s
 */
 template <> RetVal ShiftLFunc<ito::float32>(DataObject* /*src*/, const unsigned char /*shiftbit*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -8234,8 +7829,7 @@ template <> RetVal ShiftLFunc<ito::float32>(DataObject* /*src*/, const unsigned 
 */
 template <> RetVal ShiftLFunc<ito::float64>(DataObject* /*src*/, const unsigned char /*shiftbit*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -8245,8 +7839,7 @@ template <> RetVal ShiftLFunc<ito::float64>(DataObject* /*src*/, const unsigned 
 */
 template <> RetVal ShiftLFunc<ito::complex64>(DataObject* /*src*/, const unsigned char /*shiftbit*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -8257,8 +7850,7 @@ template <> RetVal ShiftLFunc<ito::complex64>(DataObject* /*src*/, const unsigne
 template <>
 RetVal ShiftLFunc<ito::complex128>(DataObject* /*src*/, const unsigned char /*shiftbit*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -8268,8 +7860,7 @@ RetVal ShiftLFunc<ito::complex128>(DataObject* /*src*/, const unsigned char /*sh
 */
 template <> RetVal ShiftLFunc<ito::Rgba32>(DataObject* /*src*/, const unsigned char /*shiftbit*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -8279,8 +7870,7 @@ template <> RetVal ShiftLFunc<ito::Rgba32>(DataObject* /*src*/, const unsigned c
 */
 template <> RetVal ShiftLFunc<ito::DateTime>(DataObject* /*src*/, const unsigned char /*shiftbit*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -8290,8 +7880,7 @@ template <> RetVal ShiftLFunc<ito::DateTime>(DataObject* /*src*/, const unsigned
 */
 template <> RetVal ShiftLFunc<ito::TimeDelta>(DataObject* /*src*/, const unsigned char /*shiftbit*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -8392,8 +7981,7 @@ template <typename _Tp> RetVal ShiftRFunc(DataObject* src, const unsigned char s
 */
 template <> RetVal ShiftRFunc<ito::float32>(DataObject* /*src*/, const unsigned char /*shiftbit*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -8403,8 +7991,7 @@ template <> RetVal ShiftRFunc<ito::float32>(DataObject* /*src*/, const unsigned 
 */
 template <> RetVal ShiftRFunc<ito::float64>(DataObject* /*src*/, const unsigned char /*shiftbit*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -8414,8 +8001,7 @@ template <> RetVal ShiftRFunc<ito::float64>(DataObject* /*src*/, const unsigned 
 */
 template <> RetVal ShiftRFunc<ito::complex64>(DataObject* /*src*/, const unsigned char /*shiftbit*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -8426,8 +8012,7 @@ template <> RetVal ShiftRFunc<ito::complex64>(DataObject* /*src*/, const unsigne
 template <>
 RetVal ShiftRFunc<ito::complex128>(DataObject* /*src*/, const unsigned char /*shiftbit*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -8437,8 +8022,7 @@ RetVal ShiftRFunc<ito::complex128>(DataObject* /*src*/, const unsigned char /*sh
 */
 template <> RetVal ShiftRFunc<ito::Rgba32>(DataObject* /*src*/, const unsigned char /*shiftbit*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -8448,8 +8032,7 @@ template <> RetVal ShiftRFunc<ito::Rgba32>(DataObject* /*src*/, const unsigned c
 */
 template <> RetVal ShiftRFunc<ito::DateTime>(DataObject* /*src*/, const unsigned char /*shiftbit*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -8459,8 +8042,7 @@ template <> RetVal ShiftRFunc<ito::DateTime>(DataObject* /*src*/, const unsigned
 */
 template <> RetVal ShiftRFunc<ito::TimeDelta>(DataObject* /*src*/, const unsigned char /*shiftbit*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -8552,8 +8134,7 @@ template <>
 RetVal BitAndFunc<ito::float32>(
     const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -8565,8 +8146,7 @@ template <>
 RetVal BitAndFunc<ito::float64>(
     const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -8578,8 +8158,7 @@ template <>
 RetVal BitAndFunc<ito::complex64>(
     const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -8591,8 +8170,7 @@ template <>
 RetVal BitAndFunc<ito::complex128>(
     const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -8604,8 +8182,7 @@ template <>
 RetVal BitAndFunc<ito::Rgba32>(
     const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -8617,8 +8194,7 @@ template <>
 RetVal BitAndFunc<ito::DateTime>(
     const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -8630,8 +8206,7 @@ template <>
 RetVal BitAndFunc<ito::TimeDelta>(
     const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -8728,8 +8303,7 @@ template <>
 RetVal BitOrFunc<ito::float32>(
     const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -8741,8 +8315,7 @@ template <>
 RetVal BitOrFunc<ito::float64>(
     const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -8754,8 +8327,7 @@ template <>
 RetVal BitOrFunc<ito::complex64>(
     const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -8767,8 +8339,7 @@ template <>
 RetVal BitOrFunc<ito::complex128>(
     const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -8780,8 +8351,7 @@ template <>
 RetVal BitOrFunc<ito::Rgba32>(
     const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -8793,8 +8363,7 @@ template <>
 RetVal BitOrFunc<ito::DateTime>(
     const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -8806,8 +8375,7 @@ template <>
 RetVal BitOrFunc<ito::TimeDelta>(
     const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -8902,8 +8470,7 @@ template <>
 RetVal BitXorFunc<ito::float32>(
     const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -8915,8 +8482,7 @@ template <>
 RetVal BitXorFunc<ito::float64>(
     const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -8928,8 +8494,7 @@ template <>
 RetVal BitXorFunc<ito::complex64>(
     const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -8941,8 +8506,7 @@ template <>
 RetVal BitXorFunc<ito::complex128>(
     const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -8954,8 +8518,7 @@ template <>
 RetVal BitXorFunc<ito::Rgba32>(
     const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -8967,8 +8530,7 @@ template <>
 RetVal BitXorFunc<ito::DateTime>(
     const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -8980,8 +8542,7 @@ template <>
 RetVal BitXorFunc<ito::TimeDelta>(
     const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -9036,12 +8597,7 @@ DataObject DataObject::bitwise_not() const
 {
     if (getType() > tFloat64)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "The bitwise not operator is not defined for this data type.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "The bitwise not operator is not defined for this data type.");
     }
 
     DataObject result;
@@ -9072,12 +8628,7 @@ DataObject DataObject::at(const ito::Range& rowRange, const ito::Range& colRange
 {
     if (m_dims != 2)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "DataObject::at with rowRange and colRange argument only defined for dims==2",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "DataObject::at with rowRange and colRange argument only defined for dims==2");
     }
 
     Range ranges[2];
@@ -9147,10 +8698,14 @@ DataObject DataObject::at(ito::Range* ranges) const
         end = ranges[n].end;
         if (start > end)
             std::swap(start, end);
-        lims[(n * 2)] = -ranges[n].start;
         if (ranges[n].start == INT_MIN) // range all
         {
+            // checked first, since -INT_MIN overflows (undefined behavior)
             lims[(n * 2)] = 0;
+        }
+        else
+        {
+            lims[(n * 2)] = -ranges[n].start;
         }
         size = m_size.m_p[n];
         if (ranges[n].end == INT_MAX) // range all
@@ -9193,17 +8748,11 @@ DataObject DataObject::at(const DataObject& mask) const
 {
     if (mask.getDims() != m_dims || (mask.getSize() != getSize()))
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "The mask object must have the same size than this data object",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "The mask object must have the same size than this data object");
     }
     else if (mask.getType() != ito::tUInt8)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert, "The mask object must have type uint8", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsAssert, "The mask object must have type uint8");
     }
 
     int numPlanes = getNumPlanes();
@@ -9303,8 +8852,7 @@ DataObject& DataObject::adjustROI(
 {
     if (m_dims != 2)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert, "DataObject::row only defined for dims==2", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsAssert, "DataObject::row only defined for dims==2");
     }
 
     int lims[4] = {dtop, dbottom, dleft, dright};
@@ -9327,12 +8875,7 @@ DataObject& DataObject::adjustROI(const unsigned char dims, const int* lims)
     // check values
     if (dims != m_dims)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "adjustROI is called with the wrong number of dimensions.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "adjustROI is called with the wrong number of dimensions.");
     }
 
 
@@ -9349,23 +8892,13 @@ DataObject& DataObject::adjustROI(const unsigned char dims, const int* lims)
             startIdx > (int)m_osize[n]) //((int)m_roi.m_p[n] - lims[n*2] + (int)m_size.m_p[n] +
                                         // lims[n*2+1]) >= (int)m_osize[n])
         {
-            cv::error(cv::Exception(
-                CV_StsAssert,
-                "adjustROI: resulting ROI will start outside of the original matrix.",
-                "",
-                __FILE__,
-                __LINE__));
+            CV_Error(cv::Error::StsAssert, "adjustROI: resulting ROI will start outside of the original matrix.");
         }
 
         endSize = lims[n * 2] + (int)m_size.m_p[n] + lims[n * 2 + 1];
         if (endSize < 0 || startIdx + endSize > (int)m_osize[n])
         {
-            cv::error(cv::Exception(
-                CV_StsAssert,
-                "adjustROI: resulting ROI is bigger than the original matrix size.",
-                "",
-                __FILE__,
-                __LINE__));
+            CV_Error(cv::Error::StsAssert, "adjustROI: resulting ROI is bigger than the original matrix size.");
         }
 
         m_roi.m_p[n] = startIdx;
@@ -9563,40 +9096,35 @@ template <typename _Tp> RetVal ConjFunc(DataObject* dObj)
 //! is not complex.
 template <> RetVal ConjFunc<int8>(DataObject* /*dObj*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 //! template specialization for data object of type uint8. throws cv::Exception, since the data type
 //! is not complex.
 template <> RetVal ConjFunc<uint8>(DataObject* /*dObj*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 //! template specialization for data object of type int16. throws cv::Exception, since the data type
 //! is not complex.
 template <> RetVal ConjFunc<int16>(DataObject* /*dObj*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 //! template specialization for data object of type uint16. throws cv::Exception, since the data
 //! type is not complex.
 template <> RetVal ConjFunc<uint16>(DataObject* /*dObj*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 //! template specialization for data object of type int32. throws cv::Exception, since the data type
 //! is not complex.
 template <> RetVal ConjFunc<int32>(DataObject* /*dObj*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -9604,8 +9132,7 @@ template <> RetVal ConjFunc<int32>(DataObject* /*dObj*/)
 //! type is not complex.
 template <> RetVal ConjFunc<uint32>(DataObject* /*dObj*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -9613,48 +9140,42 @@ template <> RetVal ConjFunc<uint32>(DataObject* /*dObj*/)
 //! type is not complex.
 template <> RetVal ConjFunc<ito::float32>(DataObject* /*dObj*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 //! template specialization for data object of type float64. throws cv::Exception, since the data
 //! type is not complex.
 template <> RetVal ConjFunc<ito::float64>(DataObject* /*dObj*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 //! template specialization for data object of type float64. throws cv::Exception, since the data
 //! type is not complex.
 template <> RetVal ConjFunc<ito::Rgba32>(DataObject* /*dObj*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 //! template specialization for data object of type DateTime. throws cv::Exception, since the data
 //! type is not complex.
 template <> RetVal ConjFunc<ito::DateTime>(DataObject* /*dObj*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 //! template specialization for data object of type TimeDelta. throws cv::Exception, since the data
 //! type is not complex.
 template <> RetVal ConjFunc<ito::TimeDelta>(DataObject* /*dObj*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 //! template specialization for data object of type int64. throws cv::Exception, since the data type
 //! is not complex.
 template <> RetVal ConjFunc<int64>(DataObject* /*dObj*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Not defined for input parameter type");
     return ito::retOk;
 }
 
@@ -9730,8 +9251,7 @@ DataObject DataObject::row(const int selRow) const
 {
     if (m_dims != 2)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert, "DataObject::row only defined for dims==2", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsAssert, "DataObject::row only defined for dims==2");
     }
 
     DataObject resMat = *this;
@@ -9772,8 +9292,7 @@ DataObject DataObject::col(const int selCol) const
 {
     if (m_dims != 2)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert, "DataObject::col only defined for dims==2", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsAssert, "DataObject::col only defined for dims==2");
     }
 
     DataObject resMat = *this;
@@ -9791,8 +9310,7 @@ DataObject DataObject::diag(void)
 {
    if (m_dims > 2)
    {
-      cv::error(cv::Exception(CV_StsAssert, "diag is only defined for 2D matrices", "", __FILE__,
-__LINE__));
+      CV_Error(cv::Error::StsAssert, "diag is only defined for 2D matrices");
    }
 
    unsigned int sizes = m_size[m_dims - 1] < m_size[m_dims - 2] ? m_size[m_dims - 1] : m_size[m_dims
@@ -9868,8 +9386,7 @@ template <>
 RetVal MulFunc<DateTime>(
     const DataObject* src1, const DataObject* src2, DataObject* res, const double /*scale*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Multiplication not supported for DateTime.", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Multiplication not supported for DateTime.");
     return retError;
 }
 
@@ -9877,8 +9394,7 @@ template <>
 RetVal MulFunc<TimeDelta>(
     const DataObject* src1, const DataObject* src2, DataObject* res, const double /*scale*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Multiplication not supported for TimeDelta.", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Multiplication not supported for TimeDelta.");
     return retError;
 }
 
@@ -10011,13 +9527,7 @@ RetVal DivFunc(const DataObject* src1, const DataObject* src2, DataObject* res)
                     for (int j = 0; j < srcMat1->cols; j++)
                     {
                         if (src2RowPtr[j] == zero)
-                            cv::error(cv::Exception(
-                                CV_StsAssert,
-                                "Division by zero not allowed for fixed point arithmetic and "
-                                "complex values",
-                                "",
-                                __FILE__,
-                                __LINE__));
+                            CV_Error(cv::Error::StsAssert, "Division by zero not allowed for fixed point arithmetic and complex values");
                         resRowPtr[j] = src1RowPtr[j] / src2RowPtr[j];
                     }
                 }
@@ -10101,16 +9611,14 @@ template <> RetVal DivFunc<Rgba32>(const DataObject* src1, const DataObject* src
 template <>
 RetVal DivFunc<DateTime>(const DataObject* src1, const DataObject* src2, DataObject* res)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Division not supported for DateTime.", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Division not supported for DateTime.");
     return ito::retError;
 }
 
 template <>
 RetVal DivFunc<TimeDelta>(const DataObject* src1, const DataObject* src2, DataObject* res)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "Division not supported for TimeDelta.", "", __FILE__, __LINE__));
+    CV_Error(cv::Error::StsAssert, "Division not supported for TimeDelta.");
     return ito::retError;
 }
 
@@ -10255,13 +9763,11 @@ dimensions is allowed to have a size greter than one. \param *mats sequence of i
 {
     if (num < 1)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert, "A length less than one was given", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsAssert, "A length less than one was given");
     }
     if (axis >= 3)
     {
-        cv::error(
-            cv::Exception(CV_StsAssert, "An axis greater 2 was given", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsAssert, "An axis greater 2 was given");
     }
 
     const ito::DataObject& firstMat = mats[0];
@@ -10269,17 +9775,12 @@ dimensions is allowed to have a size greter than one. \param *mats sequence of i
     int type = firstMat.getType();
     if (type == ito::tUInt32)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "DataType uint32 is not supported by this function",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "DataType uint32 is not supported by this function");
     }
 
     if (firstMat.getDims() < 2)
     {
-        cv::error(cv::Exception(CV_StsAssert, "First dataObject is empty", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsAssert, "First dataObject is empty");
     }
 
     int planeSize[2];
@@ -10322,15 +9823,15 @@ dimensions is allowed to have a size greter than one. \param *mats sequence of i
                     if (mats[i].getSize(cnt) != 1)
                     {
                         DELETE_AND_SET_NULL_ARRAY(objLayers);
-                        cv::error(cv::Exception(
-                            CV_StsAssert,
+                        cv::error(
+                            cv::Error::StsAssert,
                             cv::format(
                                 "%i-th element of sequence has more than one dimension of a size "
                                 "greater than one (regardless the last two).",
                                 i),
                             "",
                             __FILE__,
-                            __LINE__));
+                            __LINE__);
                     }
                 }
             }
@@ -10350,8 +9851,7 @@ dimensions is allowed to have a size greter than one. \param *mats sequence of i
         if (mats[i].getType() != type)
         {
             DELETE_AND_SET_NULL_ARRAY(objLayers);
-            cv::error(cv::Exception(
-                CV_StsAssert, "At least one dataObject differ in type.", "", __FILE__, __LINE__));
+            CV_Error(cv::Error::StsAssert, "At least one dataObject differ in type.");
         }
     }
 
@@ -10363,24 +9863,14 @@ dimensions is allowed to have a size greter than one. \param *mats sequence of i
             if (mats[i].getType() != type)
             {
                 DELETE_AND_SET_NULL_ARRAY(objLayers);
-                cv::error(cv::Exception(
-                    CV_StsAssert,
-                    "At least one dataObject differ in type.",
-                    "",
-                    __FILE__,
-                    __LINE__));
+                CV_Error(cv::Error::StsAssert, "At least one dataObject differ in type.");
             }
             // check the last size of the last two dimensions
             if (mats[i].getSize(mats[i].getDims() - 1) != planeSize[1] ||
                 mats[i].getSize(mats[i].getDims() - 2) != planeSize[0])
             {
                 DELETE_AND_SET_NULL_ARRAY(objLayers);
-                cv::error(cv::Exception(
-                    CV_StsAssert,
-                    "The last two dimensions of the given dataObjects differ in size.",
-                    "",
-                    __FILE__,
-                    __LINE__));
+                CV_Error(cv::Error::StsAssert, "The last two dimensions of the given dataObjects differ in size.");
             }
         }
         break;
@@ -10390,25 +9880,14 @@ dimensions is allowed to have a size greter than one. \param *mats sequence of i
             if (mats[i].getType() != type)
             {
                 DELETE_AND_SET_NULL_ARRAY(objLayers);
-                cv::error(cv::Exception(
-                    CV_StsAssert,
-                    "At least one dataObject differ in type.",
-                    "",
-                    __FILE__,
-                    __LINE__));
+                CV_Error(cv::Error::StsAssert, "At least one dataObject differ in type.");
             }
             // check the last size of the last two dimensions
             if (mats[i].getSize(mats[i].getDims() - 1) != planeSize[1] ||
                 objLayers[i] != objLayers[1])
             {
                 DELETE_AND_SET_NULL_ARRAY(objLayers);
-                cv::error(cv::Exception(
-                    CV_StsAssert,
-                    "At least one dataObject has a different number of layers or a shape of the "
-                    "last dimension that does not fit.",
-                    "",
-                    __FILE__,
-                    __LINE__));
+                CV_Error(cv::Error::StsAssert, "At least one dataObject has a different number of layers or a shape of the last dimension that does not fit.");
             }
             sizes[0] += mats[i].getSize(mats[i].getDims() - 2);
         }
@@ -10419,25 +9898,14 @@ dimensions is allowed to have a size greter than one. \param *mats sequence of i
             if (mats[i].getType() != type)
             {
                 DELETE_AND_SET_NULL_ARRAY(objLayers);
-                cv::error(cv::Exception(
-                    CV_StsAssert,
-                    "At least one dataObject differ in type.",
-                    "",
-                    __FILE__,
-                    __LINE__));
+                CV_Error(cv::Error::StsAssert, "At least one dataObject differ in type.");
             }
             // check the last size of the last two dimensions
             if (mats[i].getSize(mats[i].getDims() - 2) != planeSize[0] ||
                 objLayers[i] != objLayers[1])
             {
                 DELETE_AND_SET_NULL_ARRAY(objLayers);
-                cv::error(cv::Exception(
-                    CV_StsAssert,
-                    "At least one dataObject has a different number of layers or a shape of the "
-                    "last but one dimension that does not fit.",
-                    "",
-                    __FILE__,
-                    __LINE__));
+                CV_Error(cv::Error::StsAssert, "At least one dataObject has a different number of layers or a shape of the last but one dimension that does not fit.");
             }
             sizes[1] += mats[i].getSize(mats[i].getDims() - 1);
         }
@@ -10456,11 +9924,8 @@ dimensions is allowed to have a size greter than one. \param *mats sequence of i
             for (int cnt = 0; cnt < objLayers[i]; ++cnt)
             {
                 tempPlane = mats[i].get_mdata()[mats[i].seekMat(cnt)];
-#if (CV_MAJOR_VERSION >= 3)
+                // OpenCV 3.0+ uses 'u' member for reference counting
                 if (tempPlane->u)
-#else
-                if (tempPlane->refcount)
-#endif
                 {
                     // the opencv matrix has its own reference counter and manages its memory ->
                     // simple shallow copies are sufficient
@@ -10546,12 +10011,7 @@ void DataObject::pow(const ito::float64& power, DataObject& dst) const
         }
         break;
         default:
-            cv::error(cv::Exception(
-                CV_StsAssert,
-                "an integer power requires a real-typed data object.",
-                "",
-                __FILE__,
-                __LINE__));
+            CV_Error(cv::Error::StsAssert, "an integer power requires a real-typed data object.");
         }
     }
     else
@@ -10569,12 +10029,7 @@ void DataObject::pow(const ito::float64& power, DataObject& dst) const
         }
         break;
         default:
-            cv::error(cv::Exception(
-                CV_StsAssert,
-                "an non-integer power requires a data object of type float32 or float64.",
-                "",
-                __FILE__,
-                __LINE__));
+            CV_Error(cv::Error::StsAssert, "an non-integer power requires a data object of type float32 or float64.");
         }
     }
 }
@@ -10614,12 +10069,7 @@ void DataObject::sqrt(DataObject& dst) const
     }
     break;
     default:
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "sqrt requires a data object of type float32 or float64.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "sqrt requires a data object of type float32 or float64.");
     }
 }
 
@@ -10632,24 +10082,14 @@ DataObject DataObject::squeeze() const
     }
     else if (m_dims == 1)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "DataObject to squeeze may not have dimension = 1",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "DataObject to squeeze may not have dimension = 1");
     }
 
     int numMats = getNumPlanes();
 
     if (numMats == 0)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "DataObject to squeeze must contain at least one value (has no planes).",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "DataObject to squeeze must contain at least one value (has no planes).");
     }
 
     unsigned char newDimensions = 0;
@@ -10831,21 +10271,11 @@ DataObject DataObject::reshape(int newDims, const int* newSizes) const
 
     if (getTotal() != newTotal)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "Total size of new dataObject must be unchanged.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "Total size of new dataObject must be unchanged.");
     }
     else if (newDims < 2)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "New new object must have at least two dimensions (e.g. 1xM or Mx1).",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "New new object must have at least two dimensions (e.g. 1xM or Mx1).");
     }
 
     if (m_dims <= 0)
@@ -10854,24 +10284,14 @@ DataObject DataObject::reshape(int newDims, const int* newSizes) const
     }
     else if (m_dims == 1)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "DataObject to reshape may not have dimension = 1",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "DataObject to reshape may not have dimension = 1");
     }
 
     int numMats = getNumPlanes();
 
     if (numMats == 0)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "DataObject to squeeze must contain at least one value (has no planes).",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "DataObject to squeeze must contain at least one value (has no planes).");
     }
 
     int counter = 0;
@@ -11177,13 +10597,11 @@ DataObject DataObject::toGray(const int destinationType /*= ito::tUInt8*/) const
 {
     if (this->m_type != ito::tRGBA32)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert, "data type of dataObject must be rgba32.", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsAssert, "data type of dataObject must be rgba32.");
     }
     else if (destinationType == ito::tComplex64 || destinationType == ito::tComplex128)
     {
-        cv::error(
-            cv::Exception(CV_StsAssert, "destinationType must be real.", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsAssert, "destinationType must be real.");
     }
 
     DataObject resObj = DataObject(m_dims, m_size, destinationType);
@@ -11219,8 +10637,7 @@ DataObject DataObject::toGray(const int destinationType /*= ito::tUInt8*/) const
         break;
 
     default:
-        cv::error(
-            cv::Exception(CV_StsAssert, "destinationType must be real.", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsAssert, "destinationType must be real.");
         break;
     }
 
@@ -11395,8 +10812,7 @@ DataObject DataObject::splitColor(
 {
     if (this->m_type != ito::tRGBA32)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert, "data type of dataObject must be rgba32.", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsAssert, "data type of dataObject must be rgba32.");
     }
     int numChannels = (int)strlen(destinationColor);
     for (int channel = 0; channel < numChannels; ++channel)
@@ -11404,7 +10820,7 @@ DataObject DataObject::splitColor(
         if (destinationColor[channel] != 'b' && destinationColor[channel] != 'r' &&
             destinationColor[channel] != 'g' && destinationColor[channel] != 'a')
         {
-            cv::error(cv::Exception(CV_StsAssert, "unknown color.", "", __FILE__, __LINE__));
+            CV_Error(cv::Error::StsAssert, "unknown color.");
         }
     }
     DataObject resObj;
@@ -11439,8 +10855,7 @@ DataObject DataObject::splitColor(
         break;
 
     default:
-        cv::error(
-            cv::Exception(CV_StsAssert, "destinationType must be real.", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsAssert, "destinationType must be real.");
         break;
     }
 
@@ -11684,27 +11099,16 @@ DataObject DataObject::lineCut(const double* coordinates, const int& len) const
 {
     if (this->getType() == ito::tUInt32)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert, "This function does not support uint32", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsAssert, "This function does not support uint32");
     }
     if (len != 4)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "The length of the coordinate list has to be four",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "The length of the coordinate list has to be four");
     }
     int dims(this->getDims());
     if (dims > 3)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "Function only supports input dataObject up to 3 dimensions",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "Function only supports input dataObject up to 3 dimensions");
     }
     int sizeX;
     int sizeY;
@@ -11737,14 +11141,14 @@ DataObject DataObject::lineCut(const double* coordinates, const int& len) const
             coordinatesd[i] = (int)(this->getPhysToPix(dims - 2, coordinates[i]));
             if (coordinatesd[i] < 0 || coordinatesd[i] >= sizeY)
             {
-                cv::error(cv::Exception(
-                    CV_StsAssert,
+                cv::error(
+                    cv::Error::StsAssert,
                     cv::format(
                         "The %i-th entry of the coordinate list exceeds the size of the dataObject",
                         i + 1),
                     "",
                     __FILE__,
-                    __LINE__));
+                    __LINE__);
             }
         }
         else
@@ -11752,14 +11156,14 @@ DataObject DataObject::lineCut(const double* coordinates, const int& len) const
             coordinatesd[i] = (int)(this->getPhysToPix(dims - 1, coordinates[i]));
             if (coordinatesd[i] < 0 || coordinatesd[i] >= sizeX)
             {
-                cv::error(cv::Exception(
-                    CV_StsAssert,
+                cv::error(
+                    cv::Error::StsAssert,
                     cv::format(
                         "The %i-th entry of the coordinate list exceeds the size of the dataObject",
                         i + 1),
                     "",
                     __FILE__,
-                    __LINE__));
+                    __LINE__);
             }
         }
     }
@@ -12043,13 +11447,7 @@ RetVal CastFuncFromRgba32(const DataObject* srcObj, DataObject* resObj, double a
     case ito::tFloat64:
         if (beta != 0.0)
         {
-            cv::error(cv::Exception(
-                CV_StsAssert,
-                "beta value != 0.0 not allowed for conversion from rgba32 to real value type (to "
-                "gray-scale)",
-                "",
-                __FILE__,
-                __LINE__));
+            CV_Error(cv::Error::StsAssert, "beta value != 0.0 not allowed for conversion from rgba32 to real value type (to gray-scale)");
         }
         GrayScaleCastFunc<_TDest>(srcObj, resObj, alpha);
         break;
@@ -12101,12 +11499,7 @@ RetVal CastFuncFromRgba32(const DataObject* srcObj, DataObject* resObj, double a
     }
     break;
     default:
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "conversion from ito::Rgba32 to complex data types not supported.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "conversion from ito::Rgba32 to complex data types not supported.");
         break;
     }
 
@@ -12123,7 +11516,7 @@ RetVal CastFuncFromRgba32(const DataObject* srcObj, DataObject* resObj, double a
     \param &rhs is the destination data object, whose memory is firstly deleted, then newly
    allocated \param dest_type is the type-number of the destination element \param alpha scaling
    factor (default: 1.0) \param beta offset value (default: 0.0) \return retOk \throws
-   cv::Exception(CV_StsAssert) if conversion type is unknown \sa convertTo, CastFunc
+   cv::Exception(cv::Error::StsAssert) if conversion type is unknown \sa convertTo, CastFunc
 */
 template <typename _Tp>
 RetVal ConvertToFunc(
@@ -12135,8 +11528,7 @@ RetVal ConvertToFunc(
 {
     if (&lhs == &rhs)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert, "inplace-conversion of dataObject not possible", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsAssert, "inplace-conversion of dataObject not possible");
     }
     //_Tp is source type
 
@@ -12207,12 +11599,7 @@ RetVal ConvertToFunc(
             break;
 
         default:
-            cv::error(cv::Exception(
-                CV_StsAssert,
-                "cast to destination type not defined (e.g. uint32 is not supported)",
-                "",
-                __FILE__,
-                __LINE__));
+            CV_Error(cv::Error::StsAssert, "cast to destination type not defined (e.g. uint32 is not supported)");
             break;
         }
 
@@ -12233,8 +11620,7 @@ RetVal ConvertToFunc<ito::complex64>(
 {
     if (&lhs == &rhs)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert, "inplace-conversion of dataObject not possible", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsAssert, "inplace-conversion of dataObject not possible");
     }
     //_Tp is source type
 
@@ -12305,12 +11691,7 @@ RetVal ConvertToFunc<ito::complex64>(
             break;
 
         default:
-            cv::error(cv::Exception(
-                CV_StsAssert,
-                "cast to destination type not defined (e.g. uint32 is not supported)",
-                "",
-                __FILE__,
-                __LINE__));
+            CV_Error(cv::Error::StsAssert, "cast to destination type not defined (e.g. uint32 is not supported)");
             break;
         }
 
@@ -12331,8 +11712,7 @@ RetVal ConvertToFunc<ito::complex128>(
 {
     if (&lhs == &rhs)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert, "inplace-conversion of dataObject not possible", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsAssert, "inplace-conversion of dataObject not possible");
     }
     //_Tp is source type
 
@@ -12403,12 +11783,7 @@ RetVal ConvertToFunc<ito::complex128>(
             break;
 
         default:
-            cv::error(cv::Exception(
-                CV_StsAssert,
-                "cast to destination type not defined (e.g. uint32 is not supported)",
-                "",
-                __FILE__,
-                __LINE__));
+            CV_Error(cv::Error::StsAssert, "cast to destination type not defined (e.g. uint32 is not supported)");
             break;
         }
 
@@ -12429,8 +11804,7 @@ RetVal ConvertToFunc<ito::Rgba32>(
 {
     if (&lhs == &rhs)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert, "inplace-conversion of dataObject not possible", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsAssert, "inplace-conversion of dataObject not possible");
     }
     //_Tp is source type
 
@@ -12487,12 +11861,7 @@ RetVal ConvertToFunc<ito::Rgba32>(
 
         case ito::tComplex64:
         case ito::tComplex128:
-            cv::error(cv::Exception(
-                CV_StsAssert,
-                "cast from rgba32 to complex destination type not supported",
-                "",
-                __FILE__,
-                __LINE__));
+            CV_Error(cv::Error::StsAssert, "cast from rgba32 to complex destination type not supported");
             break;
 
         case ito::tRGBA32:
@@ -12501,12 +11870,7 @@ RetVal ConvertToFunc<ito::Rgba32>(
             break;
 
         default:
-            cv::error(cv::Exception(
-                CV_StsAssert,
-                "cast to destination type not defined (e.g. uint32 is not supported)",
-                "",
-                __FILE__,
-                __LINE__));
+            CV_Error(cv::Error::StsAssert, "cast to destination type not defined (e.g. uint32 is not supported)");
             break;
         }
 
@@ -12527,8 +11891,7 @@ RetVal ConvertToFunc<ito::DateTime>(
 {
     if (&lhs == &rhs)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert, "inplace-conversion of dataObject not possible", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsAssert, "inplace-conversion of dataObject not possible");
     }
     //_Tp is source type
 
@@ -12538,12 +11901,7 @@ RetVal ConvertToFunc<ito::DateTime>(
     }
     else
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "cast to destination type not defined (e.g. uint32 is not supported)",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "cast to destination type not defined (e.g. uint32 is not supported)");
     }
 
     return ito::retOk;
@@ -12559,8 +11917,7 @@ RetVal ConvertToFunc<ito::TimeDelta>(
 {
     if (&lhs == &rhs)
     {
-        cv::error(cv::Exception(
-            CV_StsAssert, "inplace-conversion of dataObject not possible", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsAssert, "inplace-conversion of dataObject not possible");
     }
     //_Tp is source type
 
@@ -12570,12 +11927,7 @@ RetVal ConvertToFunc<ito::TimeDelta>(
     }
     else
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "cast to destination type not defined (e.g. uint32 is not supported)",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "cast to destination type not defined (e.g. uint32 is not supported)");
     }
 
     return ito::retOk;
@@ -12855,8 +12207,7 @@ DataObject abs(const DataObject& dObj)
             AbsFuncReal<ito::TimeDelta>(&dObj, &resObj);
             break;
         default:
-            cv::error(cv::Exception(
-                CV_StsAssert, "abs() operator not possible for this source data object type", "", __FILE__, __LINE__));
+            CV_Error(cv::Error::StsAssert, "abs() operator not possible for this source data object type");
         }
         return resObj;
     }
@@ -12946,12 +12297,7 @@ DataObject arg(const DataObject& dObj)
     }
     else
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "arg not defined for real, color or datetime input parameter types.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "arg not defined for real, color or datetime input parameter types.");
         return DataObject();
     }
 }
@@ -13041,12 +12387,7 @@ DataObject real(const DataObject& dObj)
     }
     else
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "real not defined for real, color or datetime input parameter types.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "real not defined for real, color or datetime input parameter types.");
         return DataObject();
     }
 }
@@ -13204,8 +12545,7 @@ RetVal DataObject::setReal(DataObject& valuesObj)
         }
         else
         {
-            cv::error(cv::Exception(
-                CV_StsAssert, "Wrong dataType of value object", "", __FILE__, __LINE__));
+            CV_Error(cv::Error::StsAssert, "Wrong dataType of value object");
             return ito::retError;
         }
 
@@ -13213,12 +12553,7 @@ RetVal DataObject::setReal(DataObject& valuesObj)
     }
     else
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "real not defined for real, color or datetime input parameter types.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "real not defined for real, color or datetime input parameter types.");
         return ito::retError;
     }
 }
@@ -13374,8 +12709,7 @@ RetVal DataObject::setImag(DataObject& valuesObj)
         }
         else
         {
-            cv::error(cv::Exception(
-                CV_StsAssert, "Wrong dataType of value object", "", __FILE__, __LINE__));
+            CV_Error(cv::Error::StsAssert, "Wrong dataType of value object");
             return ito::retError;
         }
 
@@ -13383,12 +12717,7 @@ RetVal DataObject::setImag(DataObject& valuesObj)
     }
     else
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "imag not defined for real, color or datetime input parameter types.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "imag not defined for real, color or datetime input parameter types.");
         return ito::retError;
     }
 }
@@ -13476,12 +12805,7 @@ DataObject imag(const DataObject& dObj)
     }
     else
     {
-        cv::error(cv::Exception(
-            CV_StsAssert,
-            "imag not defined for real, color or datetime input parameter types.",
-            "",
-            __FILE__,
-            __LINE__));
+        CV_Error(cv::Error::StsAssert, "imag not defined for real, color or datetime input parameter types.");
         return DataObject();
     }
 }
@@ -13657,8 +12981,7 @@ ito::RetVal DataObject::linspace(
     // nan check
     if (0.0 * start != 0.0 || 0.0 * end != 0.0 || 0.0 * inc != 0.0)
     {
-        cv::error(
-            cv::Exception(CV_StsAssert, "input parameter is nan or inf", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsAssert, "input parameter is nan or inf");
         return RetVal(ito::retError, 0, "nan error");
     }
 
@@ -13922,8 +13245,7 @@ int DataObject::elemSize() const
     case tTimeDelta:
         return sizeof(TimeDelta);
     default:
-        cv::error(
-            cv::Exception(CV_StsError, "elemSize(): unknown data type.", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsError, "elemSize(): unknown data type.");
     }
 }
 
@@ -14019,8 +13341,7 @@ double DataObject::getAxisOffset(const int axisNum) const
 {
     if (axisNum < 0 || axisNum >= m_dims)
     {
-        cv::error(
-            cv::Exception(CV_StsError, "Parameter axisNum out of range.", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsError, "Parameter axisNum out of range.");
     }
     if (!m_pDataObjectTags)
         return 0.0; // default
@@ -14035,8 +13356,7 @@ double DataObject::getAxisScale(const int axisNum) const
 {
     if (axisNum < 0 || axisNum >= m_dims)
     {
-        cv::error(
-            cv::Exception(CV_StsError, "Parameter axisNum out of range.", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsError, "Parameter axisNum out of range.");
     }
     if (!m_pDataObjectTags)
         return 1.0; // default
@@ -14052,8 +13372,7 @@ const std::string DataObject::getAxisUnit(const int axisNum, bool& validOperatio
     if (axisNum < 0 || axisNum >= m_dims)
     {
         validOperation = false;
-        cv::error(
-            cv::Exception(CV_StsError, "Parameter axisNum out of range.", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsError, "Parameter axisNum out of range.");
     }
     if (!m_pDataObjectTags)
     {
@@ -14072,8 +13391,7 @@ std::string DataObject::getAxisDescription(const int axisNum, bool& validOperati
     if (axisNum < 0 || axisNum >= m_dims)
     {
         validOperation = false;
-        cv::error(
-            cv::Exception(CV_StsError, "Parameter axisNum out of range.", "", __FILE__, __LINE__));
+        CV_Error(cv::Error::StsError, "Parameter axisNum out of range.");
     }
     if (!m_pDataObjectTags)
     {

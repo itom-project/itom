@@ -54,7 +54,7 @@ public:
     void initialize(QDesignerFormEditorInterface* core);
 
 private:
-    bool initialized;
+    bool initialized = false;
 };
 
 #endif // DATAOBJECTTABLEFACTORY_H

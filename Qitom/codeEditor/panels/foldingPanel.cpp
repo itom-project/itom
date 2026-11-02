@@ -754,9 +754,9 @@ Clear scope decorations (on the editor)
 */
 void FoldingPanel::clearScopeDecos()
 {
-    foreach (TextDecoration::Ptr deco, m_scopeDecos)
+    if (editor() && !m_scopeDecos.isEmpty())
     {
-        editor()->decorations()->remove(deco);
+        editor()->decorations()->remove(m_scopeDecos);
     }
 
     m_scopeDecos.clear();
@@ -768,9 +768,9 @@ Clear the folded block decorations.
 */
 void FoldingPanel::clearBlockDeco()
 {
-    foreach(TextDecoration::Ptr deco, this->m_blockDecos)
+    if (editor() && !m_blockDecos.isEmpty())
     {
-        editor()->decorations()->remove(deco);
+        editor()->decorations()->remove(m_blockDecos);
     }
 
     m_blockDecos.clear();
@@ -1158,17 +1158,15 @@ void FoldingPanel::refreshDecorations(bool force /*= false*/)
     if (m_prevCursor.isNull() || force || \
             m_prevCursor.blockNumber() != cursor.blockNumber())
     {
-        foreach (const TextDecoration::Ptr &deco, m_blockDecos)
-        {
-            editor()->decorations()->remove(deco);
-        }
+        editor()->decorations()->remove(m_blockDecos);
 
         foreach (TextDecoration::Ptr deco, m_blockDecos)
         {
             deco->setOutline(Utils::driftColor(getScopeHighlightColor(), 110));
             deco->setBackground(getScopeHighlightColor());
-            editor()->decorations()->append(deco);
         }
+
+        editor()->decorations()->append(m_blockDecos);
     }
     m_prevCursor = cursor;
 }

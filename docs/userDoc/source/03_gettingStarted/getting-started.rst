@@ -13,8 +13,8 @@ Read the following chapter in order to get a first introduction about the main f
 This chapter is structured as follows:
 
 * At first you become acquainted with the main features of the user interface.
-* Then you learn about to open, operate and close a *virtual* motor stage provided by a hardware plugin.
-* Afterwards you will write your first small script snippet using the console and do the same stage operation using a script based approach.
+* Then you learn how to open, operate and close a *virtual* motor stage provided by a hardware plugin.
+* Afterwards you will write your first small script snippet using the console and do the same stage operation using a script-based approach.
 * In a second document you will get information about optional arguments that can be passed to the executable of |itom|.
 
 

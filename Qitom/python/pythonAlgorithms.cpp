@@ -30,7 +30,7 @@
 #include "pythonQtConversion.h"
 #include "pythontParamConversion.h"
 
-#include "opencv2/core/core_c.h"
+#include "opencv2/core.hpp"
 
 namespace ito {
 
@@ -234,7 +234,7 @@ PyObject* PythonAlgorithms::PyGenericAlgorithm2(const AddInAlgo::FilterDef *filt
     }
     catch (cv::Exception& exc)
     {
-        const char* errorStr = cvErrorStr(exc.code);
+        const char* errorStr = exc.err.c_str();
 
         ret += ito::RetVal::format(
             ito::retError,
