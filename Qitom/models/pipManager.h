@@ -156,18 +156,29 @@ class PipManager : public QAbstractItemModel
         PipMode m_pipCallMode;
         QString m_runPipUtf8Path; //!< only valid if m_pipCallMode == pipModeRunPipUtf8
 
+        //!< absolute path to itom-packages/pipProcess/packageDetails.py. This script gets the details
+        //!< of all packages in one fast call. Empty if not available or if it failed once (then
+        //!< pip show is used as fallback).
+        QString m_packageDetailsScriptPath;
+        bool m_fetchDetailsViaScript; //!< true if the current taskFetchPackagesDetails runs packageDetails.py
+        QStringList m_requestedDetailNames; //!< packages requested by the current pip show call
+
         int m_numberOfUnfetchedPackageDetails;
         int m_numberOfNewlyObtainedPackageDetails;
         bool m_fetchDetailCancelRequested;
 
-        void fetchPackageDetails(const QStringList& names, int totalNumberOfUnfetchedDetails, bool firstCall);
+        void fetchPackageDetails(const QStringList& names, int totalNumberOfUnfetchedDetails, bool firstCall, bool viaScript = false);
+        void checkPackageDetailsScript(); //!< sets m_packageDetailsScriptPath if the script exists
+        static QString canonicalPackageName(const QString &name);
         void updatePythonPackageDetails(const PythonPackage& details);
         bool triggerFetchDetailsForOpenPackages(bool firstCall);
 
         void finalizeTask(int exitCode = 0);
         void finalizeTaskCheckAvailable(const QString& error, const QString& output, int exitCode);
         void finalizeTaskListPackages(const QString& error, const QString& output);
-        void finalizeTaskFetchPackagesDetails(const QString& error, const QString& output);
+        void finalizeTaskFetchPackagesDetails(const QString& error, const QString& output, int exitCode);
+        bool parsePackageDetailsScriptOutput(const QString& output, int exitCode);
+        void continueFetchPackagesDetails();
         void finalizeTaskCheckUpdates(const QString& error, const QString& output);
         void finalizeTaskVerifyInstalledPackages(const QString& error, const QString& output);
         void finalizeTaskInstall(const QString& error, const QString& output);
