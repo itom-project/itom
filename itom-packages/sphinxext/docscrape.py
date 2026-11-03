@@ -507,17 +507,11 @@ class FunctionDoc(NumpyDocString):
         if not self["Signature"] and func is not None:
             func, func_name = self.get_func()
             try:
-                try:
-                    signature = str(inspect.signature(func))
-                except (AttributeError, ValueError):
-                    # try to read signature, backward compat for older Python
-                    if sys.version_info[0] >= 3:
-                        argspec = inspect.getfullargspec(func)
-                    else:
-                        argspec = inspect.getargspec(func)
-                    signature = inspect.formatargspec(*argspec)
+                signature = str(inspect.signature(func))
                 signature = "{}{}".format(func_name, signature.replace("*", r"\*"))
-            except TypeError:
+            except (TypeError, ValueError):
+                # no signature available (e.g. for some builtins); inspect.getargspec and
+                # inspect.formatargspec were removed in Python 3.11
                 signature = "%s()" % func_name
             self["Signature"] = signature
 

@@ -77,6 +77,7 @@ namespace ito
         connect(&m_pipProcess, &QProcess::readyReadStandardOutput, this, &PipManager::processReadyReadStandardOutput);
 
         const PythonEngine *pyeng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+        QString pythonHome; // sys.prefix of the standalone interpreter (empty if itom runs Python)
 
         if (pyeng)
         {
@@ -91,6 +92,19 @@ namespace ito
                 //Pip Manager has been started as standalone application to update packages like Numpy that cannot be updated if itom is running and the Python Engine has been entirely started.
                 if (Py_IsInitialized())
                 {
+                    // remember sys.prefix (the python home) before the interpreter is finalized.
+                    // Py_GetPythonHome() is deprecated since Python 3.13 (removed in 3.15).
+                    PyObject *python_prefix = PySys_GetObject("prefix"); //borrowed reference
+                    if (python_prefix)
+                    {
+                        bool ok;
+                        pythonHome = PythonQtConversion::PyObjGetString(python_prefix, true, ok);
+                        if (!ok)
+                        {
+                            pythonHome = QString();
+                        }
+                    }
+
 #if defined WIN32
                     //on windows, sys.executable returns the path of qitom.exe. The absolute path to python.exe is given by sys.exec_prefix
                     PyObject *python_path_prefix = PySys_GetObject("exec_prefix"); //borrowed reference
@@ -151,8 +165,6 @@ namespace ito
 
         if (!retval.containsError())
         {
-            QString pythonHome = QString::fromWCharArray(Py_GetPythonHome());
-
             if (pythonHome != "")
             {
                 QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
@@ -352,18 +364,37 @@ ito::RetVal PipManager::initPythonIfStandalone()
     Py_Initialize();
 #endif
 
-    //read directory values from Python
-    qDebug() << "Py_GetPythonHome:" << QString::fromWCharArray(Py_GetPythonHome());
-    qDebug() << "Py_GetPath:" << QString::fromWCharArray(Py_GetPath());
-    qDebug() << "Py_GetProgramName:" << QString::fromWCharArray(Py_GetProgramName());
+    // read the directory values from the sys module. Py_GetPythonHome, Py_GetPath and
+    // Py_GetProgramName are deprecated since Python 3.13 (removed in 3.15); the values are the
+    // same as sys.prefix, sys.path and sys.executable.
+    QString pythonHome;
+    QStringList pythonPath;
+    PyObject* sysPrefix = PySys_GetObject("prefix"); // borrowed
+
+    if (sysPrefix && PyUnicode_Check(sysPrefix))
+    {
+        pythonHome = QString::fromUtf8(PyUnicode_AsUTF8(sysPrefix));
+    }
+
+    PyObject* sysPath = PySys_GetObject("path"); // borrowed
+
+    if (sysPath && PyList_Check(sysPath))
+    {
+        for (Py_ssize_t i = 0; i < PyList_Size(sysPath); ++i)
+        {
+            PyObject* item = PyList_GetItem(sysPath, i); // borrowed
+
+            if (item && PyUnicode_Check(item))
+            {
+                pythonPath.append(QString::fromUtf8(PyUnicode_AsUTF8(item)));
+            }
+        }
+    }
+
+    qDebug() << "sys.prefix (python home):" << pythonHome;
+    qDebug() << "sys.path:" << pythonPath;
 
     //check PythonHome to prevent crash upon initialization of Python:
-    QString pythonHome = QString::fromWCharArray(Py_GetPythonHome());
-#ifdef WIN32
-    QStringList pythonPath = QString::fromWCharArray(Py_GetPath()).split(";");
-#else
-    QStringList pythonPath = QString::fromWCharArray(Py_GetPath()).split(":");
-#endif
     QDir pythonHomeDir(pythonHome);
     bool pythonPathValid = false;
 

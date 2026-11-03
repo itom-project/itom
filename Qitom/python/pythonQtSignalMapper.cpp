@@ -21,6 +21,7 @@
 *********************************************************************** */
 
 #include "pythonEngineInc.h"
+#include "pythonCompat.h"
 #include "pythonQtSignalMapper.h"
 #include "pythonQtConversion.h"
 
@@ -350,8 +351,13 @@ bool PythonQtSignalTarget::isSame(int signalId, PyObject* callable) const
         // bounded, m_function is a weakref
         if (PyMethod_Check(callable))
         {
-            return PyMethod_Self(callable) == PyWeakref_GetObject(m_boundedInstance) &&
-                PyMethod_Function(callable) == PyWeakref_GetObject(m_function);
+            PyObject* inst = PythonCompat::weakrefGetRef(m_boundedInstance); // new ref or NULL
+            PyObject* func = PythonCompat::weakrefGetRef(m_function); // new ref or NULL
+            const bool same = (inst != nullptr) && (func != nullptr) &&
+                PyMethod_Self(callable) == inst && PyMethod_Function(callable) == func;
+            Py_XDECREF(inst);
+            Py_XDECREF(func);
+            return same;
         }
         else //function or cfunction
         {
@@ -463,10 +469,10 @@ void PythonQtSignalTarget::call(void ** arguments)
         }
         else if (m_callableType == Callable_Method)
         {
-            PyObject *func = PyWeakref_GetObject(m_function);
-            PyObject *inst = PyWeakref_GetObject(m_boundedInstance);
+            PyObject *func = PythonCompat::weakrefGetRef(m_function); // new ref or NULL
+            PyObject *inst = PythonCompat::weakrefGetRef(m_boundedInstance); // new ref or NULL
 
-            if (func == Py_None || inst == Py_None)
+            if (func == nullptr || inst == nullptr)
             {
                 PyErr_SetString(PyExc_RuntimeError, "The python slot method is not longer available");
                 PyErr_PrintEx(0);
@@ -487,6 +493,9 @@ void PythonQtSignalTarget::call(void ** arguments)
 
                 Py_XDECREF(method);
             }
+
+            Py_XDECREF(func);
+            Py_XDECREF(inst);
         }
         else if (m_callableType == Callable_CFunction)
         {

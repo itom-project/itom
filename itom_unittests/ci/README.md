@@ -51,3 +51,24 @@ only shrink: fix a test, then remove it from the list. A new failing test must b
   into the test and needs the Qt platform plugin `offscreen` (set by the runner).
 * `AddInManagerTest.General` needs the plugin `DummyMotor` from the separate `plugins` repository and is
   skipped in a build of this repository alone.
+
+## Python C-API check (`check_python_api.py`)
+
+itom embeds CPython and uses its C-API in `Qitom/python/*.cpp` and `Qitom/models/pipManager.cpp`.
+Every Python release removes functions that were deprecated two releases earlier. The job
+`python-api` of `tests.yml` compiles these files against the headers of Python 3.12, 3.13, 3.13t
+(free-threaded) and 3.14 with `-fsyntax-only` (no link, no full build) and fails on removed *and*
+deprecated API. Locally:
+
+```sh
+cmake -S . -B build ... -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+cmake --build build --target qitom_autogen
+python3 itom_unittests/ci/check_python_api.py --build-dir build --python /path/to/python3.14 --fail-on-deprecated
+```
+
+Version differences of the C-API are hidden in `Qitom/python/pythonCompat.h` (e.g.
+`PythonCompat::weakrefGetRef` instead of the deprecated `PyWeakref_GetObject`).
+
+Free-threaded Python (`python3.13t`): itom compiles, but its thread model needs the GIL. The `itom`
+module does not declare `Py_MOD_GIL_NOT_USED`, so Python re-enables the GIL when it is imported;
+`PythonEngine` verifies this at startup and refuses to start if the GIL is disabled (`PYTHON_GIL=0`).
