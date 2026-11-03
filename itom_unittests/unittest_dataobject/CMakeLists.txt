@@ -75,6 +75,7 @@ set(unittest_dataobject_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/at_func_test2.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/convertCmplxTypeToRealType_test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectFreeCreate_Test.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectFuncs_helpers_test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/complexDataTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectTagSpace_operator_Test
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectTagType_Test.cpp

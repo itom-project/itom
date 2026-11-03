@@ -27,6 +27,7 @@
 
 #include "dataObjectFuncs.h"
 #include "../common/numeric.h"
+#include <type_traits>
 
 //! creates template defined function table for all supported data types
 #define MAKEHELPERFUNCLIST(FuncName)                                                               \
@@ -3224,6 +3225,376 @@ ito::DataObject* createFromNamedDataObject(
     if (retval)
         *retval += ret;
     return output;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! helper for sumValue: sums the values of one real data type
+template <typename _Tp>
+RetVal sumValueFunc(const DataObject* dObj, float64& sumResult, bool ignoreNaN)
+{
+    const int numMats = dObj->getNumPlanes();
+    float64 sum = 0.0;
+
+    for (int nmat = 0; nmat < numMats; ++nmat)
+    {
+        const cv::Mat* mat = dObj->get_mdata()[dObj->seekMat(nmat, numMats)];
+
+        for (int m = 0; m < mat->rows; ++m)
+        {
+            const _Tp* rowPtr = mat->ptr<_Tp>(m);
+
+            if (ignoreNaN)
+            {
+                for (int n = 0; n < mat->cols; ++n)
+                {
+                    if (isFinite<_Tp>(rowPtr[n]))
+                    {
+                        sum += static_cast<float64>(rowPtr[n]);
+                    }
+                }
+            }
+            else
+            {
+                for (int n = 0; n < mat->cols; ++n)
+                {
+                    sum += static_cast<float64>(rowPtr[n]);
+                }
+            }
+        }
+    }
+
+    sumResult = sum;
+    return ito::retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal sumValue(const DataObject* dObj, float64& sumResult, bool ignoreNaN)
+{
+    sumResult = 0.0;
+
+    if (dObj == NULL)
+    {
+        return ito::RetVal(retError, 0, "DataObjectPointer is invalid");
+    }
+
+    if (dObj->getDims() == 0)
+    {
+        return ito::retOk;
+    }
+
+    switch (dObj->getType())
+    {
+    case tUInt8:
+        return sumValueFunc<uint8>(dObj, sumResult, false);
+    case tInt8:
+        return sumValueFunc<int8>(dObj, sumResult, false);
+    case tUInt16:
+        return sumValueFunc<uint16>(dObj, sumResult, false);
+    case tInt16:
+        return sumValueFunc<int16>(dObj, sumResult, false);
+    case tUInt32:
+        return sumValueFunc<uint32>(dObj, sumResult, false);
+    case tInt32:
+        return sumValueFunc<int32>(dObj, sumResult, false);
+    case tFloat32:
+        return sumValueFunc<float32>(dObj, sumResult, ignoreNaN);
+    case tFloat64:
+        return sumValueFunc<float64>(dObj, sumResult, ignoreNaN);
+    default:
+        return ito::RetVal(
+            retError,
+            0,
+            "source matrix must be of type (u)int8, (u)int16, (u)int32, float32 or float64");
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! creates dst with the size of src and the given type (if dst is not src) and copies the tags
+/*
+    If src and dst are the same object, the type must match and nothing is allocated.
+*/
+static RetVal prepareDestinationObject(
+    const DataObject& src, DataObject& dst, const tDataType destType)
+{
+    if (&src == &dst)
+    {
+        if (src.getType() != destType)
+        {
+            return ito::RetVal(
+                retError, 0, "in-place operation requires the destination type of the source");
+        }
+        return ito::retOk;
+    }
+
+    dst = DataObject(src.getDims(), src.getSize(), destType);
+    src.copyTagMapTo(dst);
+    src.copyAxisTagsTo(dst);
+    dst.setValueUnit(src.getValueUnit());
+    dst.setValueDescription(src.getValueDescription());
+    return ito::retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! helper for clipValues: clips the values of one real data type, src and dst may be the same
+template <typename _Tp>
+RetVal clipValuesFunc(const DataObject& src, DataObject& dst, float64 minValue, float64 maxValue)
+{
+    const _Tp lower = cv::saturate_cast<_Tp>(minValue);
+    const _Tp upper = cv::saturate_cast<_Tp>(maxValue);
+    const int numMats = src.getNumPlanes();
+
+    for (int nmat = 0; nmat < numMats; ++nmat)
+    {
+        const cv::Mat* srcMat = src.get_mdata()[src.seekMat(nmat, numMats)];
+        cv::Mat* dstMat = dst.get_mdata()[dst.seekMat(nmat, numMats)];
+
+        for (int m = 0; m < srcMat->rows; ++m)
+        {
+            const _Tp* srcPtr = srcMat->ptr<_Tp>(m);
+            _Tp* dstPtr = dstMat->ptr<_Tp>(m);
+
+            for (int n = 0; n < srcMat->cols; ++n)
+            {
+                // NaN compares false in both cases and is copied unchanged
+                const _Tp v = srcPtr[n];
+                dstPtr[n] = (v < lower) ? lower : ((v > upper) ? upper : v);
+            }
+        }
+    }
+
+    return ito::retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal clipValues(const DataObject& src, DataObject& dst, float64 minValue, float64 maxValue)
+{
+    if (minValue > maxValue)
+    {
+        return ito::RetVal(retError, 0, "minValue must not be greater than maxValue");
+    }
+
+    const tDataType type = static_cast<tDataType>(src.getType());
+
+    switch (type)
+    {
+    case tUInt8:
+    case tInt8:
+    case tUInt16:
+    case tInt16:
+    case tUInt32:
+    case tInt32:
+    case tFloat32:
+    case tFloat64:
+        break;
+    default:
+        return ito::RetVal(
+            retError,
+            0,
+            "source matrix must be of type (u)int8, (u)int16, (u)int32, float32 or float64");
+    }
+
+    if (src.getDims() == 0)
+    {
+        if (&src != &dst)
+        {
+            dst = DataObject();
+        }
+        return ito::retOk;
+    }
+
+    ito::RetVal retval = prepareDestinationObject(src, dst, type);
+
+    if (retval.containsError())
+    {
+        return retval;
+    }
+
+    switch (type)
+    {
+    case tUInt8:
+        return clipValuesFunc<uint8>(src, dst, minValue, maxValue);
+    case tInt8:
+        return clipValuesFunc<int8>(src, dst, minValue, maxValue);
+    case tUInt16:
+        return clipValuesFunc<uint16>(src, dst, minValue, maxValue);
+    case tInt16:
+        return clipValuesFunc<int16>(src, dst, minValue, maxValue);
+    case tUInt32:
+        return clipValuesFunc<uint32>(src, dst, minValue, maxValue);
+    case tInt32:
+        return clipValuesFunc<int32>(src, dst, minValue, maxValue);
+    case tFloat32:
+        return clipValuesFunc<float32>(src, dst, minValue, maxValue);
+    default:
+        return clipValuesFunc<float64>(src, dst, minValue, maxValue);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! helper for normalizeValues: maps the values of src (type _TSrc) to dst (type _TDst)
+/*
+    dst = lower + (src - minValue) * scale. If src and dst are the same object, the types are
+    the same and the values are converted in-place.
+*/
+template <typename _TSrc, typename _TDst>
+RetVal normalizeValuesFunc(
+    const DataObject& src, DataObject& dst, float64 minValue, float64 lower, float64 scale)
+{
+    const int numMats = src.getNumPlanes();
+
+    for (int nmat = 0; nmat < numMats; ++nmat)
+    {
+        const cv::Mat* srcMat = src.get_mdata()[src.seekMat(nmat, numMats)];
+        cv::Mat* dstMat = dst.get_mdata()[dst.seekMat(nmat, numMats)];
+
+        for (int m = 0; m < srcMat->rows; ++m)
+        {
+            const _TSrc* srcPtr = srcMat->ptr<_TSrc>(m);
+            _TDst* dstPtr = dstMat->ptr<_TDst>(m);
+
+            for (int n = 0; n < srcMat->cols; ++n)
+            {
+                const float64 v = static_cast<float64>(srcPtr[n]);
+
+                // NaN and Inf propagate to floating point destinations. For integer
+                // destinations their conversion is undefined, hence they become 0.
+                if (std::is_floating_point<_TDst>::value || isFinite<float64>(v))
+                {
+                    dstPtr[n] = cv::saturate_cast<_TDst>(lower + (v - minValue) * scale);
+                }
+                else
+                {
+                    dstPtr[n] = 0;
+                }
+            }
+        }
+    }
+
+    return ito::retOk;
+}
+
+//! selects the destination type of normalizeValues for a given source type
+template <typename _TSrc>
+RetVal normalizeValuesDispatch(
+    const DataObject& src, DataObject& dst, float64 minValue, float64 lower, float64 scale)
+{
+    switch (dst.getType())
+    {
+    case tUInt8:
+        return normalizeValuesFunc<_TSrc, uint8>(src, dst, minValue, lower, scale);
+    case tInt8:
+        return normalizeValuesFunc<_TSrc, int8>(src, dst, minValue, lower, scale);
+    case tUInt16:
+        return normalizeValuesFunc<_TSrc, uint16>(src, dst, minValue, lower, scale);
+    case tInt16:
+        return normalizeValuesFunc<_TSrc, int16>(src, dst, minValue, lower, scale);
+    case tUInt32:
+        return normalizeValuesFunc<_TSrc, uint32>(src, dst, minValue, lower, scale);
+    case tInt32:
+        return normalizeValuesFunc<_TSrc, int32>(src, dst, minValue, lower, scale);
+    case tFloat32:
+        return normalizeValuesFunc<_TSrc, float32>(src, dst, minValue, lower, scale);
+    default:
+        return normalizeValuesFunc<_TSrc, float64>(src, dst, minValue, lower, scale);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal normalizeValues(
+    const DataObject& src, DataObject& dst, float64 lower, float64 upper, tDataType destType)
+{
+    switch (destType)
+    {
+    case tUInt8:
+    case tInt8:
+    case tUInt16:
+    case tInt16:
+    case tUInt32:
+    case tInt32:
+    case tFloat32:
+    case tFloat64:
+        break;
+    default:
+        return ito::RetVal(
+            retError,
+            0,
+            "destination type must be (u)int8, (u)int16, (u)int32, float32 or float64");
+    }
+
+    switch (src.getType())
+    {
+    case tUInt8:
+    case tInt8:
+    case tUInt16:
+    case tInt16:
+    case tUInt32:
+    case tInt32:
+    case tFloat32:
+    case tFloat64:
+        break;
+    default:
+        return ito::RetVal(
+            retError,
+            0,
+            "source matrix must be of type (u)int8, (u)int16, (u)int32, float32 or float64");
+    }
+
+    if (src.getDims() == 0)
+    {
+        if (&src != &dst)
+        {
+            dst = DataObject();
+        }
+        return ito::retOk;
+    }
+
+    float64 minValue = 0.0;
+    float64 maxValue = 0.0;
+    uint32 minLoc[3];
+    uint32 maxLoc[3];
+    ito::RetVal retval = minMaxValue(&src, minValue, minLoc, maxValue, maxLoc, true);
+
+    if (retval.containsError())
+    {
+        return retval;
+    }
+
+    // all values are NaN or Inf: minMaxValue leaves the initial values. Map every (finite)
+    // value to lower in this case, like for a constant object.
+    const bool constant = !(maxValue > minValue);
+    const float64 scale = constant ? 0.0 : (upper - lower) / (maxValue - minValue);
+
+    if (constant)
+    {
+        minValue = 0.0;
+    }
+
+    retval += prepareDestinationObject(src, dst, destType);
+
+    if (retval.containsError())
+    {
+        return retval;
+    }
+
+    switch (src.getType())
+    {
+    case tUInt8:
+        return normalizeValuesDispatch<uint8>(src, dst, minValue, lower, scale);
+    case tInt8:
+        return normalizeValuesDispatch<int8>(src, dst, minValue, lower, scale);
+    case tUInt16:
+        return normalizeValuesDispatch<uint16>(src, dst, minValue, lower, scale);
+    case tInt16:
+        return normalizeValuesDispatch<int16>(src, dst, minValue, lower, scale);
+    case tUInt32:
+        return normalizeValuesDispatch<uint32>(src, dst, minValue, lower, scale);
+    case tInt32:
+        return normalizeValuesDispatch<int32>(src, dst, minValue, lower, scale);
+    case tFloat32:
+        return normalizeValuesDispatch<float32>(src, dst, minValue, lower, scale);
+    default:
+        return normalizeValuesDispatch<float64>(src, dst, minValue, lower, scale);
+    }
 }
 
 //-----------------------------------------------------------------------------------------------
