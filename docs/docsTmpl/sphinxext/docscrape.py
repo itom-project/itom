@@ -442,12 +442,12 @@ class FunctionDoc(NumpyDocString):
         if not self["Signature"]:
             func, func_name = self.get_func()
             try:
-                # try to read signature
-                argspec = inspect.getargspec(func)
-                argspec = inspect.formatargspec(*argspec)
+                # try to read signature (inspect.getargspec and inspect.formatargspec were
+                # removed in Python 3.11)
+                argspec = str(inspect.signature(func))
                 argspec = argspec.replace("*", r"\*")
                 signature = f"{func_name}{argspec}"
-            except TypeError as e:
+            except (TypeError, ValueError):
                 signature = "%s()" % func_name
             self["Signature"] = signature
 

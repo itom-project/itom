@@ -21,6 +21,7 @@
 *********************************************************************** */
 
 #include "pythonProxy.h"
+#include "pythonCompat.h"
 
 //-------------------------------------------------------------------------------------
 
@@ -155,9 +156,13 @@ PyObject* PythonProxy::PyProxy_richcompare(PyObject *v, PyObject *w, int op)
             {
                 res = true;
             }
-            else if (PyWeakref_GetObject(v2->inst) == PyWeakref_GetObject(w2->inst))
+            else
             {
-                res = true;
+                PyObject* vInst = PythonCompat::weakrefGetRef(v2->inst); // new ref or NULL
+                PyObject* wInst = PythonCompat::weakrefGetRef(w2->inst); // new ref or NULL
+                res = (vInst != nullptr) && (vInst == wInst);
+                Py_XDECREF(vInst);
+                Py_XDECREF(wInst);
             }
         }
 
@@ -197,9 +202,9 @@ PyObject* PythonProxy::PyProxy_call(PyProxy *self, PyObject *args, PyObject *kwd
 
     if (self->inst != nullptr)
     {
-        wr = PyWeakref_GetObject(self->inst); //borrowed reference
+        wr = PythonCompat::weakrefGetRef(self->inst); // new reference or NULL
 
-        if (wr == Py_None)
+        if (wr == nullptr)
         {
             PyErr_SetString(
                 PyExc_ReferenceError,
@@ -210,6 +215,7 @@ PyObject* PythonProxy::PyProxy_call(PyProxy *self, PyObject *args, PyObject *kwd
         else
         {
             mtd = PyObject_CallMethod(self->func, "__get__", "OO", wr, self->klass); //new reference
+            Py_DECREF(wr);
         }
     }
     else

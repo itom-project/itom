@@ -85,6 +85,61 @@ jobs:
           path: test-results/
           if-no-files-found: ignore
 
+  python-api:
+    name: Python C-API check (${{ matrix.python }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        # 3.13t is the free-threaded build. 3.12 is the Python of the ubuntu-24.04 image.
+        python: ["3.12", "3.13", "3.13t", "3.14"]
+
+    # Compiles the ~30 files that use the Python C-API against the headers of each Python
+    # (syntax only, no link, no full build). Removed API is an error, deprecated API fails too,
+    # because it is removed two releases later. See itom_unittests/ci/check_python_api.py.
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake python3-dev python3-numpy libopencv-dev \
+            qt6-base-dev qt6-tools-dev qt6-tools-dev-tools qt6-l10n-tools \
+            libqt6svg6-dev libqt6opengl6-dev qt6-5compat-dev libgl-dev
+
+      - name: Set up Python ${{ matrix.python }}
+        id: python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install numpy for the headers
+        run: ${{ steps.python.outputs.python-path }} -m pip install --upgrade numpy
+
+      # The configure step uses the system Python; the check replaces its include dirs.
+      - name: Configure
+        run: |
+          cmake -S . -B build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+            -DBUILD_WITH_PCL=OFF \
+            -DBUILD_WITH_HELPVIEWER=OFF \
+            -DBUILD_UNITTEST=OFF \
+            -DBUILD_QTVERSION=Qt6
+
+      - name: Generate the moc/uic headers
+        run: cmake --build build --target qitom_autogen
+
+      - name: Compile the Python bindings against Python ${{ matrix.python }}
+        run: >
+          python3 itom_unittests/ci/check_python_api.py
+          --build-dir build
+          --python ${{ steps.python.outputs.python-path }}
+          --fail-on-deprecated
+
   coverage:
     name: Linux, Qt6, line coverage (gcov)
     runs-on: ubuntu-24.04
