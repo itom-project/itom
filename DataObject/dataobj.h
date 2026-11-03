@@ -1278,6 +1278,62 @@ namespace ito {
         DataObject squeeze() const;
         DataObject reshape(int newDims, const int *newSizes) const;
 
+        //! \name numpy-like reductions and element-wise functions
+        /*!
+            These methods follow the names, arguments and semantics of the numpy.ndarray methods
+            of the same name, evaluated over the whole ROI (numpy: axis=None). They are defined
+            for the real data types (u)int8, (u)int16, int32, float32 and float64 and throw a
+            cv::Exception for complex, rgba32, datetime and timedelta objects, like the other
+            arithmetic members of this class.
+
+            NaN and Inf: sum, mean, min, max, argmin, argmax, std, var, median and ptp propagate
+            NaN (the result is NaN, argmin/argmax return the index of the first NaN), like numpy.
+            The nan* variants ignore NaN values. Inf takes part in all comparisons.
+
+            Empty objects: sum and nansum return 0, mean, var, std and median return NaN,
+            count_nonzero returns 0, all returns true, any returns false, clip returns an empty
+            object. min, max, argmin, argmax and ptp throw a cv::Exception (numpy raises a
+            ValueError).
+
+            Indices returned by argmin/argmax are flat, row-major indices of the ROI, i.e. the
+            same as numpy.argmin of the array returned to Python.
+        */
+        //@{
+        float64 sum() const;                  /*!< sum of all values (NaN propagates) */
+        float64 nansum() const;               /*!< sum of all values, NaN values are ignored */
+        float64 mean() const;                 /*!< arithmetic mean (NaN propagates) */
+        float64 nanmean() const;              /*!< arithmetic mean, NaN values are ignored (NaN if no values remain) */
+        float64 min() const;                  /*!< minimum (NaN propagates) */
+        float64 max() const;                  /*!< maximum (NaN propagates) */
+        float64 nanmin() const;               /*!< minimum, NaN values are ignored (NaN if no values remain) */
+        float64 nanmax() const;               /*!< maximum, NaN values are ignored (NaN if no values remain) */
+        float64 ptp() const;                  /*!< peak to peak, max - min (NaN propagates) */
+        size_t argmin() const;                /*!< flat index of the first minimum (or of the first NaN) */
+        size_t argmax() const;                /*!< flat index of the first maximum (or of the first NaN) */
+        size_t nanargmin() const;             /*!< flat index of the first minimum, NaN ignored (throws if only NaN) */
+        size_t nanargmax() const;             /*!< flat index of the first maximum, NaN ignored (throws if only NaN) */
+        float64 var(int ddof = 0) const;      /*!< variance, divisor is N - ddof (NaN propagates) */
+        float64 std(int ddof = 0) const;      /*!< standard deviation, sqrt(var(ddof)) (NaN propagates) */
+        float64 nanvar(int ddof = 0) const;   /*!< variance of the non-NaN values */
+        float64 nanstd(int ddof = 0) const;   /*!< standard deviation of the non-NaN values */
+        float64 median() const;               /*!< median, the mean of the two middle values for an even count (NaN propagates) */
+        float64 nanmedian() const;            /*!< median of the non-NaN values (NaN if no values remain) */
+        size_t count_nonzero() const;         /*!< number of values that are not 0 (NaN counts as non-zero) */
+        bool all() const;                     /*!< true if all values are non-zero */
+        bool any() const;                     /*!< true if at least one value is non-zero */
+
+        //! returns a copy with all values clipped to [a_min, a_max]
+        /*!
+            Like numpy.clip: values below a_min become a_min, values above a_max become a_max,
+            NaN stays NaN. Different to numpy, the result keeps the data type of this object
+            (numpy returns a float array for an integer array with float bounds); the bounds are
+            converted to the data type with rounding and saturation. The result has the ROI size
+            of this object and a copy of the tags, axis and value information. a_min must not be
+            greater than a_max.
+        */
+        DataObject clip(float64 a_min, float64 a_max) const;
+        //@}
+
         int elemSize() const;  /*!< number of bytes that are required by each value inside of the data object array (e.g. 1 for uint8, 2 for int16...) */
 
         //! addressing method for two-dimensional data object.

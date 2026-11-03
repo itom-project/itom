@@ -274,49 +274,6 @@ namespace dObjHelper
 
 
 
-    //! sum of all values of a real data object (plane-wise, respects the ROI)
-    /*!
-    \param[in]  dObj        the data object (types (u)int8, (u)int16, (u)int32, float32, float64)
-    \param[out] sumResult   the sum as float64 (0.0 for an empty object or if all values are ignored)
-    \param[in]  ignoreNaN   if true, NaN and Inf values of floating point objects are ignored
-    \return retOk, or retError for complex, rgba32, datetime or timedelta objects
-    */
-    DATAOBJ_EXPORT RetVal sumValue(const DataObject *dObj, float64 &sumResult, bool ignoreNaN = true);
-
-    //! clips all values of a real data object to the range [minValue, maxValue]
-    /*!
-    Values below minValue are set to minValue, values above maxValue to maxValue. NaN values
-    stay NaN. The bounds are converted to the data type of the object with saturation, hence
-    they may exceed the value range of the type. dst gets the type and size of src and a
-    copy of all tags, axis and value information. src and dst may be the same object
-    (in-place operation). Otherwise dst is newly allocated and the ROI of src is the full dst.
-
-    \param[in]  src       source object (types (u)int8, (u)int16, (u)int32, float32, float64)
-    \param[out] dst       destination object
-    \param[in]  minValue  lower bound
-    \param[in]  maxValue  upper bound (must not be smaller than minValue)
-    \return retOk, or retError for unsupported types or minValue > maxValue
-    */
-    DATAOBJ_EXPORT RetVal clipValues(const DataObject &src, DataObject &dst, float64 minValue, float64 maxValue);
-
-    //! linear min-max normalization of a real data object to the range [lower, upper]
-    /*!
-    Every value v is mapped to lower + (v - min) * (upper - lower) / (max - min), where min and
-    max are the minimum and maximum of src (NaN and Inf are ignored). If max == min, all
-    values are set to lower. dst gets the type destType, the size of src and a copy of all
-    tags and axis information. NaN and Inf values stay NaN / Inf for floating point destination
-    types and become 0 for integer types. src and dst may be the same object if destType is
-    the type of src.
-
-    \param[in]  src       source object (types (u)int8, (u)int16, (u)int32, float32, float64)
-    \param[out] dst       destination object
-    \param[in]  lower     lower bound of the destination range (default 0.0)
-    \param[in]  upper     upper bound of the destination range (default 1.0)
-    \param[in]  destType  real data type of dst (default tFloat64)
-    \return retOk, or retError for unsupported types
-    */
-    DATAOBJ_EXPORT RetVal normalizeValues(const DataObject &src, DataObject &dst, float64 lower = 0.0, float64 upper = 1.0, tDataType destType = tFloat64);
-
     //! Helperfunction to copy axis related tags from a n-D-Object to a m-D-Object.
     DATAOBJ_EXPORT ito::RetVal dObjCopyLastNAxisTags(const ito::DataObject &dataObjIn, ito::DataObject &dataObjOut, const int copyLastNDims, const bool includeValueTags = true, const bool includeRotationMatrix = true);
 
