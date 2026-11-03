@@ -290,6 +290,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/charsetEncoding.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/lineEnding.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/editorFileType.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/helper/fileOperations.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/versionHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helpViewer/helpViewer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helpViewer/qtHelpUrlSchemeHandler.h
@@ -298,6 +299,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/models/bookmarkModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/outlineItem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/itomFileSystemModel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/projectTreeModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/pipManager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/timerModel.h
@@ -306,6 +308,9 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/helpSystem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/paletteOrganizer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/processOrganizer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/organizer/projectFile.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/organizer/projectOrganizer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/organizer/projectSession.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/scriptEditorOrganizer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/uiOrganizer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/userInteractionWatcher.h
@@ -410,6 +415,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/extendedDataObjectTable.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/figureWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/fileSystemDockWidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/projectBrowserWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/helpDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/itomQWidgets.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/lastCommandDockWidget.h
@@ -559,6 +565,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/charsetEncoding.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/lineEnding.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/editorFileType.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/helper/fileOperations.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/versionHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/qpropertyHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helpViewer/helpViewer.cpp
@@ -567,6 +574,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/models/bookmarkModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/outlineItem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/itomFileSystemModel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/projectTreeModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/pipManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/timerModel.cpp
@@ -575,6 +583,9 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/helpSystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/paletteOrganizer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/processOrganizer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/organizer/projectFile.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/organizer/projectOrganizer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/organizer/projectSession.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/scriptEditorOrganizer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/uiOrganizer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/userInteractionWatcher.cpp
@@ -671,6 +682,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/extendedDataObjectTable.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/figureWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/fileSystemDockWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/projectBrowserWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/helpDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/itomQWidgets.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/lastCommandDockWidget.cpp

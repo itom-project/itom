@@ -40,6 +40,7 @@
 #include "../../AddInManager/addInManager.h"
 #include "../AppManagement.h"
 #include "../organizer/designerWidgetOrganizer.h"
+#include "../organizer/projectOrganizer.h"
 #include "../organizer/paletteOrganizer.h"
 #include "../organizer/processOrganizer.h"
 #include "../organizer/uiOrganizer.h"
@@ -5405,6 +5406,275 @@ PyObject* PythonItom::getCurrentPath(PyObject* /*pSelf*/)
 }
 
 //-------------------------------------------------------------------------------------
+namespace {
+
+//! calls a project organizer slot from the python thread and converts the result
+PyObject* invokeProjectOrganizer(
+    const char* method, const QString& arg1, const QString& arg2, int numArgs, const char* timeoutMsg)
+{
+    QObject* org = AppManagement::getProjectOrganizer();
+
+    if (!org)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Project organizer not available");
+        return nullptr;
+    }
+
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    bool ok = false;
+
+    switch (numArgs)
+    {
+    case 0:
+        ok = QMetaObject::invokeMethod(
+            org, method, Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        break;
+    case 1:
+        ok = QMetaObject::invokeMethod(
+            org, method, Q_ARG(QString, arg1), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        break;
+    default:
+        ok = QMetaObject::invokeMethod(
+            org,
+            method,
+            Q_ARG(QString, arg1),
+            Q_ARG(QString, arg2),
+            Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        break;
+    }
+
+    if (!ok)
+    {
+        PyErr_Format(PyExc_RuntimeError, "Project organizer method '%s' could not be invoked", method);
+        return nullptr;
+    }
+
+    if (locker.getSemaphore()->wait(PLUGINWAIT))
+    {
+        if (!PythonCommon::transformRetValToPyException(locker.getSemaphore()->returnValue))
+        {
+            return nullptr;
+        }
+
+        Py_RETURN_NONE;
+    }
+
+    if (PyErr_CheckSignals() == -1) //!< check if key interrupt occurred
+    {
+        return PyErr_Occurred();
+    }
+
+    PyErr_SetString(PyExc_RuntimeError, timeoutMsg);
+    return nullptr;
+}
+
+} // namespace
+
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyOpenProject_doc, "openProject(filename) \n\
+\n\
+Opens an itom project file (``*.itomproject``). \n\
+\n\
+The project is shown in the project view of the file system toolbox. If the \n\
+project defines a working directory, the current working directory is changed \n\
+to it (if this option is enabled in the settings). An already opened project \n\
+is closed first. \n\
+\n\
+Parameters \n\
+---------- \n\
+filename : str \n\
+    absolute or relative path to the project file. \n\
+\n\
+Raises \n\
+------ \n\
+RuntimeError \n\
+    if the project file does not exist or cannot be parsed. \n\
+\n\
+See Also \n\
+-------- \n\
+newProject, saveProject, closeProject, getProjectInfo");
+PyObject* PythonItom::PyOpenProject(PyObject* /*pSelf*/, PyObject* pArgs)
+{
+    const char* filename = nullptr;
+
+    if (!PyArg_ParseTuple(pArgs, "s", &filename))
+    {
+        return nullptr;
+    }
+
+    return invokeProjectOrganizer(
+        "openProject", QString::fromUtf8(filename), QString(), 1, "Timeout while opening the project.");
+}
+
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyNewProject_doc, "newProject(folder, name = \"\") \n\
+\n\
+Creates a new project for a folder and opens it. \n\
+\n\
+The project is not saved yet. Call :py:func:`saveProject` to write the project \n\
+file ``<folder>/<name>.itomproject``. \n\
+\n\
+Parameters \n\
+---------- \n\
+folder : str \n\
+    existing root folder of the project. \n\
+name : str, optional \n\
+    name of the project. If empty, the name of the folder is used. \n\
+\n\
+Raises \n\
+------ \n\
+RuntimeError \n\
+    if the folder does not exist. \n\
+\n\
+See Also \n\
+-------- \n\
+openProject, saveProject, closeProject, getProjectInfo");
+PyObject* PythonItom::PyNewProject(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* pKwds)
+{
+    const char* kwlist[] = {"folder", "name", nullptr};
+    const char* folder = nullptr;
+    const char* name = "";
+
+    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "s|s", const_cast<char**>(kwlist), &folder, &name))
+    {
+        return nullptr;
+    }
+
+    return invokeProjectOrganizer(
+        "newProjectFromFolder",
+        QString::fromUtf8(folder),
+        QString::fromUtf8(name),
+        2,
+        "Timeout while creating the project.");
+}
+
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pySaveProject_doc, "saveProject(filename = \"\") \n\
+\n\
+Saves the currently opened project. \n\
+\n\
+Parameters \n\
+---------- \n\
+filename : str, optional \n\
+    if given, the project is saved to this file, else to its current file. \n\
+\n\
+Raises \n\
+------ \n\
+RuntimeError \n\
+    if no project is opened or the file cannot be written. \n\
+\n\
+See Also \n\
+-------- \n\
+openProject, newProject, closeProject, getProjectInfo");
+PyObject* PythonItom::PySaveProject(PyObject* /*pSelf*/, PyObject* pArgs)
+{
+    const char* filename = "";
+
+    if (!PyArg_ParseTuple(pArgs, "|s", &filename))
+    {
+        return nullptr;
+    }
+
+    return invokeProjectOrganizer(
+        "saveProject", QString::fromUtf8(filename), QString(), 1, "Timeout while saving the project.");
+}
+
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyCloseProject_doc, "closeProject() \n\
+\n\
+Closes the currently opened project (nothing happens if no project is opened). \n\
+\n\
+See Also \n\
+-------- \n\
+openProject, newProject, saveProject, getProjectInfo");
+PyObject* PythonItom::PyCloseProject(PyObject* /*pSelf*/)
+{
+    return invokeProjectOrganizer(
+        "closeProject", QString(), QString(), 0, "Timeout while closing the project.");
+}
+
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyGetProjectInfo_doc, "getProjectInfo() -> Optional[dict] \n\
+\n\
+Returns information about the currently opened project. \n\
+\n\
+Returns \n\
+------- \n\
+None or dict \n\
+    ``None`` if no project is opened, else a dictionary with the keys \n\
+    ``name`` (str), ``path`` (str, the project file), ``projectDir`` (str), \n\
+    ``folders`` (list of str, absolute root folders), ``mainScript`` (str or ``None``), \n\
+    ``workingDirectory`` (str), ``pythonPath`` (list of str), ``excludes`` (list of str) \n\
+    and ``saved`` (bool, ``False`` if the project file does not exist yet). \n\
+\n\
+See Also \n\
+-------- \n\
+openProject, newProject, saveProject, closeProject");
+PyObject* PythonItom::PyGetProjectInfo(PyObject* /*pSelf*/)
+{
+    ProjectOrganizer* org = qobject_cast<ProjectOrganizer*>(AppManagement::getProjectOrganizer());
+
+    if (!org || !org->hasProject())
+    {
+        Py_RETURN_NONE;
+    }
+
+    // the project is only changed in the main thread; a copy is read here
+    const ProjectFile project = org->project();
+    QStringList folders;
+
+    foreach (const ProjectFolder& f, project.folders())
+    {
+        folders << f.path;
+    }
+
+    PyObject* dict = PyDict_New();
+    PyObject* item = nullptr;
+
+    item = PythonQtConversion::QStringToPyObject(project.name());
+    PyDict_SetItemString(dict, "name", item);
+    Py_DECREF(item);
+
+    item = PythonQtConversion::QStringToPyObject(project.filePath());
+    PyDict_SetItemString(dict, "path", item);
+    Py_DECREF(item);
+
+    item = PythonQtConversion::QStringToPyObject(project.projectDir());
+    PyDict_SetItemString(dict, "projectDir", item);
+    Py_DECREF(item);
+
+    item = PythonQtConversion::QStringListToPyList(folders);
+    PyDict_SetItemString(dict, "folders", item);
+    Py_DECREF(item);
+
+    if (project.mainScript().isEmpty())
+    {
+        PyDict_SetItemString(dict, "mainScript", Py_None);
+    }
+    else
+    {
+        item = PythonQtConversion::QStringToPyObject(project.mainScript());
+        PyDict_SetItemString(dict, "mainScript", item);
+        Py_DECREF(item);
+    }
+
+    item = PythonQtConversion::QStringToPyObject(project.workingDirectory());
+    PyDict_SetItemString(dict, "workingDirectory", item);
+    Py_DECREF(item);
+
+    item = PythonQtConversion::QStringListToPyList(project.pythonPath());
+    PyDict_SetItemString(dict, "pythonPath", item);
+    Py_DECREF(item);
+
+    item = PythonQtConversion::QStringListToPyList(project.excludes());
+    PyDict_SetItemString(dict, "excludes", item);
+    Py_DECREF(item);
+
+    PyDict_SetItemString(dict, "saved", QFileInfo(project.filePath()).exists() ? Py_True : Py_False);
+
+    return dict;
+}
+
 PyDoc_STRVAR(setCurrentPath_doc, "setCurrentPath(newPath) -> bool \n\
 \n\
 Set current working directory to a new absolute path. \n\
@@ -6785,6 +7055,17 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
     {"getQtToolPath", (PyCFunction)PythonItom::getQtToolPath, METH_VARARGS, getQtToolPath_doc},
     {"getCurrentPath", (PyCFunction)PythonItom::getCurrentPath, METH_NOARGS, getCurrentPath_doc},
     {"setCurrentPath", (PyCFunction)PythonItom::setCurrentPath, METH_VARARGS, setCurrentPath_doc},
+    {"openProject", (PyCFunction)PythonItom::PyOpenProject, METH_VARARGS, pyOpenProject_doc},
+    {"newProject",
+     (PyCFunction)PythonItom::PyNewProject,
+     METH_VARARGS | METH_KEYWORDS,
+     pyNewProject_doc},
+    {"saveProject", (PyCFunction)PythonItom::PySaveProject, METH_VARARGS, pySaveProject_doc},
+    {"closeProject", (PyCFunction)PythonItom::PyCloseProject, METH_NOARGS, pyCloseProject_doc},
+    {"getProjectInfo",
+     (PyCFunction)PythonItom::PyGetProjectInfo,
+     METH_NOARGS,
+     pyGetProjectInfo_doc},
     {"checkSignals", (PyCFunction)PythonItom::PyCheckSignals, METH_NOARGS, pyCheckSignals_doc},
     {"processEvents", (PyCFunction)PythonItom::PyProcessEvents, METH_NOARGS, pyProcessEvents_doc},
     {"getDebugger", (PyCFunction)PythonItom::PyGetDebugger, METH_NOARGS, pyGetDebugger_doc},

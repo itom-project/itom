@@ -147,14 +147,17 @@ ScriptEditorOrganizer::~ScriptEditorOrganizer()
 //! This function is called to save all the information about widgets before itom is closed
 /*!
 */
-void ScriptEditorOrganizer::saveScriptState()
+void ScriptEditorOrganizer::saveScriptState(const QString& settingsGroup /*= QString()*/)
 {
     QMainWindow *mainWin = qobject_cast<QMainWindow*>(AppManagement::getMainWindow());
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    const QString group = settingsGroup.isEmpty() ? QString("ScriptEditorOrganizer") : settingsGroup;
 
-    settings.remove("ScriptEditorOrganizer"); //remove old entries and rebuild it from nothing
+    // remove old entries and rebuild them from nothing (only the script widgets of a
+    // custom group, since the group may contain other entries)
+    settings.remove(group + "/scriptWidgets");
 
-    settings.beginGroup("ScriptEditorOrganizer");
+    settings.beginGroup(group);
 
     settings.beginWriteArray("scriptWidgets");
     int counter = 0;
@@ -181,6 +184,11 @@ void ScriptEditorOrganizer::saveScriptState()
     }
 
     settings.endArray();
+    settings.endGroup();
+
+    // the recently used files and the docking state are global (not per project)
+    settings.beginGroup("ScriptEditorOrganizer");
+    settings.remove("lastScriptWidgets");
 
     // Last opened files save
     settings.beginWriteArray("lastScriptWidgets");
@@ -205,6 +213,20 @@ void ScriptEditorOrganizer::saveScriptState()
 }
 
 //----------------------------------------------------------------------------
+bool ScriptEditorOrganizer::switchScriptSession(const QString& saveGroup, const QString& restoreGroup)
+{
+    saveScriptState(saveGroup);
+
+    if (closeAllScripts(true).containsError())
+    {
+        return false;
+    }
+
+    restoreScriptState(restoreGroup);
+    return true;
+}
+
+//----------------------------------------------------------------------------
 void ScriptEditorOrganizer::scriptZoomFactorChanged(int zoomFactor)
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
@@ -225,10 +247,11 @@ void ScriptEditorOrganizer::scriptZoomFactorChanged(int zoomFactor)
 //! This function is called to get all the saved information about widgets after itom starts
 /*!
 */
-RetVal ScriptEditorOrganizer::restoreScriptState()
+RetVal ScriptEditorOrganizer::restoreScriptState(const QString& settingsGroup /*= QString()*/)
 {
     RetVal retval;
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    const QString group = settingsGroup.isEmpty() ? QString("ScriptEditorOrganizer") : settingsGroup;
 
     settings.beginGroup("ScriptEditorOrganizer");
     m_dockedNewWidget = settings.value("scriptEditorDocked", "false").toBool();
@@ -239,20 +262,23 @@ RetVal ScriptEditorOrganizer::restoreScriptState()
     Qt::DockWidgetArea area;
     ScriptDockWidget *sdw;
 
-    // reading last used files
+    // reading last used files (only once, the list is global)
     int counter = settings.beginReadArray("lastScriptWidgets");
     QFileInfo fi;
 
-    for (int i = 0; i < counter; ++i)
+    if (m_recentlyUsedFiles.isEmpty())
     {
-        settings.setArrayIndex(i);
-
-        QString path = settings.value("path").toString();
-
-        fi.setFile(path);
-        if (fi.exists())
+        for (int i = 0; i < counter; ++i)
         {
-            m_recentlyUsedFiles.append(QDir::toNativeSeparators(fi.absoluteFilePath()));
+            settings.setArrayIndex(i);
+
+            QString path = settings.value("path").toString();
+
+            fi.setFile(path);
+            if (fi.exists())
+            {
+                m_recentlyUsedFiles.append(QDir::toNativeSeparators(fi.absoluteFilePath()));
+            }
         }
     }
     settings.endArray();
@@ -263,7 +289,7 @@ RetVal ScriptEditorOrganizer::restoreScriptState()
 
 	if (userOrg->currentUserHasFeature(featDeveloper))
 	{
-        settings.beginGroup("ScriptEditorOrganizer");
+        settings.beginGroup(group);
 		counter = settings.beginReadArray("scriptWidgets");
 
 		for (int i = 0; i < counter; ++i)

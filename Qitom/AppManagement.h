@@ -51,6 +51,7 @@ class AppManagement
         inline static QObject* getMainWindow() { QMutexLocker locker (&m_mutex); return m_mainWin; }
         inline static QObject* getUiOrganizer() { QMutexLocker locker (&m_mutex); return m_uiOrganizer; }  /*!< returns static pointer to UiOrganizer instance */
         inline static QObject* getProcessOrganizer() { QMutexLocker locker (&m_mutex); return m_processOrganizer; }  /*!< returns static pointer to ProcessOrganizer instance */
+        inline static QObject* getProjectOrganizer() { QMutexLocker locker (&m_mutex); return m_projectOrganizer; }  /*!< returns static pointer to ProjectOrganizer instance */
         inline static QObject* getUserOrganizer() { QMutexLocker locker (&m_mutex); return m_userOrganizer; }
         inline static QObject* getCoutStream() { QMutexLocker locker (&m_mutex); return m_coutStream; }
         inline static QObject* getCerrStream() { QMutexLocker locker (&m_mutex); return m_cerrStream; }
@@ -117,6 +118,12 @@ class AppManagement
             m_processOrganizer = processOrganizer;
         }
 
+        static void setProjectOrganizer(QObject* projectOrganizer)
+        {
+            QMutexLocker locker(&m_mutex);
+            m_projectOrganizer = projectOrganizer;
+        }
+
         static void setUserOrganizer(QObject* userOrganizer)
         {
             QMutexLocker locker(&m_mutex);
@@ -156,6 +163,7 @@ class AppManagement
         static QObject* m_addInManager;
         static QObject* m_uiOrganizer; /*!< static pointer to UiOrganizer (default: NULL) */
         static QObject* m_processOrganizer; /*!< static pointer to ProcessOrganizer (default: NULL) */
+        static QObject* m_projectOrganizer; /*!< static pointer to ProjectOrganizer (default: NULL) */
         static QObject *m_userOrganizer;    /*!< static pointer to UserOrganizer (default: NULL) */
         static QObject* m_coutStream; /*!< static pointer to QDebugStream for std::cout redirection */
         static QObject* m_cerrStream; /*!< static pointer to QDebugStream for std::cerr redirection */
