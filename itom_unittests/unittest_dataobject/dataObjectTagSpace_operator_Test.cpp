@@ -511,25 +511,30 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_comp_Test)
     this->validAxisTags(this->mat1_2d, dTempTest3);
     this->invalid(dTempTest1, dTempTest3);
 
-    dTempTest3 = this->mat1_2d < dTempTest1;
-    this->validTagSpace(this->mat1_2d, dTempTest3);
-    this->validAxisTags(this->mat1_2d, dTempTest3);
-    this->invalid(dTempTest1, dTempTest3);
+    // the ordering operators <, >, <= and >= are only defined for real types
+    const int type = this->mat1_2d.getType();
+    if (type != ito::tComplex64 && type != ito::tComplex128 && type != ito::tRGBA32)
+    {
+        dTempTest3 = this->mat1_2d < dTempTest1;
+        this->validTagSpace(this->mat1_2d, dTempTest3);
+        this->validAxisTags(this->mat1_2d, dTempTest3);
+        this->invalid(dTempTest1, dTempTest3);
 
-    dTempTest3 = this->mat1_2d > dTempTest1;
-    this->validTagSpace(this->mat1_2d, dTempTest3);
-    this->validAxisTags(this->mat1_2d, dTempTest3);
-    this->invalid(dTempTest1, dTempTest3);
+        dTempTest3 = this->mat1_2d > dTempTest1;
+        this->validTagSpace(this->mat1_2d, dTempTest3);
+        this->validAxisTags(this->mat1_2d, dTempTest3);
+        this->invalid(dTempTest1, dTempTest3);
 
-    dTempTest3 = this->mat1_2d >= dTempTest1;
-    this->validTagSpace(this->mat1_2d, dTempTest3);
-    this->validAxisTags(this->mat1_2d, dTempTest3);
-    this->invalid(dTempTest1, dTempTest3);
+        dTempTest3 = this->mat1_2d >= dTempTest1;
+        this->validTagSpace(this->mat1_2d, dTempTest3);
+        this->validAxisTags(this->mat1_2d, dTempTest3);
+        this->invalid(dTempTest1, dTempTest3);
 
-    dTempTest3 = this->mat1_2d <= dTempTest1;
-    this->validTagSpace(this->mat1_2d, dTempTest3);
-    this->validAxisTags(this->mat1_2d, dTempTest3);
-    this->invalid(dTempTest1, dTempTest3);
+        dTempTest3 = this->mat1_2d <= dTempTest1;
+        this->validTagSpace(this->mat1_2d, dTempTest3);
+        this->validAxisTags(this->mat1_2d, dTempTest3);
+        this->invalid(dTempTest1, dTempTest3);
+    }
 
     dTempTest3 = this->mat1_2d != dTempTest1;
     this->validTagSpace(this->mat1_2d, dTempTest3);
