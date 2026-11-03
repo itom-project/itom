@@ -2337,7 +2337,7 @@ PyObject* PythonDataObject::PyDataObject_getValue(PyDataObject* self, void* /*cl
         return outputTuple = PyTuple_New(0);
     }
 
-    outputTuple = PyTuple_New(self->dataObject->getTotal());
+    outputTuple = PyTuple_New(static_cast<Py_ssize_t>(self->dataObject->getNumElements()));
 
     ito::DObjConstIterator it = self->dataObject->constBegin();
     ito::DObjConstIterator itEnd = self->dataObject->constEnd();
@@ -7586,14 +7586,14 @@ PyObject* PythonDataObject::PyDataObject_arg(PyDataObject* self, void* /*closure
 }
 
 //-------------------------------------------------------------------------------------
-int PythonDataObject::PyDataObj_mappingLength(PyDataObject* self)
+Py_ssize_t PythonDataObject::PyDataObj_mappingLength(PyDataObject* self)
 {
     if (self->dataObject == NULL)
     {
         return 0;
     }
 
-    return self->dataObject->getTotal();
+    return static_cast<Py_ssize_t>(self->dataObject->getNumElements());
 }
 
 //-------------------------------------------------------------------------------------
@@ -8091,7 +8091,7 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                         const npy_intp* npArrayShape = PyArray_SHAPE(npArray_);
                         int* map_dims_to_npdims = new int[dims];
 
-                        if (dataObj.getTotal() != PyArray_SIZE(npArray_))
+                        if (dataObj.getNumElements() != static_cast<size_t>(PyArray_SIZE(npArray_)))
                         {
                             PyErr_Format(
                                 PyExc_ValueError,
@@ -9378,7 +9378,7 @@ PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject* self)
 #endif
 
     // check if size and osize are totally equal, then set continuous flag
-    if (selfDO->getTotal() == selfDO->getOriginalTotal())
+    if (selfDO->getNumElements() == selfDO->getOriginalNumElements())
     {
 #if (NPY_FEATURE_VERSION < 0x00000007)
         inter->flags |= NPY_C_CONTIGUOUS;
