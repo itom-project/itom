@@ -25,9 +25,11 @@
 #include "../global.h"
 #include "../AppManagement.h"
 #include "../codeEditor/codeEditor.h"
+#include "../helper/editorFileType.h"
 #include <qmenu.h>
 
 #include <qsettings.h>
+#include <qregularexpression.h>
 
 namespace ito
 {
@@ -54,6 +56,12 @@ void WidgetPropEditorScripts::readSettings()
     ui.checkOutlineAutoUpdateEnabled->setChecked(settings.value("outlineAutoUpdateEnabled", true).toBool());
     ui.spinOutlineAutoUpdateDelay->setValue(settings.value("outlineAutoUpdateDelay", 0.5).toDouble());
     ui.checkOutlineShowNavigation->setChecked(settings.value("outlineShowNavigation", true).toBool());
+
+    // other text files
+    ui.editTextFileSuffixes->setText(
+        settings.value("textFileExtensions", EditorFileType::defaultTextSuffixes())
+            .toStringList()
+            .join(" "));
 
     // edge mode
     switch ((CodeEditor::EdgeMode)(settings.value("edgeMode", CodeEditor::EdgeNone).toInt()))
@@ -106,6 +114,13 @@ void WidgetPropEditorScripts::writeSettings()
     settings.setValue("outlineAutoUpdateEnabled", ui.checkOutlineAutoUpdateEnabled->isChecked());
     settings.setValue("outlineAutoUpdateDelay", ui.spinOutlineAutoUpdateDelay->value());
     settings.setValue("outlineShowNavigation", ui.checkOutlineShowNavigation->isChecked());
+
+    // other text files
+    QStringList textSuffixes =
+        ui.editTextFileSuffixes->text().split(QRegularExpression("[\\s,;]+"));
+    textSuffixes.removeAll("");
+    settings.setValue("textFileExtensions", textSuffixes);
+    EditorFileType::invalidateCache();
 
     //edge mode
     //edge mode

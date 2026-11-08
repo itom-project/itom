@@ -66,6 +66,7 @@ PALETTES = {
         "tooltipBg": "#1f2328",
         "tooltipText": "#ffffff",
         "progressChunk": "#9ec0f3",  # lighter than accent, such that text stays readable
+        "error": "#c62828",         # error messages
     },
     "modernDark": {
         "bg": "#1b1d21",
@@ -88,6 +89,7 @@ PALETTES = {
         "tooltipBg": "#e6e8eb",
         "tooltipText": "#1b1d21",
         "progressChunk": "#3a5f9e",
+        "error": "#f28b82",
     },
 }
 

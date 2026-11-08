@@ -5,14 +5,14 @@ Popular Python packages
 **********************************
 
 One main advantage of |python| are thousands of packages, that enhance the base functionality in many application fields. Most of those packages are
-also freely available and listed in the official python package index (https://pypi.python.org/pypi). |itom| comes with a GUI based :ref:`package manager <gui-pipmanager>`
+also freely available and listed in the official python package index (https://pypi.org/). |itom| comes with a GUI based :ref:`package manager <gui-pipmanager>`
 that can be used to browse the python package index, automatically download and install or upgrade these packages.
 
 Many 3rd party packages are completely implemented in Python code. These packages can usually be used within |itom| without limitations. Nevertheless, you have to take
 care that the selected package is compatible to the right version of |python| (see About dialog of |itom|) and to your operation system (also 32bit or 64bit, depending on |itom|).
 Other packages, like some numerical intense packages or packages that wrap further libraries, can internally also be written in C. Usually, the packages that are provided by
 the python package index, only provide the pure sources. Hence, you have to compile the sources upon installation, which is sometimes done automatically if an appropriate compiler
-is found on the destination computer. Nevertheless, this might often fail especially for Windows operation systems. In this case, check the website http://www.lfd.uci.edu/~gohlke/pythonlibs/
+is found on the destination computer. Nevertheless, this might often fail especially for Windows operation systems. In this case, check the website https://www.lfd.uci.edu/~gohlke/pythonlibs/
 for ready-to-use binaries for Windows. The offered **whl** files can simply be downloaded and installed by the itom internal python package manager.
 
 Here is a list of popular |python| packages, that can be very useful when working with |itom|:
@@ -20,13 +20,13 @@ Here is a list of popular |python| packages, that can be very useful when workin
 **Numpy**
 
 Numpy is the main |python| package for numeric calculations and work with arrays and matrices. Numpy is directly integrated in |itom| and **required** to run |itom|. For Windows users,
-Numpy should always be obtained as binary package from http://www.lfd.uci.edu/~gohlke/pythonlibs/. Please consider, that a major jump of the Numpy version might require a new compilation of |itom|!
+Numpy should always be obtained as binary package from https://www.lfd.uci.edu/~gohlke/pythonlibs/. Please note that a major jump of the Numpy version might require a new compilation of |itom|!
 There is a strong compatibility between the main array class :py:class:`itom.dataObject` of |itom| and :py:class:`numpy.array`. For more information about this, see the section :ref:`itomDataObjectVsNumpyArray`
 
 **Scipy**
 
 Scipy is a sister-project to **Numpy** and provides more functions from the field of scientific calculations, statistics, linear algebra, interpolation, signal processing... Windows users
-should also directly download the binaries from http://www.lfd.uci.edu/~gohlke/pythonlibs/. The version of Scipy must be compatible with Numpy, therefore try to update both at the same time.
+should also directly download the binaries from https://www.lfd.uci.edu/~gohlke/pythonlibs/. The version of Scipy must be compatible with Numpy, therefore try to update both at the same time.
 
 
 **Matplotlib**
@@ -38,7 +38,7 @@ information about **Matplotlib** and |itom|, see the section :ref:`pymod-matplot
 
 **Plotly**
 
-Plotly is an alternative to **Matplotlib** and provides interactive plots, e.g. for the statistical analysisis of
+Plotly is an alternative to **Matplotlib** and provides interactive plots, e.g. for the statistical analysis of
 machine learning results, based on html and java script. |itom| provides a specific render widget for **Plotly**
 such that the outputs can be rendered in specific itom windows or this widget, embedded in any custom user interface.
 For more information about **Plotly** see the section :ref:`pymod-plotly`.
@@ -46,7 +46,7 @@ For more information about **Plotly** see the section :ref:`pymod-plotly`.
 **sphinx**
 
 Sphinx is a popular package for rendering user documentations to various output formats (e.g. html, latex, QtHelp, Windows Help Format, ...). Sphinx is used to parse this documentation and for the
-homepage of |itom| (https://itom-project.github.io/). See the section :ref:`buildDocumentation` for more information how to create the user documentation (e.g. if you have a self-compiled version of |itom|).
+homepage of |itom| (https://itom-project.github.io/). See the section :ref:`build-documentation-label` for more information how to create the user documentation (e.g. if you have a self-compiled version of |itom|).
 
 **pip**
 
@@ -59,7 +59,7 @@ Scikit-image is the image processing sub-package of **Scipy**. See the website h
 **OpenCV**
 
 This package is a wrapper to the popular open-source image processing library **OpenCV**. Although OpenCV is also the basic structure of :py:class:`~itom.dataObject`, the python package can be used
-to call specific functions from OpenCV directly from Python. Since, the |python| wrapper was not available for Python 3 until november 2015, many functions from OpenCV are also wrapped within
+to call specific functions from OpenCV directly from Python. Since, the |python| wrapper was not available for Python 3 until November 2015, many functions from OpenCV are also wrapped within
 the itom plugin **OpenCVFilters**.
 
 **frosted**
@@ -70,4 +70,4 @@ This syntax check can be enabled and configured in the :ref:`property dialog of 
 **pywin32** (Windows only)
 
 This is a popular package, that is also required by many other packages and is used to directly call functions from DLLs under Windows. It has also many more features to interact with other applications under Windows.
-Get it also as binary file from http://www.lfd.uci.edu/~gohlke/pythonlibs/.
+Get it also as binary file from https://www.lfd.uci.edu/~gohlke/pythonlibs/.

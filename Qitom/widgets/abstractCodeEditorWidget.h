@@ -35,6 +35,7 @@
 #include "../codeEditor/modes/pyCalltips.h"
 #include "../codeEditor/modes/pyAutoIndent.h"
 #include "../codeEditor/pyCodeReferenceRenamer.h"
+#include "../helper/editorFileType.h"
 
 #include <qstringlist.h>
 #include <qrect.h>
@@ -61,6 +62,9 @@ protected:
 
     virtual void loadSettings(); //overwrite this method if you want to load further settings
 
+    //! replaces the syntax highlighter (and fold detector) by the one that fits to the given file type
+    void setSyntaxHighlighter(EditorFileType::Type type);
+
     QString formatCodeBeforeInsertion(const QString &text, int &lineCount, bool trimText = false, const QString &newIndent = "") const;
     QString formatCodeForClipboard(const QString &code, const QString &prependedTextInFirstLine) const;
 
@@ -68,7 +72,8 @@ protected:
 
     tUserSelectionState m_userSelectionState;
 
-    QSharedPointer<SyntaxHighlighterBase> m_pythonSyntaxHighlighter;
+    QSharedPointer<SyntaxHighlighterBase> m_syntaxHighlighter;
+    EditorFileType::Type m_syntaxHighlighterType; //!< file type, the current highlighter is made for
     QSharedPointer<CodeEditorStyle> m_editorStyle;
     QSharedPointer<SymbolMatcherMode> m_symbolMatcher;
     QSharedPointer<CaretLineHighlighterMode> m_caretLineHighlighter;

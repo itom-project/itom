@@ -220,14 +220,18 @@ latest opened editor window. Filename can be either a string with a relative \n\
 or absolute filename to the script to open or any object with a ``__file__`` \n\
 attribute. This attribute is then read and used as path. \n\
 \n\
+Besides python scripts, other text-like files (e.g. txt, json, yaml, xml, ini, ...) \n\
+can be opened, too. These files are shown with a specific syntax highlighting, but \n\
+cannot be run or debugged. \n\
+\n\
 The relative filename is relative with respect to the current directory. \n\
 \n\
 Parameters \n\
 ---------- \n\
 filename : str or Any \n\
-    Relative or absolute filename to a python script that is then opened \n\
-    (in the current editor window). Alternatively an object with a \n\
-    ``__file__`` attribute is allowed. \n\
+    Relative or absolute filename to a python script or any other supported \n\
+    text file that is then opened (in the current editor window). Alternatively \n\
+    an object with a ``__file__`` attribute is allowed. \n\
 \n\
 Raises \n\
 ------ \n\

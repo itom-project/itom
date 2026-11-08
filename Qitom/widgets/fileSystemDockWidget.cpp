@@ -25,6 +25,7 @@
 #include "../global.h"
 #include "../AppManagement.h"
 #include "../helper/IOHelper.h"
+#include "../helper/editorFileType.h"
 #include "../organizer/userOrganizer.h"
 
 #include <qheaderview.h>
@@ -39,6 +40,7 @@
 #include <qprocess.h>
 #include <qcombobox.h>
 #include <qapplication.h>
+#include <qset.h>
 #include <qshortcut.h>
 #include <qmimedata.h>
 #include <qfileiconprovider.h>
@@ -53,7 +55,7 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     m_pPathEdit(nullptr), m_pMainToolbar(nullptr), m_pTreeView(nullptr), m_pLblFilter(nullptr),
     m_pCmbFilter(nullptr), m_pFileSystemModel(nullptr), m_baseDirectory(QString()),
     m_pActMoveCDUp(nullptr), m_pActSelectCD(nullptr),
-    m_pActOpenFile(nullptr), m_pActExecuteFile(nullptr), m_pActLocateOnDisk(nullptr),
+    m_pActOpenFile(nullptr), m_pActOpenInEditor(nullptr), m_pActExecuteFile(nullptr), m_pActLocateOnDisk(nullptr),
     m_pActRenameItem(nullptr), m_pActDeleteItems(nullptr), m_pActCutItems(nullptr),
     m_pActCopyItems(nullptr), m_pActPasteItems(nullptr), m_pActNewDir(nullptr),
     m_pActNewPyFile(nullptr), m_pViewList(nullptr), m_pViewDetails(nullptr), m_lastMovedShowDirAction(nullptr),
@@ -294,6 +296,7 @@ FileSystemDockWidget::~FileSystemDockWidget()
     DELETE_AND_SET_NULL(m_pActMoveCDUp);
     DELETE_AND_SET_NULL(m_pActSelectCD);
     DELETE_AND_SET_NULL(m_pActOpenFile);
+    DELETE_AND_SET_NULL(m_pActOpenInEditor);
     DELETE_AND_SET_NULL(m_pActExecuteFile);
     DELETE_AND_SET_NULL(m_pActLocateOnDisk);
     DELETE_AND_SET_NULL(m_pActRenameItem);
@@ -319,7 +322,18 @@ void FileSystemDockWidget::setLinkColor(const QColor &color)
 
     to influence the link color
     */
-    m_linkColor = color;
+    if (m_linkColor != color)
+    {
+        m_linkColor = color;
+
+        // The stylesheet applies this property when the widget is polished (first
+        // shown). At this time, the path has already been rendered with the default
+        // color in the constructor, therefore render it again with the new color.
+        if (m_pPathEdit && !m_baseDirectory.isEmpty())
+        {
+            m_pPathEdit->setHtml(getHtmlTag(m_baseDirectory));
+        }
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -340,6 +354,8 @@ void FileSystemDockWidget::createActions()
     {
         m_pActOpenFile = new ShortcutAction(QIcon(":/files/icons/open.png"), tr("Open File"), this);
         m_pActOpenFile->connectTrigger(this, SLOT(mnuOpenFile()));
+        m_pActOpenInEditor = new ShortcutAction(QIcon(":/files/icons/fileText.png"), tr("Open in Script Editor"), this);
+        m_pActOpenInEditor->connectTrigger(this, SLOT(mnuOpenInEditor()));
         m_pActExecuteFile = new ShortcutAction(QIcon(":/script/icons/runScript.png"), tr("Execute File"), this);
         m_pActExecuteFile->connectTrigger(this, SLOT(mnuExecuteFile()));
     }
@@ -374,6 +390,11 @@ void FileSystemDockWidget::createMenus()
     if (m_pActOpenFile)
     {
         m_pContextMenu->addAction(m_pActOpenFile->action());
+    }
+
+    if (m_pActOpenInEditor)
+    {
+        m_pContextMenu->addAction(m_pActOpenInEditor->action());
     }
 
     if (m_pActExecuteFile)
@@ -455,6 +476,7 @@ void FileSystemDockWidget::updateActions()
     bool isFile = false;
     bool areFiles = false;
     bool isPyFile = false;
+    bool isOtherEditableFile = false; // text-like file (not python) that can be opened in the script editor
     bool pyNotRun = false;
     bool selectedOnlyOne = (indexList.count() == 1);
 
@@ -463,6 +485,7 @@ void FileSystemDockWidget::updateActions()
         QFileInfo fileinfo = m_pFileSystemModel->fileInfo(indexList.first());
         isFile = fileinfo.isFile();
         isPyFile = isFile && (fileinfo.suffix().toLower() == "py");
+        isOtherEditableFile = isFile && !isPyFile && EditorFileType::isEditable(fileinfo.filePath());
         if (isPyFile)
         {
             PythonEngine* eng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
@@ -495,6 +518,11 @@ void FileSystemDockWidget::updateActions()
     if (m_pActOpenFile)
     {
         m_pActOpenFile->setVisible(isFile || areFiles, true);
+    }
+
+    if (m_pActOpenInEditor)
+    {
+        m_pActOpenInEditor->setVisible(isOtherEditableFile, true);
     }
 
     if (m_pActExecuteFile)
@@ -530,8 +558,11 @@ void FileSystemDockWidget::updateActions()
 
     if (m_pActPasteItems)
     {
-        QClipboard* clipboard = QApplication::clipboard();
-        m_pActPasteItems->setEnabled(clipboard->mimeData()->hasUrls(), true);
+        // mimeData() can be nullptr, e.g. on the offscreen platform or if the
+        // clipboard is not accessible
+        const QClipboard* clipboard = QApplication::clipboard();
+        const QMimeData* mimeData = clipboard ? clipboard->mimeData() : nullptr;
+        m_pActPasteItems->setEnabled(mimeData && mimeData->hasUrls(), true);
     }
 
     if (m_pActNewDir)
@@ -862,6 +893,31 @@ void FileSystemDockWidget::mnuExecuteFile()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! opens the selected text-like files always in the script editor (even if a plugin could load them as data)
+void FileSystemDockWidget::mnuOpenInEditor()
+{
+    ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
+
+    if (!uOrg->currentUserHasFeature(featDeveloper))
+    {
+        return;
+    }
+
+    QSet<QString> files;
+
+    foreach(const QModelIndex &idx, m_pTreeView->selectedIndexes())
+    {
+        QFileInfo fi = m_pFileSystemModel->fileInfo(idx);
+
+        if (fi.isFile() && EditorFileType::isEditable(fi.filePath()) && !files.contains(fi.filePath()))
+        {
+            files.insert(fi.filePath());
+            IOHelper::openPythonScript(fi.filePath());
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::mnuOpenFile()
 {
     QModelIndexList indexList;
@@ -1075,10 +1131,10 @@ void FileSystemDockWidget::mnuPasteItems()
 {
     QModelIndex index;
     QClipboard *clipboard = QApplication::clipboard();
-    const QMimeData *mimeData = clipboard->mimeData(QClipboard::Clipboard);
+    const QMimeData *mimeData = clipboard ? clipboard->mimeData(QClipboard::Clipboard) : nullptr;
     bool result = false;
 
-    if (mimeData->hasUrls())
+    if (mimeData && mimeData->hasUrls())
     {
         if (m_pTreeView->selectedIndexes().count() == 0)
         {

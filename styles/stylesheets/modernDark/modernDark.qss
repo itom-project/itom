@@ -731,3 +731,35 @@ QStatusBar QLabel {
     color: #9aa1ab;
     padding: 0 6px;
 }
+
+/* ---- itom specific widgets ---------------------------------------------------------- */
+/* These widgets paint some colors themselves (e.g. HTML links) with light-theme
+   defaults in C++. Override them via qproperty, such that they fit to the palette. */
+
+ito--FileSystemDockWidget {
+    /* clickable parts of the current directory path */
+    qproperty-linkColor: #5b93f0;
+}
+
+ito--DialogAboutQItom {
+    qproperty-textColor: #e6e8eb;
+    qproperty-linkColor: #5b93f0;
+}
+
+ito--DialogPipManager {
+    qproperty-colorMessage: #e6e8eb;
+    qproperty-colorError: #f28b82;
+}
+
+ito--FigureWidget {
+    qproperty-currentBorderColor: #5b93f0;
+}
+
+ito--HelpTreeDockWidget {
+    qproperty-backgroundColorHeading: #272a30;
+    qproperty-textColorHeading: #e6e8eb;
+    qproperty-linkColor: #5b93f0;
+    qproperty-backgroundParamName: #22324d;
+    qproperty-textColorSection: #d6e4fc;
+    qproperty-backgroundColorSection: #2c3036;
+}

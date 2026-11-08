@@ -37,6 +37,11 @@ DialogGoto::DialogGoto(const int maxLine, const int curLine, const int maxChar, 
     m_captionChar = QString( tr("Character number (0 - %1, current: %2):")).arg(maxChar).arg(curChar);
     m_maxLine = maxLine;
     m_maxChar = maxChar;
+    m_maxColumn = 1;
+
+    ui.spinColumn->setMinimum(1);
+    ui.spinColumn->setMaximum(1);
+    ui.spinColumn->setValue(1);
 
     if(m_maxChar == 0) //disable option to goto character
     {
@@ -54,6 +59,8 @@ void DialogGoto::on_radioLine_clicked()
     ui.lblCaption->setText(m_captionLine);
     ui.spinValue->setMinimum(1);
     ui.spinValue->setMaximum(m_maxLine);
+    ui.lblColumn->setVisible(true);
+    ui.spinColumn->setVisible(true);
 }
 
 void DialogGoto::on_radioChar_clicked()
@@ -61,6 +68,24 @@ void DialogGoto::on_radioChar_clicked()
     ui.lblCaption->setText(m_captionChar);
     ui.spinValue->setMinimum(0);
     ui.spinValue->setMaximum(m_maxChar);
+    ui.lblColumn->setVisible(false);
+    ui.spinColumn->setVisible(false);
+}
+
+void DialogGoto::setColumn(const int maxColumn, const int curColumn)
+{
+    // the maximum is the length of the current line. A column beyond the length of the
+    // target line is clipped by the editor.
+    m_maxColumn = qMax(1, maxColumn);
+    ui.lblColumn->setText(tr("Column (1 - %1, current: %2):").arg(m_maxColumn).arg(curColumn));
+    ui.spinColumn->setMinimum(1);
+    ui.spinColumn->setMaximum(qMax(m_maxColumn, 100000)); // other lines may be longer
+    ui.spinColumn->setValue(qBound(1, curColumn, 100000));
+}
+
+int DialogGoto::getColumn() const
+{
+    return ui.radioLine->isChecked() ? ui.spinColumn->value() : 1;
 }
 
 void DialogGoto::getData(bool &lineNotChar, int &curValue)

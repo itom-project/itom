@@ -63,8 +63,8 @@ public:
     typedef QMap<QString, Mode::Ptr>::const_iterator const_iterator;
     typedef QMap<QString, Mode::Ptr>::iterator iterator;
 
-    Mode::Ptr append(Mode::Ptr mode);
-    Mode::Ptr remove(Mode::Ptr mode);
+    void append(Mode::Ptr mode);
+    void remove(Mode::Ptr mode);
     void clear();
 
     Mode::Ptr get(const QString &name) const

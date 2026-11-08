@@ -24,6 +24,7 @@
 #define IOHELPER_H
 
 #include "../global.h"
+#include "charsetEncoding.h"
 #include "../common/sharedStructures.h"
 #include "../common/sharedStructuresQt.h"
 #include "../../common/addInInterface.h"
@@ -56,7 +57,8 @@ public:
         IOMimeDataObject = 0x020, /*!< consider algorithms that allow saving or loading data objects */
         IOMimePointCloud = 0x040, /*!< consider algorithms that allow saving or loading point clouds */
         IOMimePolygonMesh = 0x080, /*!< consider algorithms that allow saving or loading polygonal meshes */
-        IOMimeAll = IOMimeDataObject | IOMimePointCloud | IOMimePolygonMesh /*!< or-combination of IOMimeDataObject, IOMimePointCloud and IOMimePolygonMesh */
+        IOMimeAll = IOMimeDataObject | IOMimePointCloud | IOMimePolygonMesh, /*!< or-combination of IOMimeDataObject, IOMimePointCloud and IOMimePolygonMesh */
+        IOTextFiles = 0x100 /*!< add a filter for text-like files, that are opened in the script editor (input only) */
     };
     Q_DECLARE_FLAGS(IOFilters, IOFilter)
 
@@ -77,31 +79,8 @@ public:
 
     /** This struct defines all necessary information for a possible charset encoding.
     */
-    struct CharsetEncodingItem
-    {
-        CharsetEncodingItem() :
-            encodingName(""), displayName(""), displayNameShort(""), bom(""), userDefined(false)
-        {}
-
-        //!< the name that is accepted by QTextCodec or QStringConverter.
-        //!< This is also used as value in the itom settings.
-        QString encodingName;
-
-        //!< the name used as display name in a config dialog
-        QString displayName;
-
-        //!< the short version, e.g. for a status bar
-        QString displayNameShort;
-
-        //!< all possible aliases, e.g. in Python scripts (coding=...)
-        QStringList aliases;
-
-        //!< the Byte-Order-Mark used to automatically detect this encoding (or empty, if not used)
-        QByteArray bom;
-
-        //!< false if part of the officially supported list of encodings, else true
-        bool userDefined;
-    };
+    //!< kept for compatibility, the implementation moved to CharsetEncoding
+    typedef CharsetEncoding::Item CharsetEncodingItem;
 
 
     static RetVal openGeneralFile(const QString &generalFileName, bool openUnknownsWithExternalApp = true, bool showMessages = false, QWidget* parent = NULL, const char* errorSlotMemberOfParent = NULL, bool globalNotLocalWorkspace = true);
@@ -139,7 +118,6 @@ private:
     IOHelper(const IOHelper &) : QObject() {};
 
     static QString allItomFilesName;
-    static QList<CharsetEncodingItem> supportedScriptEncodings;
 
 };
 

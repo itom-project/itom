@@ -92,7 +92,9 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
     m_pStatusBarWidget(nullptr),
     m_classBox(nullptr),
     m_methodBox(nullptr),
-    m_classMenuBar(nullptr)
+    m_classMenuBar(nullptr),
+    m_pythonActionsVisible(true),
+    m_scriptToolBarHiddenByUser(false)
 {
     qRegisterMetaType<QSharedPointer<OutlineItem> >("QSharedPointer<OutlineItem>");
 
@@ -744,7 +746,7 @@ void ScriptDockWidget::showOutlineNavigationBar(bool show)
         }
     }
 
-    m_classMenuBar->setVisible(show);
+    m_classMenuBar->setVisible(show && m_pythonActionsVisible);
 }
 
 //-------------------------------------------------------------------------------------
@@ -944,7 +946,8 @@ RetVal ScriptDockWidget::openScript()
 {
     QString fileName;
 
-    fileName = QFileDialog::getOpenFileName(getActiveInstance(), tr("File Open"), QDir::currentPath(), "Python (*.py)");
+    fileName = QFileDialog::getOpenFileName(
+        getActiveInstance(), tr("File Open"), QDir::currentPath(), EditorFileType::openFileFilter());
 
     if (!fileName.isEmpty())
     {
@@ -970,24 +973,30 @@ RetVal ScriptDockWidget::openScript(QString filename, bool silent)
 
     if (!fileInfo.exists())
     {
+        QString text = tr("The file '%1' could not be found.").arg(filename);
+
         if (!silent)
         {
-            QMessageBox msg(QMessageBox::Warning, tr("Open Script"), tr("The file '%1' could not be found.").arg(filename));
+            QMessageBox msg(QMessageBox::Warning, tr("Open Script"), text);
             msg.exec();
         }
-        return RetVal(retError);
+        return RetVal(retError, 0, text.toUtf8().data());
     }
     else
     {
 
-        if (fileInfo.suffix().toLower() != "py")
+        if (!EditorFileType::isEditable(filename))
         {
+            QString text =
+                tr("The file '%1' is neither a python script nor a supported text file.")
+                    .arg(filename);
+
             if (!silent)
             {
-                QMessageBox msg(QMessageBox::Warning, tr("Open Script"), tr("The file '%1' is not a python script.").arg(filename));
+                QMessageBox msg(QMessageBox::Warning, tr("Open Script"), text);
                 msg.exec();
             }
-            return RetVal(retError);
+            return RetVal(retError, 0, text.toUtf8().data());
         }
     }
 
@@ -1001,7 +1010,7 @@ RetVal ScriptDockWidget::openScript(QString filename, bool silent)
     // Hint: this does not consider the paths so far.
     QDir path(fileInfo.absolutePath());
     QStringList nameFilters;
-    nameFilters << "*.py";
+    nameFilters = EditorFileType::nameFilters();
     QFileInfoList filesInfo = path.entryInfoList(nameFilters, QDir::Files);
 
     foreach(const QFileInfo &f, filesInfo)
@@ -1150,7 +1159,7 @@ RetVal ScriptDockWidget::appendEditor(ScriptEditorWidget* editorWidget)
         QFileInfo info(name);
         name = info.fileName();
     }
-    m_tab->addTab(editorWidget, QIcon(":/files/icons/filePython.png"), name);
+    m_tab->addTab(editorWidget, EditorFileType::icon(editorWidget->fileType()), name);
 
     // add the new index to the stackHistory.
     m_stackHistory.prepend(m_tab->count() - 1);
@@ -1359,6 +1368,7 @@ void ScriptDockWidget::tabFilenameOrModificationChanged(int index)
     {
         ScriptEditorWidget *editorWidget = static_cast<ScriptEditorWidget*>(m_tab->widget(index));
         setWindowModified(editorWidget->isModified());
+        m_tab->setTabIcon(index, EditorFileType::icon(editorWidget->fileType()));
 
         // ClassNavigator: set the right classes in comboboxes
         updateCodeNavigation(editorWidget, editorWidget->parseOutline());
@@ -1464,14 +1474,20 @@ void ScriptDockWidget::currentScriptCursorPositionChanged()
         int line = currentEditor->currentLineNumber() + 1;
         int col = currentEditor->currentColumnNumber() + 1;
 
-        emit statusBarInformationChanged(
-            this,
-            charsetEncoding.displayNameShort,
-            line,
-            col
-        );
+        // encoding, line ending and large file hint (shown by the main window or by
+        // this dock widget if it is undocked)
+        QString info = QString("%1, %2")
+                           .arg(charsetEncoding.displayNameShort)
+                           .arg(LineEnding::shortName(currentEditor->lineEnding()));
 
-        m_pStatusBarWidget->setText(tr("Ln %1, Col %2, %3 ").arg(line).arg(col).arg(charsetEncoding.displayNameShort));
+        if (currentEditor->largeFileMode())
+        {
+            info += tr(", large file (reduced features)");
+        }
+
+        emit statusBarInformationChanged(this, info, line, col);
+
+        m_pStatusBarWidget->setText(tr("Ln %1, Col %2, %3 ").arg(line).arg(col).arg(info));
     }
     else
     {
@@ -1735,6 +1751,63 @@ void ScriptDockWidget::updateEditorActions()
 }
 
 //-------------------------------------------------------------------------------------
+//! shows or hides all actions, toolbars and the outline navigation bar, that only
+//! make sense for python scripts (e.g. hidden if a text file is the current tab).
+void ScriptDockWidget::setPythonActionsVisible(bool visible)
+{
+    if (visible == m_pythonActionsVisible)
+    {
+        return;
+    }
+
+    m_pythonActionsVisible = visible;
+
+    // hiding the actions also hides them in the menus
+    ShortcutAction* pyActions[] = {
+        m_scriptRunAction,
+        m_scriptRunSelectionAction,
+        m_scriptRunCodeCellAction,
+        m_scriptRunCodeCellAndAdvanceAction,
+        m_scriptDebugAction,
+        m_scriptStopAction,
+        m_scriptContinueAction,
+        m_scriptStepAction,
+        m_scriptStepOverAction,
+        m_scriptStepOutAction,
+        m_autoCodeFormatAction,
+        m_referenceRenameAction,
+        m_pyDocstringGeneratorAction};
+
+    for (ShortcutAction* a : pyActions)
+    {
+        if (a && a->action())
+        {
+            a->action()->setVisible(visible);
+        }
+    }
+
+    if (m_scriptToolBar)
+    {
+        if (!visible)
+        {
+            // remember if the user has hidden the toolbar by himself
+            m_scriptToolBarHiddenByUser = m_scriptToolBar->isHidden();
+            m_scriptToolBar->hide();
+        }
+        else if (!m_scriptToolBarHiddenByUser)
+        {
+            m_scriptToolBar->show();
+        }
+    }
+
+    // text files have no outline, hide the class / method navigation
+    if (m_classMenuBar)
+    {
+        m_classMenuBar->setVisible(visible && m_outlineShowNavigation);
+    }
+}
+
+//-------------------------------------------------------------------------------------
 //! updates actions which deal with python commands or which are dependent on the python state
 //! Read-only is also python-dependent.
 void ScriptDockWidget::updatePythonActions()
@@ -1744,11 +1817,20 @@ void ScriptDockWidget::updatePythonActions()
     bool busy2 = busy1 && pythonDebugMode() && pythonInWaitingMode();
     int tabCount = m_tab->count();
 
-    m_scriptRunAction->setEnabled(!busy1);
-    m_scriptRunSelectionAction->setEnabled(sew && (!busy1 || pythonInWaitingMode()));
-    m_scriptRunCodeCellAction->setEnabled(sew && (!busy1 || pythonInWaitingMode()));
-    m_scriptRunCodeCellAndAdvanceAction->setEnabled(sew && (!busy1 || pythonInWaitingMode()));
-    m_scriptDebugAction->setEnabled(!busy1);
+    // run, debug and all other python features are only available for python files
+    bool pyFile = (sew == nullptr) || sew->isPythonFile();
+    bool canComment = sew != nullptr &&
+        !EditorFileType::commentToken(sew->fileType()).isEmpty();
+
+    setPythonActionsVisible(pyFile);
+
+    m_scriptRunAction->setEnabled(!busy1 && pyFile);
+    m_scriptRunSelectionAction->setEnabled(sew && pyFile && (!busy1 || pythonInWaitingMode()));
+    m_scriptRunCodeCellAction->setEnabled(sew && pyFile && (!busy1 || pythonInWaitingMode()));
+    m_scriptRunCodeCellAndAdvanceAction->setEnabled(
+        sew && pyFile && (!busy1 || pythonInWaitingMode()));
+    m_scriptDebugAction->setEnabled(!busy1 && pyFile);
+    m_referenceRenameAction->setEnabled(pyFile);
     m_scriptStopAction->setEnabled(busy1);
     m_scriptContinueAction->setEnabled(busy2);
     m_scriptStepAction->setEnabled(busy2);
@@ -1769,20 +1851,22 @@ void ScriptDockWidget::updatePythonActions()
         !busy1);
     m_undoAction->setEnabled(!busy1 && sew != nullptr && sew->isUndoAvailable());
     m_redoAction->setEnabled(!busy1 && sew != nullptr && sew->isRedoAvailable());
-    m_commentAction->setEnabled(!busy1 && tabCount > 0 && sew != nullptr);
-    m_uncommentAction->setEnabled(!busy1 && tabCount > 0 && sew != nullptr);
+    m_commentAction->setEnabled(!busy1 && tabCount > 0 && canComment);
+    m_uncommentAction->setEnabled(!busy1 && tabCount > 0 && canComment);
     m_indentAction->setEnabled(!busy1 && tabCount > 0 && sew != nullptr);
     m_unindentAction->setEnabled(!busy1 && tabCount > 0 && sew != nullptr);
 
     m_autoCodeFormatAction->setEnabled(
         !busy1 &&
         m_autoCodeFormatCmd != "" &&
+        pyFile &&
         tabCount > 0);
 
     m_pyDocstringGeneratorAction->setEnabled(
         !busy1 &&
         tabCount > 0 &&
         sew != nullptr &&
+        sew->isPythonFile() &&
         sew->currentLineCanHaveDocstring());
 }
 
@@ -2839,6 +2923,7 @@ void ScriptDockWidget::mnuGoto()
     sew->getCursorPosition(&curLine,&curIndex);
 
     DialogGoto *d = new DialogGoto(sew->lineCount(), curLine + 1, sew->length(), sew->positionFromLineIndex(curLine, curIndex), getCanvas());
+    d->setColumn(sew->lineLength(curLine) + 1, curIndex + 1);
 
     if (d->exec())
     {
@@ -2848,6 +2933,11 @@ void ScriptDockWidget::mnuGoto()
         {
             curLine = curValue - 1;
             sew->setCursorPosAndEnsureVisible(curLine);
+
+            // optional column (clipped to the length of the line)
+            int column = qMin(d->getColumn() - 1, sew->lineLength(curLine));
+            sew->setCursorPosition(curLine, qMax(0, column));
+            sew->ensureCursorVisible(); // horizontal scrolling to the column
         }
         else
         {
