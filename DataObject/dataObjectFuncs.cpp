@@ -1870,10 +1870,10 @@ RetVal meanValue(const DataObject* dObj, float64& meanResult, bool ignoreNaN)
 {
     ito::RetVal retval = ito::retOk;
 
-    int dims = dObj->getDims();
-
-    if (dObj == NULL || dims == 0)
+    if (dObj == NULL || dObj->getDims() == 0)
         return ito::RetVal(retError, 0, "DataObjectPointer is invalid");
+
+    int dims = dObj->getDims();
 
     if (dObj->getType() == tComplex64 || dObj->getType() == tComplex128 ||
         dObj->getType() == tRGBA32)
@@ -2098,10 +2098,10 @@ RetVal medianValue(const DataObject* dObj, float64& medianResult, bool ignoreNaN
 {
     ito::RetVal retval = ito::retOk;
 
-    int dims = dObj->getDims();
-
-    if (dObj == NULL || dims == 0)
+    if (dObj == NULL || dObj->getDims() == 0)
         return ito::RetVal(retError, 0, "DataObject must not be empty");
+
+    int dims = dObj->getDims();
 
     if (dObj->getType() == tComplex64 || dObj->getType() == tComplex128 ||
         dObj->getType() == tRGBA32)
@@ -2390,10 +2390,10 @@ RetVal devValue(
 {
     ito::RetVal retval = ito::retOk;
 
-    int dims = dObj->getDims();
-
-    if (dObj == NULL || dims == 0)
+    if (dObj == NULL || dObj->getDims() == 0)
         return ito::RetVal(retError, 0, "DataObjectPointer is invalid");
+
+    int dims = dObj->getDims();
 
     if (dObj->getType() == tComplex64 || dObj->getType() == tComplex128 ||
         dObj->getType() == tRGBA32)
@@ -2471,14 +2471,13 @@ RetVal devValue(
 RetVal calcCVDFT(
     DataObject* dObjIO, const bool inverse, const bool inverseAsReal, const bool lineWise)
 {
-    unsigned int numMats = dObjIO->getNumPlanes();
     std::string protocol("Applied ");
     ito::RetVal retval(ito::retOk);
 
     bool createNewObj = false;
     bool clearInMat = false;
 
-    if (dObjIO == NULL || dObjIO->getDims() > 2 || numMats != 1)
+    if (dObjIO == NULL || dObjIO->getDims() > 2 || dObjIO->getNumPlanes() != 1)
         return ito::RetVal(
             ito::retError, 0, "DFT-Error: source object empty or not a single plane");
 
