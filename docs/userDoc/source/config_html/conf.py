@@ -24,6 +24,7 @@ _g["__file__"] = _oldFile
 
 # -- HTML specific overrides ---------------------------------------------------
 
+logo = "../../../../Qitom/icons/itomicon/itomLogo4_128.png"
 extensions += ["sphinx_favicon", "sphinx_copybutton"]
 
 toc_object_entries = True

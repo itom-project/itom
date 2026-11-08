@@ -269,12 +269,17 @@ bool CheckableComboBox::eventFilter(QObject *o, QEvent *e)
     case QEvent::MouseButtonRelease:
       {
       QMouseEvent *m = static_cast<QMouseEvent *>(e);
+      // Use the item under the mouse cursor. The current index of the view is not
+      // changed by a click on a disabled item, such that toggling the current index
+      // would toggle a different item than the clicked one.
+      const QModelIndex clickedIndex = (o == this->view()->viewport()) ?
+        this->view()->indexAt(m->pos()) : this->view()->currentIndex();
       if (this->view()->isVisible() &&
           this->view()->rect().contains(m->pos()) &&
-          this->view()->currentIndex().isValid()
+          clickedIndex.isValid()
           //&& !blockMouseReleaseTimer.isActive()
-          && (this->view()->currentIndex().flags() & Qt::ItemIsEnabled)
-          && (this->view()->currentIndex().flags() & Qt::ItemIsSelectable))
+          && (clickedIndex.flags() & Qt::ItemIsEnabled)
+          && (clickedIndex.flags() & Qt::ItemIsSelectable))
         {
         // The signal to open the menu is fired when the mouse button is
         // pressed, we don't want to toggle the item under the mouse cursor
@@ -284,8 +289,8 @@ bool CheckableComboBox::eventFilter(QObject *o, QEvent *e)
           // make the item current, it will then call QComboBox::update (and
           // repaint) when the current index data is changed (checkstate
           // toggled fires dataChanged signal which is observed).
-          this->setCurrentIndex(this->view()->currentIndex().row());
-          d->CheckableModelHelper_->toggleCheckState(this->view()->currentIndex());
+          this->setCurrentIndex(clickedIndex.row());
+          d->CheckableModelHelper_->toggleCheckState(clickedIndex);
           }
         d->MouseButtonPressed = false;
         return true;
