@@ -51,3 +51,28 @@ only shrink: fix a test, then remove it from the list. A new failing test must b
   into the test and needs the Qt platform plugin `offscreen` (set by the runner).
 * `AddInManagerTest.General` needs the plugin `DummyMotor` from the separate `plugins` repository and is
   skipped in a build of this repository alone.
+
+## Exported symbols of the public libraries (ABI check)
+
+`AGENTS.md` protects the API and ABI of `itomCommonLib`, `itomCommonQtLib`, `dataobject`, `itomShapeLib` and
+`itomCommonPlotLib`, because the plugins are compiled against them. `check_exported_symbols.py` reads the
+exported symbols of these libraries with `nm -D` and compares them with the reference lists in `abi/`:
+
+| Situation | Result |
+|---|---|
+| a strong symbol (out-of-line function or data) of the reference is missing | check fails (ABI break) |
+| a weak symbol (template instantiation, inline function, vtable) is missing | notice, compiler dependent |
+| a new symbol is exported | notice, the API may grow |
+
+Only symbols of the namespace `ito`, of the exported classes in the global namespace and C functions are
+compared; `std`, OpenCV, Qt and compiler runtime symbols are ignored. The reference files are named after
+the platform (`<library>.linux-x86_64.txt`).
+
+When a symbol was added on purpose, or removed in a major version, update the reference and commit the
+diff together with the change:
+
+```sh
+python3 itom_unittests/ci/check_exported_symbols.py --build-dir build --reference itom_unittests/ci/abi --update
+```
+
+The check runs on Linux only. On Windows `dumpbin /exports` would be needed; this is not automated yet.

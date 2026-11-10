@@ -67,8 +67,8 @@ jobs:
             -DBUILD_QTVERSION=Qt6 \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
 
-      - name: Build the unittests
-        run: cmake --build build --parallel $(nproc) --target $UNITTEST_TARGETS
+      - name: Build the unittests and the public libraries
+        run: cmake --build build --parallel $(nproc) --target $UNITTEST_TARGETS itomCommonPlotLib
 
       - name: Run the unittests
         run: >
@@ -76,6 +76,16 @@ jobs:
           --build-dir build
           --known itom_unittests/ci/known_failures_linux.txt
           --json-dir test-results
+
+      # The exported symbols of the public libraries are compared with itom_unittests/ci/abi.
+      # A removed symbol breaks the plugins (AGENTS.md: no API/ABI breaks). New symbols are only
+      # reported; update the reference files with --update when the change is intended.
+      - name: Check the exported symbols of the public libraries (ABI)
+        if: always()
+        run: >
+          python3 itom_unittests/ci/check_exported_symbols.py
+          --build-dir build
+          --reference itom_unittests/ci/abi
 
       - name: Upload the test results
         if: always()
