@@ -33,6 +33,9 @@
 #include <qdrag.h>
 #include <qfontmetrics.h>
 #include <qmainwindow.h>
+#include <qmenubar.h>
+#include <qstatusbar.h>
+#include <qtoolbar.h>
 #include <qmimedata.h>
 #include <qpainter.h>
 #include <qpalette.h>
@@ -174,6 +177,64 @@ void DockDragDropController::hideIndicator()
 }
 
 //-------------------------------------------------------------------------------------
+//! returns the global rectangle of the docking region of the main window.
+/*!
+    This is the rectangle of the main window without the menu bar, the tool bars, that are
+    docked to the main window, and the status bar.
+*/
+static QRect dockRegionGlobalRect(const QMainWindow* mw, const QRect& mainRect)
+{
+    int left = mainRect.left();
+    int right = mainRect.right();
+    int top = mainRect.top();
+    int bottom = mainRect.bottom();
+
+    QMenuBar* menu = mw->menuBar();
+
+    if (menu && menu->isVisible())
+    {
+        top = qMax(top, menu->mapToGlobal(QPoint(0, menu->height())).y());
+    }
+
+    QStatusBar* status = mw->statusBar();
+
+    if (status && status->isVisible())
+    {
+        bottom = qMin(bottom, status->mapToGlobal(QPoint(0, 0)).y() - 1);
+    }
+
+    foreach (QToolBar* tb, mw->findChildren<QToolBar*>())
+    {
+        // toolBarArea is NoToolBarArea for tool bars, that are not managed by the main window
+        if (!tb->isVisible() || tb->isFloating())
+        {
+            continue;
+        }
+
+        switch (mw->toolBarArea(tb))
+        {
+        case Qt::TopToolBarArea:
+            top = qMax(top, tb->mapToGlobal(QPoint(0, tb->height())).y());
+            break;
+        case Qt::BottomToolBarArea:
+            bottom = qMin(bottom, tb->mapToGlobal(QPoint(0, 0)).y() - 1);
+            break;
+        case Qt::LeftToolBarArea:
+            left = qMax(left, tb->mapToGlobal(QPoint(tb->width(), 0)).x());
+            break;
+        case Qt::RightToolBarArea:
+            right = qMin(right, tb->mapToGlobal(QPoint(0, 0)).x() - 1);
+            break;
+        default:
+            break;
+        }
+    }
+
+    const QRect region(QPoint(left, top), QPoint(right, bottom));
+    return region.isValid() ? region : mainRect;
+}
+
+//-------------------------------------------------------------------------------------
 //! finds the drop target at the given global position.
 /*!
     If exclude is nullptr, a script tab is dragged. Then all script windows (docked or
@@ -301,37 +362,53 @@ DockDropTarget DockDragDropController::findTarget(
         return target;
     }
 
-    // docking areas at the edges of the main window
+    // docking areas at the edges of the docking region of the main window (without menu bar,
+    // tool bars and status bar). The area is selected by the nearest edge, relative to the
+    // width of the zone of this edge. Therefore, all four areas can be reached, also in the corners.
+    const QRect areaRect = dockRegionGlobalRect(mw, mainRect);
     const double bandFactor = windowDrag ? 0.06 : 0.18;
-    const int bandX = qMax(windowDrag ? 40 : 0, (int)(mainRect.width() * bandFactor));
-    const int bandY = qMax(windowDrag ? 40 : 0, (int)(mainRect.height() * bandFactor));
-    QRect indicator = mainRect;
+    const int bandX = qMax(windowDrag ? 40 : 1, (int)(areaRect.width() * bandFactor));
+    const int bandY = qMax(windowDrag ? 40 : 1, (int)(areaRect.height() * bandFactor));
+    QRect indicator = areaRect;
 
-    if (globalPos.x() < mainRect.left() + bandX)
+    double bestScore = 1.0; // a zone is hit, if the distance to its edge is smaller than its band
+    const auto consider = [&](Qt::DockWidgetArea area, int distance, int band) {
+        const double score = (double)distance / (double)band;
+
+        if (score < bestScore)
+        {
+            bestScore = score;
+            target.area = area;
+        }
+    };
+
+    consider(Qt::LeftDockWidgetArea, globalPos.x() - areaRect.left(), bandX);
+    consider(Qt::RightDockWidgetArea, areaRect.right() - globalPos.x(), bandX);
+    consider(Qt::TopDockWidgetArea, globalPos.y() - areaRect.top(), bandY);
+    consider(Qt::BottomDockWidgetArea, areaRect.bottom() - globalPos.y(), bandY);
+
+    switch (target.area)
     {
-        target.area = Qt::LeftDockWidgetArea;
-        indicator.setWidth(mainRect.width() / 3);
-    }
-    else if (globalPos.x() > mainRect.right() - bandX)
-    {
-        target.area = Qt::RightDockWidgetArea;
-        indicator.setLeft(mainRect.right() - mainRect.width() / 3);
-    }
-    else if (globalPos.y() < mainRect.top() + bandY)
-    {
-        target.area = Qt::TopDockWidgetArea;
-        indicator.setHeight(mainRect.height() / 3);
-    }
-    else if (globalPos.y() > mainRect.bottom() - bandY)
-    {
-        target.area = Qt::BottomDockWidgetArea;
-        indicator.setTop(mainRect.bottom() - mainRect.height() / 3);
-    }
-    else if (!windowDrag)
-    {
-        // center of the main window: default area for script windows
-        target.area = Qt::TopDockWidgetArea;
-        indicator.setHeight(mainRect.height() / 2);
+    case Qt::LeftDockWidgetArea:
+        indicator.setWidth(areaRect.width() / 3);
+        break;
+    case Qt::RightDockWidgetArea:
+        indicator.setLeft(areaRect.right() - areaRect.width() / 3);
+        break;
+    case Qt::TopDockWidgetArea:
+        indicator.setHeight(areaRect.height() / 3);
+        break;
+    case Qt::BottomDockWidgetArea:
+        indicator.setTop(areaRect.bottom() - areaRect.height() / 3);
+        break;
+    default:
+        if (!windowDrag)
+        {
+            // center of the main window: default area for script windows
+            target.area = Qt::TopDockWidgetArea;
+            indicator.setHeight(areaRect.height() / 2);
+        }
+        break;
     }
 
     if (target.area != Qt::NoDockWidgetArea)
