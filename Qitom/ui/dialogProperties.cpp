@@ -53,6 +53,7 @@
 #include "widgetPropWorkspaceUnpack.h"
 
 #include "../helper/guiHelper.h"
+#include "../languageServer/languageServerManager.h"
 #include "AppManagement.h"
 
 namespace ito {
@@ -539,6 +540,8 @@ void DialogProperties::apply()
     }
 
     QObject* mainApplication = AppManagement::getMainApplication();
+
+    LanguageServerManager::getInstance()->reloadSettings();
 
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
     QMetaObject::invokeMethod(mainApplication, "_propertiesChanged");
