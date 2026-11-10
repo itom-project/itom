@@ -147,6 +147,11 @@ void SliderWidgetPrivate::synchronizeSiblingWidth(int width)
 {
   Q_UNUSED(width);
   Q_Q(const SliderWidget);
+  if (!q->parent())
+    {
+    // a widget without parent has no siblings
+    return;
+    }
   QList<SliderWidget*> siblings =
     q->parent()->findChildren<SliderWidget*>();
   foreach(SliderWidget* sibling, siblings)
@@ -165,6 +170,11 @@ void SliderWidgetPrivate::synchronizeSiblingDecimals(int decimals)
 {
   Q_UNUSED(decimals);
   Q_Q(const SliderWidget);
+  if (!q->parent())
+    {
+    // a widget without parent has no siblings
+    return;
+    }
   QList<SliderWidget*> siblings =
     q->parent()->findChildren<SliderWidget*>();
   foreach(SliderWidget* sibling, siblings)
