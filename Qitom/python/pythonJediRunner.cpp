@@ -139,7 +139,7 @@ bool PythonJediRunner::tryToLoadJediIfNotYetDone()
 }
 
 //-------------------------------------------------------------------------------------
-void PythonJediRunner::addCalltipRequest(const JediCalltipRequest& request)
+void PythonJediRunner::addCalltipRequest(const CalltipRequest& request)
 {
     if (!m_threadPool.isNull())
     {
@@ -156,7 +156,7 @@ void PythonJediRunner::addCalltipRequest(const JediCalltipRequest& request)
 }
 
 //-------------------------------------------------------------------------------------
-void PythonJediRunner::addCompletionRequest(const JediCompletionRequest& request)
+void PythonJediRunner::addCompletionRequest(const CompletionRequest& request)
 {
     if (!m_threadPool.isNull())
     {
@@ -173,7 +173,7 @@ void PythonJediRunner::addCompletionRequest(const JediCompletionRequest& request
 }
 
 //-------------------------------------------------------------------------------------
-void PythonJediRunner::addGoToAssignmentRequest(const JediAssignmentRequest& request)
+void PythonJediRunner::addGoToAssignmentRequest(const AssignmentRequest& request)
 {
     if (!m_threadPool.isNull())
     {
@@ -190,7 +190,7 @@ void PythonJediRunner::addGoToAssignmentRequest(const JediAssignmentRequest& req
 }
 
 //-------------------------------------------------------------------------------------
-void PythonJediRunner::addGetHelpRequest(const JediGetHelpRequest& request)
+void PythonJediRunner::addGetHelpRequest(const GetHelpRequest& request)
 {
     if (!m_threadPool.isNull())
     {
@@ -207,7 +207,7 @@ void PythonJediRunner::addGetHelpRequest(const JediGetHelpRequest& request)
 }
 
 //-------------------------------------------------------------------------------------
-void PythonJediRunner::addRenameRequest(const JediRenameRequest& request)
+void PythonJediRunner::addRenameRequest(const RenameRequest& request)
 {
     if (!m_threadPool.isNull())
     {
@@ -235,7 +235,7 @@ void CompletionRunnable::run()
         return;
     }
 
-    QVector<ito::JediCompletion> completions;
+    QVector<ito::CompletionItem> completions;
 
     PyGILState_STATE gstate = PyGILState_Ensure();
 
@@ -296,7 +296,7 @@ void CompletionRunnable::run()
                         QStringList tooltipList =
                             PythonQtConversion::PyObjToStringList(tooltips, false, ok);
 
-                        completions.append(ito::JediCompletion(
+                        completions.append(ito::CompletionItem(
                             QLatin1String(calltip),
                             tooltipList,
                             QLatin1String(icon),
@@ -343,7 +343,7 @@ void CompletionRunnable::run()
             Q_ARG(int, m_request.m_line),
             Q_ARG(int, m_request.m_col),
             Q_ARG(int, m_request.m_requestId),
-            Q_ARG(QVector<ito::JediCompletion>, completions));
+            Q_ARG(QVector<ito::CompletionItem>, completions));
     }
 
     endRun();
@@ -359,7 +359,7 @@ void GoToAssignmentRunnable::run()
         return;
     }
 
-    QVector<ito::JediAssignment> assignments;
+    QVector<ito::AssignmentItem> assignments;
 
     PyGILState_STATE gstate = PyGILState_Ensure();
 
@@ -423,7 +423,7 @@ void GoToAssignmentRunnable::run()
                                 lineOffset = 0;
                             }
                         }
-                        assignments.append(ito::JediAssignment(
+                        assignments.append(ito::AssignmentItem(
                             filepath2.canonicalFilePath(),
                             line - lineOffset,
                             column,
@@ -465,7 +465,7 @@ void GoToAssignmentRunnable::run()
         QMetaObject::invokeMethod(
             s,
             m_request.m_callbackFctName.constData(),
-            Q_ARG(QVector<ito::JediAssignment>, assignments));
+            Q_ARG(QVector<ito::AssignmentItem>, assignments));
     }
 
     endRun();
@@ -481,7 +481,7 @@ void CalltipRunnable::run()
         return;
     }
 
-    QVector<ito::JediCalltip> calltips;
+    QVector<ito::CalltipItem> calltips;
 
     PyGILState_STATE gstate = PyGILState_Ensure();
 
@@ -543,7 +543,7 @@ void CalltipRunnable::run()
 
                     if (ok)
                     {
-                        calltips.append(ito::JediCalltip(
+                        calltips.append(ito::CalltipItem(
                             QLatin1String(calltipMethodName),
                             params,
                             column,
@@ -589,7 +589,7 @@ void CalltipRunnable::run()
     if (s && m_request.m_callbackFctName != "")
     {
         QMetaObject::invokeMethod(
-            s, m_request.m_callbackFctName.constData(), Q_ARG(QVector<ito::JediCalltip>, calltips));
+            s, m_request.m_callbackFctName.constData(), Q_ARG(QVector<ito::CalltipItem>, calltips));
     }
 
     endRun();
@@ -605,7 +605,7 @@ void GetHelpRunnable::run()
         return;
     }
 
-    QVector<ito::JediGetHelp> helps;
+    QVector<ito::HelpItem> helps;
 
     PyGILState_STATE gstate = PyGILState_Ensure();
 
@@ -657,7 +657,7 @@ void GetHelpRunnable::run()
 
                     if (ok)
                     {
-                        helps.append(ito::JediGetHelp(description, tooltips));
+                        helps.append(ito::HelpItem(description, tooltips));
                     }
                 }
                 else
@@ -691,7 +691,7 @@ void GetHelpRunnable::run()
     if (s && m_request.m_callbackFctName != "")
     {
         QMetaObject::invokeMethod(
-            s, m_request.m_callbackFctName.constData(), Q_ARG(QVector<ito::JediGetHelp>, helps));
+            s, m_request.m_callbackFctName.constData(), Q_ARG(QVector<ito::HelpItem>, helps));
     }
 
     endRun();
@@ -708,7 +708,7 @@ void RenameRunnable::run()
         return;
     }
 
-    QVector<ito::JediRename> renameList;
+    QVector<ito::RenameFileChanges> renameList;
     bool success = false;
     QString errorText;
     QString mainFile = QFileInfo(m_request.m_filepath).canonicalFilePath();
@@ -760,7 +760,7 @@ void RenameRunnable::run()
 
                             if (ok)
                             {
-                                JediRename fileToChange;
+                                RenameFileChanges fileToChange;
                                 fileToChange.m_fileInProject = (fileInProjectRef == Py_True);
 
                                 if (m_request.m_untitledFile && filePath == QDir::cleanPath(m_request.m_filepath))
@@ -789,7 +789,7 @@ void RenameRunnable::run()
 
                                 for (int idx = 0; idx < lines.size(); ++idx)
                                 {
-                                    FileRenameItem item;
+                                    RenameTextItem item;
                                     item.lineNumber = lines[idx];
                                     item.startColumnIndex = columns[idx];
                                     item.oldWordSize = values[idx].size();
@@ -841,7 +841,7 @@ void RenameRunnable::run()
         QMetaObject::invokeMethod(
             s,
             m_request.m_callbackFctName.constData(),
-            Q_ARG(QVector<ito::JediRename>, renameList),
+            Q_ARG(QVector<ito::RenameFileChanges>, renameList),
             Q_ARG(QString, oldValue),
             Q_ARG(bool, success),
             Q_ARG(QString, errorText)

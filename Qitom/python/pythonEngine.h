@@ -31,7 +31,7 @@
 //    #define NO_IMPORT_ARRAY
 //#endif
 
-#include "pythonJedi.h"
+#include "../languageServer/languageServerTypes.h"
 
 #ifndef Q_MOC_RUN
     #include "pythonWrapper.h"
@@ -139,7 +139,6 @@ public:
     void pythonRunFunction(PyObject *callable, PyObject *argTuple, bool gilExternal = false);
     inline PyObject *getGlobalDictionary()  const { return m_pGlobalDictionary;  }  /*!< returns reference to main dictionary (main workspace) */
     inline bool pySyntaxCheckAvailable() const { return (m_pyModCodeChecker != NULL); }
-    bool tryToLoadJediIfNotYetDone(); //returns true, if Jedi is already loaded or could be loaded; else false
 
     //!< parses a (multiline) python string and returns the line numbers of the start of every major block.
     /* From Python 3.7 on, the AST is parsed to check for the major blocks. Then the encoding is always empty.
@@ -152,20 +151,19 @@ public:
     QString getPythonExecutable() const { return m_pythonExecutable; }
     Qt::HANDLE getPythonThreadId() const { return m_pythonThreadId; }
 
-    //!< thread-safe method (can be called from any thread) to enqueue a jedi completion request
-    void enqueueJediCompletionRequest(const ito::JediCompletionRequest &request);
+    //!< returns the jedi runner, used by the (legacy) jedi language server backend.
+    QSharedPointer<PythonJediRunner> getJediRunner() const { return m_jediRunner; }
 
-    //!< thread-safe method (can be called from any thread) to enqueue a jedi calltip request
-    void enqueueJediCalltipRequest(const ito::JediCalltipRequest &request);
-
-    //!< thread-safe method (can be called from any thread) to enqueue a jedi calltip request
-    void enqueueGoToAssignmentRequest(const ito::JediAssignmentRequest &request);
-
-    //!< thread-safe method (can be called from any thread) to enqueue a jedi get-help request
-    void enqueueJediGetHelpRequest(const ito::JediGetHelpRequest &request);
-
-    //!< thread-safe method (can be called from any thread) to enqueue a jedi rename request
-    void enqueueJediRenameRequest(const ito::JediRenameRequest& request);
+    /**
+     * @brief Get the current sys.path as a list of absolute directory paths.
+     *
+     * This method acquires the Python GIL and reads the current sys.path.
+     * It can be called from any thread. Relative paths are converted to absolute paths
+     * using the current working directory of itom.
+     *
+     * @return List of absolute paths that are on Python's sys.path. Empty if Python is not running.
+     */
+    QStringList getSysPath() const;
 
     static bool isInterruptQueued();
     static const PythonEngine *getInstance();
@@ -383,6 +381,14 @@ signals:
     void pythonModifyLocalDict(PyObject* localDict, ItomSharedSemaphore* semaphore);
     void pythonModifyGlobalDict(PyObject* globalDict, ItomSharedSemaphore* semaphore);
     void pythonCurrentDirChanged();
+    /**
+     * @brief Emitted when Python transitions to idle state.
+     *
+     * This signal is emitted after a script finishes running or after debugging ends,
+     * when Python returns to its idle state. It can be used to update caches that
+     * depend on Python's state, such as sys.path-based workspace folders in a language server.
+     */
+    void pythonIdleStateEntered();
     void updateCallStack(QStringList filenames, IntList lines, QStringList methods);
     void deleteCallStack();
 

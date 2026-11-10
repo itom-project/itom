@@ -23,7 +23,8 @@
 
 #include "pyCodeReferenceRenamer.h"
 #include "../python/pythonEngine.h"
-#include "../python/pythonJedi.h"
+#include "../languageServer/languageServerTypes.h"
+#include "../languageServer/languageServerManager.h"
 #include "AppManagement.h"
 #include "codeEditor.h"
 #include "delegates/htmlItemDelegate.h"
@@ -50,7 +51,7 @@ namespace ito {
 
 //-------------------------------------------------------------------------------------
 PyCodeReferenceRenamer::PyCodeReferenceRenamer(QWidget* parent) :
-    QObject(parent), m_pParent(parent), m_pPythonEngine(nullptr), m_renameDialog(nullptr),
+    m_pPythonEngine(nullptr), m_pConnectedBackend(nullptr), m_pendingRequestId(-1), m_renameDialog(nullptr),
     m_newNameUserInput(nullptr), m_treeWidgetReferences(nullptr), m_dialogButtonBox(nullptr)
 {
     m_pPythonEngine = AppManagement::getPythonEngine();
@@ -134,11 +135,54 @@ PyCodeReferenceRenamer::~PyCodeReferenceRenamer()
 ito::RetVal PyCodeReferenceRenamer::rename(
     const int& line, const int& column, const QString& filepath)
 {
-    PythonEngine* pyEng = (PythonEngine*)m_pPythonEngine;
+    ILanguageServerBackend* backend = LanguageServerManager::getInstance()->activeBackend();
 
-    if (pyEng)
+    if (!backend && !m_waitingForBackend)
     {
-        if (pyEng->tryToLoadJediIfNotYetDone())
+        // the backend might still be initializing: wait for it
+        m_waitingForBackend = true;
+
+        LanguageServerManager::getInstance()->runWhenBackendReady(
+            this,
+            [this, line, column, filepath](ILanguageServerBackend* readyBackend)
+        {
+            m_waitingForBackend = false;
+            RetVal retval;
+
+            if (readyBackend)
+            {
+                retval = startRename(readyBackend, line, column, filepath);
+            }
+            else
+            {
+                retval = RetVal(
+                    retError,
+                    CodeYetNotAvailable,
+                    tr("No language server (Jedi or ZubanLS) is available. The rename feature "
+                       "will be disabled.")
+                        .toLatin1()
+                        .data());
+            }
+
+            if (retval.containsError())
+            {
+                QMessageBox::warning(
+                    m_pParent, tr("Rename"), QLatin1String(retval.errorMessage()));
+            }
+        });
+
+        return ito::retOk;
+    }
+
+    return startRename(backend, line, column, filepath);
+}
+
+//-------------------------------------------------------------------------------------
+ito::RetVal PyCodeReferenceRenamer::startRename(
+    ILanguageServerBackend* backend, const int& line, const int& column, const QString& filepath)
+{
+    if (backend)
+    {
         {
             ScriptEditorOrganizer* seo =
                 qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
@@ -151,17 +195,8 @@ ito::RetVal PyCodeReferenceRenamer::rename(
 
             if (filepath.isNull())
             {
-                // unnamed file --> create a non-existing dummy filename
-                QDir currDir = QDir::currentPath();
-                int idx = 1;
-                QString filenamePattern = "__untitled%1__.py";
-
-                while (currDir.exists(filenamePattern.arg(idx)))
-                {
-                    idx++;
-                }
-
-                m_request.m_filepath = currDir.filePath(filenamePattern.arg(idx));
+                // unnamed file --> use the unique, non-existing dummy filename of the editor
+                m_request.m_filepath = sew->getLanguageServerFilename();
                 m_request.m_fileModified = true;
                 m_request.m_untitledFile = true;
                 m_request.m_untitledName = sew->getUntitledName();
@@ -174,34 +209,73 @@ ito::RetVal PyCodeReferenceRenamer::rename(
                 m_request.m_untitledName = QString();
             }
 
-            m_request.m_callbackFctName = "onJediRenameResultAvailable";
             m_request.m_col = column;
             m_request.m_line = line;
 
-            m_request.m_sender = this;
-            PythonEngine* pyEng = (PythonEngine*)m_pPythonEngine;
+            if (backend != m_pConnectedBackend)
+            {
+                if (m_pConnectedBackend)
+                {
+                    disconnect(
+                        m_pConnectedBackend, &ILanguageServerBackend::renameReady,
+                        this, &PyCodeReferenceRenamer::onRenameReady);
+                }
+
+                connect(
+                    backend, &ILanguageServerBackend::renameReady,
+                    this, &PyCodeReferenceRenamer::onRenameReady);
+                m_pConnectedBackend = backend;
+            }
 
             QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-            pyEng->enqueueJediRenameRequest(m_request);
+            m_pendingRequestId = backend->requestRename(m_request);
+
+            if (m_pendingRequestId < 0)
+            {
+                QApplication::restoreOverrideCursor();
+                return RetVal(
+                    retError,
+                    CodeYetNotAvailable,
+                    tr("The language server is not ready. The rename feature is currently not available.")
+                        .toLatin1()
+                        .data());
+            }
         }
-        else
-        {
-            return RetVal(
-                retError,
-                CodeYetNotAvailable,
-                tr("Python module Jedi is not available or could not be loaded. The rename feature "
-                   "will be disabled.")
-                    .toLatin1()
-                    .data());
-        }
+    }
+    else
+    {
+        return RetVal(
+            retError,
+            CodeYetNotAvailable,
+            tr("No language server (Jedi or ZubanLS) is available. The rename feature "
+               "will be disabled.")
+                .toLatin1()
+                .data());
     }
 
     return ito::retOk;
 }
 
 //-------------------------------------------------------------------
-void PyCodeReferenceRenamer::onJediRenameResultAvailable(
-    const QVector<ito::JediRename>& filesToChange,
+void PyCodeReferenceRenamer::onRenameReady(
+    int requestId,
+    QVector<ito::RenameFileChanges> filesToChange,
+    QString oldValue,
+    bool success,
+    QString errorText)
+{
+    if (requestId < 0 || requestId != m_pendingRequestId)
+    {
+        return;
+    }
+
+    m_pendingRequestId = -1;
+    onRenameResultAvailable(filesToChange, oldValue, success, errorText);
+}
+
+//-------------------------------------------------------------------
+void PyCodeReferenceRenamer::onRenameResultAvailable(
+    const QVector<ito::RenameFileChanges>& filesToChange,
     const QString& oldValue,
     bool success,
     QString errorText)
@@ -345,7 +419,7 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
 
         for (int idx = 0; idx < file.m_items.size(); ++idx)
         {
-            const ito::FileRenameItem& renameItem = file.m_items[idx];
+            const ito::RenameTextItem& renameItem = file.m_items[idx];
             QTreeWidgetItem* lineItem = new QTreeWidgetItem(fileItem);
             lineItem->setData(0, Qt::UserRole, canonicalFilePath);
 
@@ -451,7 +525,7 @@ void PyCodeReferenceRenamer::onApply()
     struct RenameFile
     {
         QString canonicalFileName; // is the file path or the name of the untitled script (fileUntitled = true)
-        QVector<FileRenameItem> items;
+        QVector<RenameTextItem> items;
         bool fileOpened;
         bool mainFile;
         bool fileModified;
@@ -482,7 +556,7 @@ void PyCodeReferenceRenamer::onApply()
                 if (changeItem->checkState(0) == Qt::Checked)
                 {
                     renameFile.items
-                        << changeItem->data(0, RoleFileRenameItem).value<FileRenameItem>();
+                        << changeItem->data(0, RoleFileRenameItem).value<RenameTextItem>();
                 }
             }
 
@@ -650,12 +724,12 @@ void PyCodeReferenceRenamer::onItemDoubleClick(QTreeWidget* treeWidget, QTreeWid
 ito::RetVal PyCodeReferenceRenamer::replaceOccurencesInFile(
     const QString& filePath,
     const QString& newValue,
-    const QVector<ito::FileRenameItem>& renameItems)
+    const QVector<ito::RenameTextItem>& renameItems)
 {
     // sort items by starting with the last one first
-    QVector<ito::FileRenameItem> items = renameItems;
+    QVector<ito::RenameTextItem> items = renameItems;
     std::sort(
-        items.begin(), items.end(), [](const ito::FileRenameItem& a, const ito::FileRenameItem& b) {
+        items.begin(), items.end(), [](const ito::RenameTextItem& a, const ito::RenameTextItem& b) {
             if (a.lineNumber != b.lineNumber)
             {
                 return a.lineNumber >= b.lineNumber;
@@ -687,7 +761,7 @@ ito::RetVal PyCodeReferenceRenamer::replaceOccurencesInFile(
     }
 
     // modify content
-    foreach (const ito::FileRenameItem& item, items)
+    foreach (const ito::RenameTextItem& item, items)
     {
         line = content[item.lineNumber - 1];
         line = line.left(item.startColumnIndex) + newValue +

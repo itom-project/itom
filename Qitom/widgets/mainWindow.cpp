@@ -53,6 +53,7 @@
 #include <qstatusbar.h>
 
 #include "../organizer/scriptEditorOrganizer.h"
+#include "../languageServer/languageServerManager.h"
 
 
 #ifdef ITOM_USEHELPVIEWER
@@ -2734,6 +2735,8 @@ void MainWindow::currentDirectoryChanged()
     {
         m_fileSystemDock->changeBaseDirectory(cd, true);
     }
+
+    LanguageServerManager::notifyCurrentDirectoryChanged(cd);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
