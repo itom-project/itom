@@ -311,6 +311,63 @@ PythonEngine::~PythonEngine()
 }
 
 //-------------------------------------------------------------------------------------
+//! returns true if the global interpreter lock is enabled (always true for non free-threaded builds)
+/*
+    Must be called with the GIL (or thread state) held and after the interpreter has been
+    initialized. Uses sys._is_gil_enabled() (Python 3.13+). If it cannot be evaluated, true is
+    returned.
+*/
+static bool isGilEnabled()
+{
+#ifdef Py_GIL_DISABLED
+    PyObject* sysModule = PyImport_ImportModule("sys"); // new reference
+    bool enabled = true;
+
+    if (sysModule)
+    {
+        PyObject* result = PyObject_CallMethod(sysModule, "_is_gil_enabled", nullptr); // new ref
+
+        if (result)
+        {
+            enabled = PyObject_IsTrue(result) != 0;
+            Py_DECREF(result);
+        }
+        else
+        {
+            PyErr_Clear();
+        }
+
+        Py_DECREF(sysModule);
+    }
+    else
+    {
+        PyErr_Clear();
+    }
+
+    return enabled;
+#else
+    return true;
+#endif
+}
+
+//-------------------------------------------------------------------------------------
+//! returns the string attribute of the sys module (e.g. "prefix", "executable") or an empty string
+/*
+    Must be called with the GIL held and after the interpreter has been initialized.
+*/
+static QString sysStringAttribute(const char* name)
+{
+    PyObject* value = PySys_GetObject(name); // borrowed reference, no exception if missing
+
+    if (value && PyUnicode_Check(value))
+    {
+        return QString::fromUtf8(PyUnicode_AsUTF8(value));
+    }
+
+    return QString();
+}
+
+//-------------------------------------------------------------------------------------
 void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap> infoMessages)
 {
     m_pythonThreadId = QThread::currentThreadId();
@@ -513,18 +570,31 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
         }
 #endif
 
-        //read directory values from Python
-        qDebug() << "Py_GetPythonHome:" << QString::fromWCharArray(Py_GetPythonHome());
-        qDebug() << "Py_GetPath:" << QString::fromWCharArray(Py_GetPath());
-        qDebug() << "Py_GetProgramName:" << QString::fromWCharArray(Py_GetProgramName());
+        // read the directory values from the sys module. Py_GetPythonHome, Py_GetPath and
+        // Py_GetProgramName are deprecated since Python 3.13 (removed in 3.15); the values
+        // are the same as sys.prefix, sys.path and sys.executable.
+        const QString pythonHome = sysStringAttribute("prefix");
+        QStringList pythonPath;
+        PyObject* sysPath = PySys_GetObject("path"); // borrowed
+
+        if (sysPath && PyList_Check(sysPath))
+        {
+            for (Py_ssize_t i = 0; i < PyList_Size(sysPath); ++i)
+            {
+                PyObject* item = PyList_GetItem(sysPath, i); // borrowed
+
+                if (item && PyUnicode_Check(item))
+                {
+                    pythonPath.append(QString::fromUtf8(PyUnicode_AsUTF8(item)));
+                }
+            }
+        }
+
+        qDebug() << "sys.prefix (python home):" << pythonHome;
+        qDebug() << "sys.path:" << pythonPath;
+        qDebug() << "sys.executable:" << sysStringAttribute("executable");
 
         //check PythonHome to prevent crash upon initialization of Python:
-        QString pythonHome = QString::fromWCharArray(Py_GetPythonHome());
-#ifdef WIN32
-        QStringList pythonPath = QString::fromWCharArray(Py_GetPath()).split(";");
-#else
-        QStringList pythonPath = QString::fromWCharArray(Py_GetPath()).split(":");
-#endif
         QDir pythonHomeDir(pythonHome);
         bool pythonPathValid = false;
 
@@ -573,6 +643,38 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
 
         m_itomModule = PyImport_ImportModule("itom");
         m_pyModGC = PyImport_ImportModule("gc"); //new reference
+
+#ifdef Py_GIL_DISABLED
+        // Free-threaded build of Python (3.13+, python3.13t). The thread model of itom relies
+        // on the GIL: the Python code runs in the Python thread, the GUI in the main thread,
+        // and PyGILState_Ensure() is used as the lock that serializes all accesses to Python
+        // objects (see AGENTS.md, rule 5). Without the GIL, these accesses would race.
+        //
+        // The 'itom' module uses single-phase initialization and does not declare
+        // Py_MOD_GIL_NOT_USED, hence Python re-enables the GIL when it is imported (with a
+        // RuntimeWarning). This is intended. Verify it, since this behaviour can be overridden
+        // with PYTHON_GIL=0 or -X gil=0.
+        if (!isGilEnabled())
+        {
+            (*retValue) += RetVal(
+                retError,
+                0,
+                tr("This Python interpreter runs without the global interpreter lock (GIL). "
+                   "itom requires the GIL. Start Python with PYTHON_GIL=1 or use a standard "
+                   "(non free-threaded) build of Python.")
+                    .toLatin1()
+                    .data());
+            return;
+        }
+        else if (infoMessages)
+        {
+            infoMessages->insert(
+                "freeThreadedPython",
+                tr("This is a free-threaded build of Python. The GIL has been re-enabled for "
+                   "itom, which does not support free-threaded operation. Python threads "
+                   "will not run in parallel."));
+        }
+#endif
 
         m_mainModule = PyImport_AddModule("__main__"); // reference to the module __main__ , where code above has been evaluated
 

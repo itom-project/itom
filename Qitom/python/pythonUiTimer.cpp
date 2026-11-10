@@ -26,6 +26,7 @@
 #include "../global.h"
 #include "../organizer/uiOrganizer.h"
 #include "pythonEngineInc.h"
+#include "pythonCompat.h"
 #include "AppManagement.h"
 #include <iostream>
 #include <qvector.h>
@@ -90,10 +91,10 @@ void TimerCallback::timeout()
     }
     else if (m_callableType == CallableType::Callable_Method)
     {
-        PyObject *func = PyWeakref_GetObject(m_function);
-        PyObject *inst = PyWeakref_GetObject(m_boundedInstance);
+        PyObject *func = PythonCompat::weakrefGetRef(m_function); // new ref or NULL
+        PyObject *inst = PythonCompat::weakrefGetRef(m_boundedInstance); // new ref or NULL
 
-        if (func == Py_None || inst == Py_None)
+        if (func == nullptr || inst == nullptr)
         {
             PyErr_SetString(PyExc_RuntimeError, "The python slot method is not longer available");
             PyErr_PrintEx(0);
@@ -114,6 +115,9 @@ void TimerCallback::timeout()
 
             Py_XDECREF(method);
         }
+
+        Py_XDECREF(func);
+        Py_XDECREF(inst);
     }
     else if (m_callableType == CallableType::Callable_CFunction)
     {
