@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>533</width>
+    <width>491</width>
     <height>255</height>
    </rect>
   </property>
@@ -17,7 +17,7 @@
    <item>
     <widget class="QGroupBox" name="groupGotoDefinition">
      <property name="title">
-      <string>Go to definition and assignment enabled (requires Python packages jedi and parso)</string>
+      <string>Go to definition and assignment enabled</string>
      </property>
      <property name="checkable">
       <bool>true</bool>
@@ -90,7 +90,10 @@
       <item>
        <widget class="QLabel" name="label_2">
         <property name="text">
-         <string>Press F12 to goto definition of word under the current cursor position</string>
+         <string>Press F12 to goto definition of word under the current cursor position. The result is provided by the active language assistance backend (configured in Editor - General). For Jedi, the Python packages jedi and parso are required.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
         </property>
        </widget>
       </item>

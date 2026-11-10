@@ -44,6 +44,7 @@
 #include "../../widgets/scriptEditorWidget.h"
 
 #include "python/pythonEngine.h"
+#include "languageServer/languageServerManager.h"
 
 #include <qdir.h>
 #include <qtooltip.h>
@@ -54,7 +55,11 @@ PyCalltipsMode::PyCalltipsMode(const QString &name, const QString &description /
     Mode(name, description),
     QObject(parent),
     m_pPythonEngine(NULL),
-    m_requestCount(0)
+    m_pConnectedBackend(NULL),
+    m_pendingCalltipId(-1),
+    m_hasDeferredRequest(false),
+    m_deferredLine(-1),
+    m_deferredCol(-1)
 {
     m_pPythonEngine = AppManagement::getPythonEngine();
 
@@ -87,26 +92,41 @@ void PyCalltipsMode::onStateChanged(bool state)
 {
     if (m_pPythonEngine)
     {
+        // The calltip is triggered by the key press event (after the character has
+        // been inserted into the document) and not by the key release event:
+        // 1. If the code completion popup is visible, the key press is forwarded
+        //    to the editor by the QCompleter, but the key release is swallowed by
+        //    the popup and never reaches the editor.
+        // 2. The release event of '(' is reported as Qt::Key_ParenLeft only if the
+        //    shift key is still pressed. If shift is released first (common when
+        //    typing fast), the release event carries the unshifted key (e.g.
+        //    Qt::Key_8 or Qt::Key_9 depending on the keyboard layout).
         if (state)
         {
-            connect(editor(), SIGNAL(keyReleased(QKeyEvent*)), this, SLOT(onKeyReleased(QKeyEvent*)));
+            connect(editor(), SIGNAL(postKeyPressed(QKeyEvent*)), this, SLOT(onPostKeyPressed(QKeyEvent*)));
         }
         else
         {
-            disconnect(editor(), SIGNAL(keyReleased(QKeyEvent*)), this, SLOT(onKeyReleased(QKeyEvent*)));
+            disconnect(editor(), SIGNAL(postKeyPressed(QKeyEvent*)), this, SLOT(onPostKeyPressed(QKeyEvent*)));
         }
     }
 }
 
 //----------------------------------------------------------
 /*
-Auto indent if the released key is the return key.
+Requests a calltip, if the typed character is an opening bracket or a comma.
+The character is already inserted into the document, when this slot is called.
 :param event: the key event
 */
-void PyCalltipsMode::onKeyReleased(QKeyEvent *e)
+void PyCalltipsMode::onPostKeyPressed(QKeyEvent *e)
 {
+    // compare the text, too, since the key depends on the keyboard layout and
+    // on the modifier state.
+    const QString text = e->text();
+
     if (e->key() == Qt::Key_ParenLeft || \
-            e->key() == Qt::Key_Comma)
+            e->key() == Qt::Key_Comma || \
+            text == "(" || text == ",")
     {
         QTextCursor tc = editor()->textCursor();
         int line = tc.blockNumber();
@@ -153,41 +173,129 @@ void PyCalltipsMode::onKeyReleased(QKeyEvent *e)
 //--------------------------------------------------------------------------------
 void PyCalltipsMode::requestCalltip(const QString &source, int line, int col, const QString &encoding)
 {
-    PythonEngine *pyEng = (PythonEngine*)m_pPythonEngine;
+    // Pending requests are not awaited: a new request always replaces the previous
+    // one (its result is dropped in onCalltipReady, since m_pendingCalltipId is
+    // updated). Otherwise a lost response (e.g. a restarted language server) would
+    // block all further calltips.
+    ILanguageServerBackend* backend = LanguageServerManager::getInstance()->activeBackend();
 
-    if (pyEng && (m_requestCount == 0))
+    if (!backend)
     {
-        ScriptEditorWidget *sew = qobject_cast<ScriptEditorWidget*>(editor());
-        QString filename;
-        if (sew)
-        {
-            filename = sew->getFilename();
-        }
-
-        if (filename == "")
-        {
-            filename = QDir::cleanPath(QDir::current().absoluteFilePath("__temporaryfile__.py"));
-        }
-
-        if (pyEng->tryToLoadJediIfNotYetDone())
-        {
-            m_requestCount += 1;
-
-            ito::JediCalltipRequest request;
-            request.m_callbackFctName = "onJediCalltipResultAvailable";
-            request.m_col = col;
-            request.m_line = line;
-            request.m_path = filename;
-            request.m_sender = this;
-            request.m_source = source;
-
-            pyEng->enqueueJediCalltipRequest(request);
-        }
-        else
-        {
-            onStateChanged(false);
-        }
+        // The backend is created lazily and it might be initialized asynchronously
+        // (the zuban language server for instance is an external process). In this
+        // case activeBackend() returns nullptr for the moment and the manager emits
+        // backendChanged() as soon as the backend is ready. Therefore remember this
+        // request and re-issue it at that time instead of disabling the calltips.
+        deferCalltipRequest(source, line, col, encoding);
+        return;
     }
+
+    AbstractCodeEditorWidget *acew = qobject_cast<AbstractCodeEditorWidget*>(editor());
+    QString filename;
+
+    if (acew)
+    {
+        filename = acew->getLanguageServerFilename();
+    }
+
+    connectToBackend(backend);
+
+    ito::CalltipRequest request;
+    request.m_col = col;
+    request.m_line = line;
+    request.m_path = filename;
+    request.m_source = source;
+
+    int requestId = backend->requestCalltip(request);
+
+    if (requestId >= 0)
+    {
+        m_pendingCalltipId = requestId;
+    }
+}
+
+//--------------------------------------------------------------------------------
+void PyCalltipsMode::deferCalltipRequest(const QString &source, int line, int col, const QString &encoding)
+{
+    // only the most recent request is kept, since an outdated calltip must not be shown.
+    m_deferredSource = source;
+    m_deferredEncoding = encoding;
+    m_deferredLine = line;
+    m_deferredCol = col;
+    m_hasDeferredRequest = true;
+
+    if (!m_backendChangedConnection)
+    {
+        m_backendChangedConnection = connect(
+            LanguageServerManager::getInstance(), &LanguageServerManager::backendChanged,
+            this, &PyCalltipsMode::onBackendChanged);
+    }
+}
+
+//--------------------------------------------------------------------------------
+void PyCalltipsMode::onBackendChanged()
+{
+    if (!m_hasDeferredRequest)
+    {
+        return;
+    }
+
+    const QString source = m_deferredSource;
+    const QString encoding = m_deferredEncoding;
+    const int line = m_deferredLine;
+    const int col = m_deferredCol;
+
+    m_hasDeferredRequest = false;
+    m_deferredSource.clear();
+    m_deferredEncoding.clear();
+    m_deferredLine = -1;
+    m_deferredCol = -1;
+
+    // the initialization of the backend may have taken a while, hence only show a
+    // calltip, if the user is still typing in this editor.
+    if (!editor() || !editor()->hasFocus())
+    {
+        return;
+    }
+
+    requestCalltip(source, line, col, encoding);
+}
+
+//--------------------------------------------------------------------------------
+void PyCalltipsMode::connectToBackend(ILanguageServerBackend* backend)
+{
+    if (backend == m_pConnectedBackend)
+    {
+        return;
+    }
+
+    if (m_pConnectedBackend)
+    {
+        disconnect(
+            m_pConnectedBackend, &ILanguageServerBackend::calltipReady,
+            this, &PyCalltipsMode::onCalltipReady);
+    }
+
+    connect(
+        backend, &ILanguageServerBackend::calltipReady,
+        this, &PyCalltipsMode::onCalltipReady);
+
+    m_pConnectedBackend = backend;
+}
+
+//--------------------------------------------------------------------------------
+void PyCalltipsMode::onCalltipReady(int requestId, QVector<ito::CalltipItem> calltips)
+{
+    // every mode is connected to the same backend, therefore only handle
+    // the result, that belongs to the request of this instance.
+    if (requestId < 0 || requestId != m_pendingCalltipId)
+    {
+        return;
+    }
+
+    m_pendingCalltipId = -1;
+
+    onCalltipResultAvailable(calltips);
 }
 
 //--------------------------------------------------------------------------------
@@ -212,7 +320,7 @@ bool PyCalltipsMode::isLastChardEndOfWord() const
 }
 
 //--------------------------------------------------------------------------------
-QString parseCalltip(const ito::JediCalltip &tip, bool compactLayout)
+QString parseCalltip(const ito::CalltipItem &tip, bool compactLayout)
 {
     if (tip.m_calltipParams.size() == 0)
     {
@@ -289,16 +397,24 @@ QString parseCalltip(const ito::JediCalltip &tip, bool compactLayout)
 }
 
 //--------------------------------------------------------------------------------
-void PyCalltipsMode::onJediCalltipResultAvailable(QVector<ito::JediCalltip> calltips)
+void PyCalltipsMode::onCalltipResultAvailable(QVector<ito::CalltipItem> calltips)
 {
-     m_requestCount--;
+    // drop calltips without any content (e.g. the language server returned no
+    // signature). An empty tooltip "()" must not be shown.
+    for (int idx = calltips.size() - 1; idx >= 0; --idx)
+    {
+        if (calltips[idx].m_calltipMethodName.isEmpty() && calltips[idx].m_calltipParams.isEmpty())
+        {
+            calltips.remove(idx);
+        }
+    }
 
-    if (isLastChardEndOfWord() || calltips.size() == 0)
+    if (!editor() || isLastChardEndOfWord() || calltips.size() == 0)
     {
         return;
     }
 
-    JediCalltip first_calltip = calltips[0];
+    CalltipItem first_calltip = calltips[0];
 
     QString text;
 
@@ -308,12 +424,12 @@ void PyCalltipsMode::onJediCalltipResultAvailable(QVector<ito::JediCalltip> call
         // in a new line
         int noLines = calltips.size();
 
-        foreach (const JediCalltip& tip, calltips)
+        foreach (const CalltipItem& tip, calltips)
         {
             noLines += tip.m_calltipParams.size();
         }
 
-        foreach(const JediCalltip &tip, calltips)
+        foreach(const CalltipItem &tip, calltips)
         {
             // newline not necessary, since each calltip is in a <p>...</p> block
             text.append(parseCalltip(tip, noLines > 20));

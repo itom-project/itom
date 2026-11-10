@@ -23,7 +23,9 @@
 
 #pragma once
 
-#include "../python/pythonJedi.h"
+#include "../languageServer/languageServerTypes.h"
+#include "../languageServer/languageServerBackend.h"
+#include <qpointer.h>
 #include <qabstractbutton.h>
 #include <qdialog.h>
 #include <qdialogbuttonbox.h>
@@ -56,11 +58,17 @@ public:
 
 private:
     QObject* m_pPythonEngine;
+    QPointer<ILanguageServerBackend> m_pConnectedBackend;
+    bool m_waitingForBackend = false;
+
+    RetVal startRename(
+        ILanguageServerBackend* backend, const int& line, const int& column, const QString& filepath);
+    int m_pendingRequestId;
     QDialog* m_renameDialog;
     QLineEdit* m_newNameUserInput;
     QTreeWidget* m_treeWidgetReferences;
     QDialogButtonBox* m_dialogButtonBox;
-    ito::JediRenameRequest m_request;
+    ito::RenameRequest m_request;
     QWidget* m_pParent;
 
     enum RenamerRole
@@ -76,8 +84,14 @@ private:
     QStringList readFirstNLinesFromFile(const QString& filepath, int n) const;
 
 private slots:
-    void onJediRenameResultAvailable(
-        const QVector<ito::JediRename>& filesToChange,
+    void onRenameReady(
+        int requestId,
+        QVector<ito::RenameFileChanges> filesToChange,
+        QString oldValue,
+        bool success,
+        QString errorText);
+    void onRenameResultAvailable(
+        const QVector<ito::RenameFileChanges>& filesToChange,
         const QString& oldValue,
         bool success,
         QString errorText);
@@ -92,7 +106,7 @@ private slots:
     ito::RetVal replaceOccurencesInFile(
         const QString& filePath,
         const QString& newValue,
-        const QVector<ito::FileRenameItem>& renameItems);
+        const QVector<ito::RenameTextItem>& renameItems);
 
 signals:
 };
