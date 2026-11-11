@@ -128,7 +128,8 @@ MainApplication::MainApplication(tGuiType guiType) :
     m_pyThread(nullptr), m_pyEngine(nullptr), m_pyStatePublisher(nullptr),
     m_scriptEditorOrganizer(nullptr), m_mainWin(nullptr), m_paletteOrganizer(nullptr),
     m_uiOrganizer(nullptr), m_designerWidgetOrganizer(nullptr), m_processOrganizer(nullptr),
-    m_pSplashScreen(nullptr), m_splashScreenTextColor(Qt::white), m_pQout(nullptr), m_pQerr(nullptr)
+    m_projectOrganizer(nullptr), m_projectSession(nullptr), m_pSplashScreen(nullptr),
+    m_splashScreenTextColor(Qt::white), m_pQout(nullptr), m_pQerr(nullptr)
 {
     m_guiType = guiType;
     MainApplication::mainApplicationInstance = this;
@@ -405,7 +406,9 @@ QPixmap MainApplication::getSplashScreenPixmap() const
     \sa PythonEngine, MainWindow, ScriptEditorOrganizer
 */
 void MainApplication::setupApplication(
-    const QStringList& scriptsToOpen, const QStringList& scriptsToExecute)
+    const QStringList& scriptsToOpen,
+    const QStringList& scriptsToExecute,
+    const QString& projectToOpen /*= QString()*/)
 {
     RetVal retValue = retOk;
     RetVal pyRetValue;
@@ -814,6 +817,10 @@ void MainApplication::setupApplication(
     m_processOrganizer = new ProcessOrganizer();
     AppManagement::setProcessOrganizer(qobject_cast<QObject*>(m_processOrganizer));
 
+    m_projectOrganizer = new ProjectOrganizer();
+    AppManagement::setProjectOrganizer(qobject_cast<QObject*>(m_projectOrganizer));
+    connect(this, &MainApplication::propertiesChanged, m_projectOrganizer, &ProjectOrganizer::reloadSettings);
+
     qDebug("MainApplication::setupApplication");
 
     // starting AddInManager
@@ -958,6 +965,10 @@ void MainApplication::setupApplication(
     m_scriptEditorOrganizer = new ScriptEditorOrganizer(m_mainWin != nullptr);
     AppManagement::setScriptEditorOrganizer(
         m_scriptEditorOrganizer); // qobject_cast<QObject*>(scriptEditorOrganizer);
+
+    // the session must be created after the script editor organizer, since it saves and
+    // restores the open scripts per project
+    m_projectSession = new ProjectSession(m_projectOrganizer);
 
     qDebug("..script editor started");
 
@@ -1112,6 +1123,34 @@ void MainApplication::setupApplication(
     settings->beginGroup("CurrentStatus");
     QString currentDir = (settings->value("currentDir", QDir::currentPath()).toString());
     settings->endGroup();
+
+    // project to open at start: command line, or the last project (if enabled)
+    QString startProject = projectToOpen;
+
+    if (startProject.isEmpty() && m_projectOrganizer && m_projectOrganizer->reopenLastProject())
+    {
+        startProject = m_projectOrganizer->lastProject();
+    }
+
+    if (!startProject.isEmpty())
+    {
+        if (!QFileInfo(startProject).isFile())
+        {
+            std::cerr << "The project file '" << startProject.toLatin1().data() << "' does not exist.\n" << std::endl;
+            startProject.clear();
+        }
+        else if (m_projectOrganizer && m_projectOrganizer->setWorkingDirectoryOnOpen())
+        {
+            // the autostart scan below sets the current directory in the python thread
+            // afterwards; use the working directory of the project there, too.
+            ProjectFile project;
+
+            if (!project.load(startProject).containsError() && QFileInfo(project.workingDirectory()).isDir())
+            {
+                currentDir = project.workingDirectory();
+            }
+        }
+    }
     DELETE_AND_SET_NULL(settings);
 
     m_pSplashScreen->showMessage(
@@ -1122,6 +1161,17 @@ void MainApplication::setupApplication(
 
     // force python to scan and run files in autostart folder in itom-packages folder
     QMetaObject::invokeMethod(m_pyEngine, "scanAndRunAutostartFolder", Q_ARG(QString, currentDir));
+
+    if (!startProject.isEmpty() && m_projectOrganizer)
+    {
+        RetVal projectRet = m_projectOrganizer->openProject(startProject);
+
+        if (projectRet.containsError())
+        {
+            std::cerr << "The project '" << startProject.toLatin1().data() << "' could not be opened: "
+                      << projectRet.errorMessage() << "\n" << std::endl;
+        }
+    }
 
     ////since autostart-files could have changed current directory, re-change it to the value of the
     /// settings-file
@@ -1235,6 +1285,10 @@ void MainApplication::finalizeApplication()
     DELETE_AND_SET_NULL(m_pyThread);
 
     AddInManager::closeInstance();
+
+    DELETE_AND_SET_NULL(m_projectSession);
+    DELETE_AND_SET_NULL(m_projectOrganizer);
+    AppManagement::setProjectOrganizer(NULL);
 
     DELETE_AND_SET_NULL(m_processOrganizer);
     AppManagement::setProcessOrganizer(NULL);
@@ -1356,7 +1410,18 @@ void MainApplication::mainWindowCloseRequest(bool considerPythonBusy)
         // saves the state of all opened scripts to the settings file
         if (m_scriptEditorOrganizer)
         {
-            m_scriptEditorOrganizer->saveScriptState();
+            if (m_projectOrganizer && m_projectOrganizer->hasProject() &&
+                m_projectOrganizer->restoreScripts())
+            {
+                // the open scripts belong to the project; the global session was
+                // saved when the project was opened
+                m_scriptEditorOrganizer->saveScriptState(
+                    ProjectOrganizer::settingsGroup(m_projectOrganizer->project().filePath()));
+            }
+            else
+            {
+                m_scriptEditorOrganizer->saveScriptState();
+            }
 
             retValue += m_scriptEditorOrganizer->closeAllScripts(true);
 

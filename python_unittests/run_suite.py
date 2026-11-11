@@ -20,6 +20,7 @@ import idc_test
 import plot_test
 import shape_test
 import script_editor_textfiles_test
+import project_test
 
 if pyversion >= (3, 6):
     import itom_stubs_generator
@@ -116,6 +117,7 @@ def suite():
             script_editor_textfiles_test.ScriptEditorTextFilesTest
         )
     )
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(project_test.ProjectTest))
     return suite
 
 

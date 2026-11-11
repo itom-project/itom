@@ -26,7 +26,7 @@ The runner has its own tests with fake executables (no build required):
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_PCL=OFF -DBUILD_WITH_HELPVIEWER=OFF \
       -DBUILD_UNITTEST=ON -DBUILD_UNITTEST_INTERNAL_ENABLE=ON -DBUILD_QTVERSION=Qt6
 cmake --build build --target unittest_dataobject unittest_commonlib unittest_commonqtlib \
-      unittest_addinmanager unittest_qpropertyeditor unittest_codeeditor
+      unittest_addinmanager unittest_qpropertyeditor unittest_codeeditor unittest_fileoperations unittest_project
 python3 itom_unittests/ci/run_unittests.py --build-dir build --known itom_unittests/ci/known_failures_linux.txt
 ```
 
@@ -49,5 +49,9 @@ only shrink: fix a test, then remove it from the list. A new failing test must b
   limits. A failure means that a feature does O(file size) or O(line length) work per keystroke again.
 * `unittest_codeeditor` compiles the core of the script editor (`Qitom/codeEditor`, no python modes) directly
   into the test and needs the Qt platform plugin `offscreen` (set by the runner).
+* `unittest_project` compiles the project classes of `Qitom` (`ProjectFile`, `ProjectTreeModel`,
+  `ProjectOrganizer`, `ProjectSession`) directly into the test and drives the model in a real `QTreeView`
+  (`projectTreeViewTest.cpp`, Qt Test with the `offscreen` platform). The GUI widgets themselves
+  (`FileSystemDockWidget`, `ProjectBrowserWidget`) need the whole application and are not covered.
 * `AddInManagerTest.General` needs the plugin `DummyMotor` from the separate `plugins` repository and is
   skipped in a build of this repository alone.
