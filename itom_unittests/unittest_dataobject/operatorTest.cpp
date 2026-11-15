@@ -473,80 +473,71 @@ TYPED_TEST(operatorTest, CompareEQ_test)
     this->mat2_3d.template at<TypeParam>(2, 1, 0) = cv::saturate_cast<TypeParam>(95);
     this->mat2_3d.template at<TypeParam>(2, 1, 1) = cv::saturate_cast<TypeParam>(149);
 
-    if (std::numeric_limits<TypeParam>::max() ==
-        std::numeric_limits<ito::int8>::max()) // compare not implemented for int8
-    {
-        EXPECT_THROW({ this->mat1_1d == this->mat2_1d; }, cv::Exception);
-        EXPECT_THROW({ this->mat1_2d == this->mat2_2d; }, cv::Exception);
-        EXPECT_THROW({ this->mat1_3d == this->mat2_3d; }, cv::Exception);
-    }
-    else
-    {
-        this->mat3_1d = (this->mat1_1d == this->mat2_1d);
-        this->mat3_2d = (this->mat1_2d == this->mat2_2d);
-        this->mat3_3d = (this->mat1_3d == this->mat2_3d);
+    this->mat3_1d = (this->mat1_1d == this->mat2_1d);
+    this->mat3_2d = (this->mat1_2d == this->mat2_2d);
+    this->mat3_3d = (this->mat1_3d == this->mat2_3d);
 
-        EXPECT_EQ(this->mat3_1d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(255));
-        EXPECT_NE(this->mat3_1d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(0));
+    EXPECT_EQ(this->mat3_1d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(255));
+    EXPECT_NE(this->mat3_1d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(0));
 
-        EXPECT_EQ(this->mat3_2d.template at<ito::uint8>(0, 0),
-                  cv::saturate_cast<ito::uint8>(
-                      255)); //!< The values of the elements on locations (0,0) and (1,1) in both matrices are kept
-                             //!< intentionally similar, which should be resulted as '255' in the result matrix
-                             //!< this->mat3_2d on those same locations.
-        EXPECT_EQ(
-            this->mat3_2d.template at<ito::uint8>(0, 1),
-            cv::saturate_cast<ito::uint8>(0)); //!< The values of the elements on locations (0,1) and (1,0) in both
-                                               //!< matrices are kept intentionally different, which should be resulted
-                                               //!< as '0' in the result matrix this->mat3_2d on those same locations.
-        EXPECT_EQ(this->mat3_2d.template at<ito::uint8>(1, 0), cv::saturate_cast<ito::uint8>(0));
-        EXPECT_EQ(this->mat3_2d.template at<ito::uint8>(1, 1), cv::saturate_cast<ito::uint8>(255));
+    EXPECT_EQ(this->mat3_2d.template at<ito::uint8>(0, 0),
+              cv::saturate_cast<ito::uint8>(
+                  255)); //!< The values of the elements on locations (0,0) and (1,1) in both matrices are kept
+                         //!< intentionally similar, which should be resulted as '255' in the result matrix
+                         //!< this->mat3_2d on those same locations.
+    EXPECT_EQ(
+        this->mat3_2d.template at<ito::uint8>(0, 1),
+        cv::saturate_cast<ito::uint8>(0)); //!< The values of the elements on locations (0,1) and (1,0) in both
+                                           //!< matrices are kept intentionally different, which should be resulted
+                                           //!< as '0' in the result matrix this->mat3_2d on those same locations.
+    EXPECT_EQ(this->mat3_2d.template at<ito::uint8>(1, 0), cv::saturate_cast<ito::uint8>(0));
+    EXPECT_EQ(this->mat3_2d.template at<ito::uint8>(1, 1), cv::saturate_cast<ito::uint8>(255));
 
-        // EXPECT_EQ ( this->mat3_3d.template at<ito::uint8>(0,0,0), cv::saturate_cast<ito::uint8>(255));
-        // EXPECT_NE ( this->mat3_3d.template at<ito::uint8>(0,0,0), cv::saturate_cast<ito::uint8>(0));
+    // EXPECT_EQ ( this->mat3_3d.template at<ito::uint8>(0,0,0), cv::saturate_cast<ito::uint8>(255));
+    // EXPECT_NE ( this->mat3_3d.template at<ito::uint8>(0,0,0), cv::saturate_cast<ito::uint8>(0));
 
-        EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(0, 0, 0), cv::saturate_cast<ito::uint8>(255));
-        EXPECT_EQ(
-            this->mat3_3d.template at<ito::uint8>(0, 0, 1),
-            cv::saturate_cast<ito::uint8>(0)); //!< Values of the elements on this location are kept different in both
-                                               //!< matrices this->mat1_3d and this->mat2_3d to check if the resultant
-                                               //!< matrix this->mat3_3d contains '0' value on the same location.
-        EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(0, 1, 0), cv::saturate_cast<ito::uint8>(255));
-        EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(1, 0, 2), cv::saturate_cast<ito::uint8>(255));
-        EXPECT_EQ(
-            this->mat3_3d.template at<ito::uint8>(1, 1, 3),
-            cv::saturate_cast<ito::uint8>(0)); //!< Values of the elements on this location are kept different in both
-                                               //!< matrices this->mat1_3d and this->mat2_3d to check if the resultant
-                                               //!< matrix this->mat3_3d contains '0' value on the same location.
-        EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(2, 0, 0), cv::saturate_cast<ito::uint8>(255));
-        EXPECT_EQ(
-            this->mat3_3d.template at<ito::uint8>(2, 0, 1),
-            cv::saturate_cast<ito::uint8>(0)); //!< Values of the elements on this location are kept different in both
-                                               //!< matrices this->mat1_3d and this->mat2_3d to check if the resultant
-                                               //!< matrix this->mat3_3d contains '0' value on the same location.
-        EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(2, 1, 0), cv::saturate_cast<ito::uint8>(255));
-        EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(2, 1, 1), cv::saturate_cast<ito::uint8>(255));
+    EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(0, 0, 0), cv::saturate_cast<ito::uint8>(255));
+    EXPECT_EQ(
+        this->mat3_3d.template at<ito::uint8>(0, 0, 1),
+        cv::saturate_cast<ito::uint8>(0)); //!< Values of the elements on this location are kept different in both
+                                           //!< matrices this->mat1_3d and this->mat2_3d to check if the resultant
+                                           //!< matrix this->mat3_3d contains '0' value on the same location.
+    EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(0, 1, 0), cv::saturate_cast<ito::uint8>(255));
+    EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(1, 0, 2), cv::saturate_cast<ito::uint8>(255));
+    EXPECT_EQ(
+        this->mat3_3d.template at<ito::uint8>(1, 1, 3),
+        cv::saturate_cast<ito::uint8>(0)); //!< Values of the elements on this location are kept different in both
+                                           //!< matrices this->mat1_3d and this->mat2_3d to check if the resultant
+                                           //!< matrix this->mat3_3d contains '0' value on the same location.
+    EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(2, 0, 0), cv::saturate_cast<ito::uint8>(255));
+    EXPECT_EQ(
+        this->mat3_3d.template at<ito::uint8>(2, 0, 1),
+        cv::saturate_cast<ito::uint8>(0)); //!< Values of the elements on this location are kept different in both
+                                           //!< matrices this->mat1_3d and this->mat2_3d to check if the resultant
+                                           //!< matrix this->mat3_3d contains '0' value on the same location.
+    EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(2, 1, 0), cv::saturate_cast<ito::uint8>(255));
+    EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(2, 1, 1), cv::saturate_cast<ito::uint8>(255));
 
-        this->mat3_1d = (this->mat1_1d == 1);
-        EXPECT_EQ(this->mat3_1d.template at<ito::uint8>(0, 0), 255);
+    this->mat3_1d = (this->mat1_1d == 1);
+    EXPECT_EQ(this->mat3_1d.template at<ito::uint8>(0, 0), 255);
 
-        this->mat3_2d = (this->mat1_2d == 5.0);
-        EXPECT_EQ(this->mat3_2d.template at<ito::uint8>(0, 0), 0);
-        EXPECT_EQ(this->mat3_2d.template at<ito::uint8>(1, 0), 255);
-        EXPECT_EQ(this->mat3_2d.template at<ito::uint8>(0, 1), 0);
-        EXPECT_EQ(this->mat3_2d.template at<ito::uint8>(1, 1), 0);
+    this->mat3_2d = (this->mat1_2d == 5.0);
+    EXPECT_EQ(this->mat3_2d.template at<ito::uint8>(0, 0), 0);
+    EXPECT_EQ(this->mat3_2d.template at<ito::uint8>(1, 0), 255);
+    EXPECT_EQ(this->mat3_2d.template at<ito::uint8>(0, 1), 0);
+    EXPECT_EQ(this->mat3_2d.template at<ito::uint8>(1, 1), 0);
 
-        this->mat3_3d = (this->mat1_3d == 65);
-        EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(0, 0, 0), cv::saturate_cast<ito::uint8>(0));
-        EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(0, 0, 1), cv::saturate_cast<ito::uint8>(0));
-        EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(0, 1, 0), cv::saturate_cast<ito::uint8>(0));
-        EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(1, 0, 2), cv::saturate_cast<ito::uint8>(255));
-        EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(1, 1, 3), cv::saturate_cast<ito::uint8>(0));
-        EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(2, 0, 0), cv::saturate_cast<ito::uint8>(0));
-        EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(2, 0, 1), cv::saturate_cast<ito::uint8>(0));
-        EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(2, 1, 0), cv::saturate_cast<ito::uint8>(0));
-        EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(2, 1, 1), cv::saturate_cast<ito::uint8>(0));
-    }
+    this->mat3_3d = (this->mat1_3d == 65);
+    EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(0, 0, 0), cv::saturate_cast<ito::uint8>(0));
+    EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(0, 0, 1), cv::saturate_cast<ito::uint8>(0));
+    EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(0, 1, 0), cv::saturate_cast<ito::uint8>(0));
+    EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(1, 0, 2), cv::saturate_cast<ito::uint8>(255));
+    EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(1, 1, 3), cv::saturate_cast<ito::uint8>(0));
+    EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(2, 0, 0), cv::saturate_cast<ito::uint8>(0));
+    EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(2, 0, 1), cv::saturate_cast<ito::uint8>(0));
+    EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(2, 1, 0), cv::saturate_cast<ito::uint8>(0));
+    EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(2, 1, 1), cv::saturate_cast<ito::uint8>(0));
+
 }
 
 // CompareNE_test
@@ -564,26 +555,17 @@ TYPED_TEST(operatorTest, CompareNE_test)
     this->mat1_3d = cv::saturate_cast<TypeParam>(25);
     this->mat2_3d = cv::saturate_cast<TypeParam>(26);
 
-    if (std::numeric_limits<TypeParam>::max() ==
-        std::numeric_limits<ito::int8>::max()) // compare not implemented for int8
-    {
-        EXPECT_THROW({ this->mat1_1d != this->mat2_1d; }, cv::Exception);
-        EXPECT_THROW({ this->mat1_2d != this->mat2_2d; }, cv::Exception);
-        EXPECT_THROW({ this->mat1_3d != this->mat2_3d; }, cv::Exception);
-    }
-    else
-    {
-        this->mat3_1d = this->mat1_1d != this->mat2_1d;
-        this->mat3_2d = this->mat1_2d != this->mat2_2d;
-        this->mat3_3d = this->mat1_3d != this->mat2_3d;
+    this->mat3_1d = this->mat1_1d != this->mat2_1d;
+    this->mat3_2d = this->mat1_2d != this->mat2_2d;
+    this->mat3_3d = this->mat1_3d != this->mat2_3d;
 
-        EXPECT_EQ(this->mat3_1d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(255));
-        EXPECT_NE(this->mat3_1d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(0));
-        EXPECT_EQ(this->mat3_2d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(255));
-        EXPECT_NE(this->mat3_2d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(0));
-        EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(1, 1, 1), cv::saturate_cast<ito::uint8>(255));
-        EXPECT_NE(this->mat3_3d.template at<ito::uint8>(1, 1, 1), cv::saturate_cast<ito::uint8>(0));
-    }
+    EXPECT_EQ(this->mat3_1d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(255));
+    EXPECT_NE(this->mat3_1d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(0));
+    EXPECT_EQ(this->mat3_2d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(255));
+    EXPECT_NE(this->mat3_2d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(0));
+    EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(1, 1, 1), cv::saturate_cast<ito::uint8>(255));
+    EXPECT_NE(this->mat3_3d.template at<ito::uint8>(1, 1, 1), cv::saturate_cast<ito::uint8>(0));
+
 }
 
 // CompareLE_test
@@ -601,26 +583,17 @@ TYPED_TEST(operatorTest, CompareLE_test)
     this->mat1_3d = cv::saturate_cast<TypeParam>(25);
     this->mat2_3d = cv::saturate_cast<TypeParam>(25);
 
-    if (std::numeric_limits<TypeParam>::max() ==
-        std::numeric_limits<ito::int8>::max()) // compare not implemented for int8
-    {
-        EXPECT_THROW({ this->mat1_1d <= this->mat2_1d; }, cv::Exception);
-        EXPECT_THROW({ this->mat1_2d <= this->mat2_2d; }, cv::Exception);
-        EXPECT_THROW({ this->mat1_3d <= this->mat2_3d; }, cv::Exception);
-    }
-    else
-    {
-        this->mat3_1d = this->mat1_1d <= this->mat2_1d;
-        this->mat3_2d = this->mat1_2d <= this->mat2_2d;
-        this->mat3_3d = this->mat1_3d <= this->mat2_3d;
+    this->mat3_1d = this->mat1_1d <= this->mat2_1d;
+    this->mat3_2d = this->mat1_2d <= this->mat2_2d;
+    this->mat3_3d = this->mat1_3d <= this->mat2_3d;
 
-        EXPECT_EQ(this->mat3_1d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(255));
-        EXPECT_NE(this->mat3_1d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(0));
-        EXPECT_EQ(this->mat3_2d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(255));
-        EXPECT_NE(this->mat3_2d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(0));
-        EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(1, 1, 1), cv::saturate_cast<ito::uint8>(255));
-        EXPECT_NE(this->mat3_3d.template at<ito::uint8>(1, 1, 1), cv::saturate_cast<ito::uint8>(0));
-    }
+    EXPECT_EQ(this->mat3_1d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(255));
+    EXPECT_NE(this->mat3_1d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(0));
+    EXPECT_EQ(this->mat3_2d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(255));
+    EXPECT_NE(this->mat3_2d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(0));
+    EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(1, 1, 1), cv::saturate_cast<ito::uint8>(255));
+    EXPECT_NE(this->mat3_3d.template at<ito::uint8>(1, 1, 1), cv::saturate_cast<ito::uint8>(0));
+
 }
 // CompareGE_test
 /*!
@@ -637,42 +610,33 @@ TYPED_TEST(operatorTest, CompareGE_test)
     this->mat1_3d = cv::saturate_cast<TypeParam>(29);
     this->mat2_3d = cv::saturate_cast<TypeParam>(25);
 
-    if (std::numeric_limits<TypeParam>::max() ==
-        std::numeric_limits<ito::int8>::max()) // compare not implemented for int8
-    {
-        EXPECT_THROW({ this->mat1_1d >= this->mat2_1d; }, cv::Exception);
-        EXPECT_THROW({ this->mat1_2d >= this->mat2_2d; }, cv::Exception);
-        EXPECT_THROW({ this->mat1_3d >= this->mat2_3d; }, cv::Exception);
-    }
-    else
-    {
-        this->mat3_1d = this->mat1_1d >= this->mat2_1d;
-        this->mat3_2d = this->mat1_2d >= this->mat2_2d;
-        this->mat3_3d = this->mat1_3d >= this->mat2_3d;
+    this->mat3_1d = this->mat1_1d >= this->mat2_1d;
+    this->mat3_2d = this->mat1_2d >= this->mat2_2d;
+    this->mat3_3d = this->mat1_3d >= this->mat2_3d;
 
-        EXPECT_EQ(this->mat3_1d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(255));
-        EXPECT_NE(this->mat3_1d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(0));
-        EXPECT_EQ(this->mat3_2d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(255));
-        EXPECT_NE(this->mat3_2d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(0));
-        EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(1, 1, 1), cv::saturate_cast<ito::uint8>(255));
-        EXPECT_NE(this->mat3_3d.template at<ito::uint8>(1, 1, 1), cv::saturate_cast<ito::uint8>(0));
+    EXPECT_EQ(this->mat3_1d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(255));
+    EXPECT_NE(this->mat3_1d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(0));
+    EXPECT_EQ(this->mat3_2d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(255));
+    EXPECT_NE(this->mat3_2d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(0));
+    EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(1, 1, 1), cv::saturate_cast<ito::uint8>(255));
+    EXPECT_NE(this->mat3_3d.template at<ito::uint8>(1, 1, 1), cv::saturate_cast<ito::uint8>(0));
 
-        this->mat3_1d = this->mat1_1d >= 7;
-        this->mat3_2d = this->mat1_2d >= 7;
-        this->mat3_3d = this->mat1_3d >= 7;
+    this->mat3_1d = this->mat1_1d >= 7;
+    this->mat3_2d = this->mat1_2d >= 7;
+    this->mat3_3d = this->mat1_3d >= 7;
 
-        EXPECT_EQ(this->mat3_1d.template at<ito::uint8>(0, 0), 255);
-        EXPECT_EQ(this->mat3_2d.template at<ito::uint8>(0, 0), 255);
-        EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(1, 1, 1), 255);
+    EXPECT_EQ(this->mat3_1d.template at<ito::uint8>(0, 0), 255);
+    EXPECT_EQ(this->mat3_2d.template at<ito::uint8>(0, 0), 255);
+    EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(1, 1, 1), 255);
 
-        this->mat3_1d = this->mat1_1d >= 35;
-        this->mat3_2d = this->mat1_2d >= 35;
-        this->mat3_3d = this->mat1_3d >= 35;
+    this->mat3_1d = this->mat1_1d >= 35;
+    this->mat3_2d = this->mat1_2d >= 35;
+    this->mat3_3d = this->mat1_3d >= 35;
 
-        EXPECT_EQ(this->mat3_1d.template at<ito::uint8>(0, 0), 0);
-        EXPECT_EQ(this->mat3_2d.template at<ito::uint8>(0, 0), 0);
-        EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(1, 1, 1), 0);
-    }
+    EXPECT_EQ(this->mat3_1d.template at<ito::uint8>(0, 0), 0);
+    EXPECT_EQ(this->mat3_2d.template at<ito::uint8>(0, 0), 0);
+    EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(1, 1, 1), 0);
+
 }
 
 // CompareLT_test
@@ -690,42 +654,33 @@ TYPED_TEST(operatorTest, CompareLT_test)
     this->mat1_3d = cv::saturate_cast<TypeParam>(21);
     this->mat2_3d = cv::saturate_cast<TypeParam>(25);
 
-    if (std::numeric_limits<TypeParam>::max() ==
-        std::numeric_limits<ito::int8>::max()) // compare not implemented for int8
-    {
-        EXPECT_THROW({ this->mat1_1d < this->mat2_1d; }, cv::Exception);
-        EXPECT_THROW({ this->mat1_2d < this->mat2_2d; }, cv::Exception);
-        EXPECT_THROW({ this->mat1_3d < this->mat2_3d; }, cv::Exception);
-    }
-    else
-    {
-        this->mat3_1d = this->mat1_1d < this->mat2_1d;
-        this->mat3_2d = this->mat1_2d < this->mat2_2d;
-        this->mat3_3d = this->mat1_3d < this->mat2_3d;
+    this->mat3_1d = this->mat1_1d < this->mat2_1d;
+    this->mat3_2d = this->mat1_2d < this->mat2_2d;
+    this->mat3_3d = this->mat1_3d < this->mat2_3d;
 
-        EXPECT_EQ(this->mat3_1d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(255));
-        EXPECT_NE(this->mat3_1d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(0));
-        EXPECT_EQ(this->mat3_2d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(255));
-        EXPECT_NE(this->mat3_2d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(0));
-        EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(1, 1, 1), cv::saturate_cast<ito::uint8>(255));
-        EXPECT_NE(this->mat3_3d.template at<ito::uint8>(1, 1, 1), cv::saturate_cast<ito::uint8>(0));
+    EXPECT_EQ(this->mat3_1d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(255));
+    EXPECT_NE(this->mat3_1d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(0));
+    EXPECT_EQ(this->mat3_2d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(255));
+    EXPECT_NE(this->mat3_2d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(0));
+    EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(1, 1, 1), cv::saturate_cast<ito::uint8>(255));
+    EXPECT_NE(this->mat3_3d.template at<ito::uint8>(1, 1, 1), cv::saturate_cast<ito::uint8>(0));
 
-        this->mat3_1d = this->mat1_1d < 7;
-        this->mat3_2d = this->mat1_2d < 7;
-        this->mat3_3d = this->mat1_3d < 7;
+    this->mat3_1d = this->mat1_1d < 7;
+    this->mat3_2d = this->mat1_2d < 7;
+    this->mat3_3d = this->mat1_3d < 7;
 
-        EXPECT_EQ(this->mat3_1d.template at<ito::uint8>(0, 0), 0);
-        EXPECT_EQ(this->mat3_2d.template at<ito::uint8>(0, 0), 0);
-        EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(1, 1, 1), 0);
+    EXPECT_EQ(this->mat3_1d.template at<ito::uint8>(0, 0), 0);
+    EXPECT_EQ(this->mat3_2d.template at<ito::uint8>(0, 0), 0);
+    EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(1, 1, 1), 0);
 
-        this->mat3_1d = this->mat1_1d < 35;
-        this->mat3_2d = this->mat1_2d < 35;
-        this->mat3_3d = this->mat1_3d < 35;
+    this->mat3_1d = this->mat1_1d < 35;
+    this->mat3_2d = this->mat1_2d < 35;
+    this->mat3_3d = this->mat1_3d < 35;
 
-        EXPECT_EQ(this->mat3_1d.template at<ito::uint8>(0, 0), 255);
-        EXPECT_EQ(this->mat3_2d.template at<ito::uint8>(0, 0), 255);
-        EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(1, 1, 1), 255);
-    }
+    EXPECT_EQ(this->mat3_1d.template at<ito::uint8>(0, 0), 255);
+    EXPECT_EQ(this->mat3_2d.template at<ito::uint8>(0, 0), 255);
+    EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(1, 1, 1), 255);
+
 }
 
 // CompareGT_test
@@ -743,26 +698,17 @@ TYPED_TEST(operatorTest, CompareGT_test)
     this->mat1_3d = cv::saturate_cast<TypeParam>(26);
     this->mat2_3d = cv::saturate_cast<TypeParam>(22);
 
-    if (std::numeric_limits<TypeParam>::max() ==
-        std::numeric_limits<ito::int8>::max()) // compare not implemented for int8
-    {
-        EXPECT_THROW({ this->mat1_1d > this->mat2_1d; }, cv::Exception);
-        EXPECT_THROW({ this->mat1_2d > this->mat2_2d; }, cv::Exception);
-        EXPECT_THROW({ this->mat1_3d > this->mat2_3d; }, cv::Exception);
-    }
-    else
-    {
-        this->mat3_1d = this->mat1_1d > this->mat2_1d;
-        this->mat3_2d = this->mat1_2d > this->mat2_2d;
-        this->mat3_3d = this->mat1_3d > this->mat2_3d;
+    this->mat3_1d = this->mat1_1d > this->mat2_1d;
+    this->mat3_2d = this->mat1_2d > this->mat2_2d;
+    this->mat3_3d = this->mat1_3d > this->mat2_3d;
 
-        EXPECT_EQ(this->mat3_1d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(255));
-        EXPECT_NE(this->mat3_1d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(0));
-        EXPECT_EQ(this->mat3_2d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(255));
-        EXPECT_NE(this->mat3_2d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(0));
-        EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(1, 1, 1), cv::saturate_cast<ito::uint8>(255));
-        EXPECT_NE(this->mat3_3d.template at<ito::uint8>(1, 1, 1), cv::saturate_cast<ito::uint8>(0));
-    }
+    EXPECT_EQ(this->mat3_1d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(255));
+    EXPECT_NE(this->mat3_1d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(0));
+    EXPECT_EQ(this->mat3_2d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(255));
+    EXPECT_NE(this->mat3_2d.template at<ito::uint8>(0, 0), cv::saturate_cast<ito::uint8>(0));
+    EXPECT_EQ(this->mat3_3d.template at<ito::uint8>(1, 1, 1), cv::saturate_cast<ito::uint8>(255));
+    EXPECT_NE(this->mat3_3d.template at<ito::uint8>(1, 1, 1), cv::saturate_cast<ito::uint8>(0));
+
 }
 
 // ShiftL_test

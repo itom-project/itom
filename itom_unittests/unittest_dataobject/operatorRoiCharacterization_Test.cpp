@@ -614,14 +614,6 @@ TYPED_TEST(RoiOperatorTest, EqualAndNotEqualAreComplementary)
         ito::DataObject roiA = makeRoi(fullA, g, g.startA);
         ito::DataObject roiB = makeRoi(fullB, g, g.startA);
 
-        if (std::is_same<T, ito::int8>::value)
-        {
-            // known limitation: the compare operators are not implemented for int8
-            EXPECT_THROW((void)(roiA == roiB), cv::Exception);
-            EXPECT_THROW((void)(roiA != roiB), cv::Exception);
-            continue;
-        }
-
         ito::DataObject eq = (roiA == roiB);
         ito::DataObject ne = (roiA != roiB);
         ASSERT_EQ(eq.getType(), ito::tUInt8);

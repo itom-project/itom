@@ -5896,6 +5896,8 @@ DataObject DataObject::operator*(const DataObject& rhs)
     sizes[m_dims - 1] = rhs.m_size[m_dims - 1];
     DataObject result(m_dims, sizes, m_type);
     delete[] sizes;
+    copyTagMapTo(result);
+    copyAxisTagsTo(result);
     fListOpMulFunc[m_type](this, &rhs, &result);
     return result;
 }
@@ -6351,9 +6353,7 @@ DataObject DataObject::operator*(const complex128& factor)
     \param *src2 is the second source matrix
     \param *dst is the destination matrix, which must have the same ROI than src1 and src2 and must
    be of type uint8 \param cmpOp is the compare operator (cv::CMP_EQ, cv::CMP_GT, cv::CMP_GE,
-   cv::CMP_LT, cv::CMP_LE, cv::CMP_NE) \remark no comparison is possible for source matrices of type
-   int8 (due to openCV-problems) \throws cv::Exception if source matrix is of type int8 \return
-   retOk
+   cv::CMP_LT, cv::CMP_LE, cv::CMP_NE) \return retOk
 */
 template <typename _Tp>
 void CmpFunc(const DataObject* src1, const DataObject* src2, DataObject* dst, cv::CmpTypes cmpOp)
@@ -6379,13 +6379,6 @@ void CmpFunc(const DataObject* src1, const DataObject* src2, DataObject* dst, cv
 
         cv::compare(*src1mat, *src2mat, *dest, cmpOp);
     }
-}
-
-template <>
-void CmpFunc<ito::int8>(
-    const DataObject* src1, const DataObject* src2, DataObject* dst, cv::CmpTypes cmpOp)
-{
-    CV_Error(cv::Error::StsAssert, "Compare operator not defined for int8.");
 }
 
 //! template specialisation for compare function of type complex64
@@ -6787,6 +6780,8 @@ DataObject DataObject::operator<(DataObject& rhs)
     }
 
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous | rhs.m_continuous);
+    copyTagMapTo(resMat);
+    copyAxisTagsTo(resMat);
     fListCmpFunc[m_type](this, &rhs, &resMat, cv::CMP_LT);
 
     return resMat;
@@ -6801,7 +6796,18 @@ DataObject DataObject::operator<(DataObject& rhs)
 */
 DataObject DataObject::operator>(DataObject& rhs)
 {
-    return rhs < *this;
+    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
+    {
+        CV_Error(cv::Error::StsAssert, "DataObject - operands differ in size or type");
+        return *this;
+    }
+
+    DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous | rhs.m_continuous);
+    copyTagMapTo(resMat);
+    copyAxisTagsTo(resMat);
+    fListCmpFunc[m_type](this, &rhs, &resMat, cv::CMP_GT);
+
+    return resMat;
 }
 
 //! compare operator, compares for "lower or equal than"
@@ -6820,6 +6826,8 @@ DataObject DataObject::operator<=(DataObject& rhs)
     }
 
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous | rhs.m_continuous);
+    copyTagMapTo(resMat);
+    copyAxisTagsTo(resMat);
     fListCmpFunc[m_type](this, &rhs, &resMat, cv::CMP_LE);
 
     return resMat;
@@ -6834,7 +6842,18 @@ DataObject DataObject::operator<=(DataObject& rhs)
 */
 DataObject DataObject::operator>=(DataObject& rhs)
 {
-    return rhs <= *this;
+    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
+    {
+        CV_Error(cv::Error::StsAssert, "DataObject - operands differ in size or type");
+        return *this;
+    }
+
+    DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous | rhs.m_continuous);
+    copyTagMapTo(resMat);
+    copyAxisTagsTo(resMat);
+    fListCmpFunc[m_type](this, &rhs, &resMat, cv::CMP_GE);
+
+    return resMat;
 }
 
 //! compare operator, compares for "equal to"
@@ -6853,6 +6872,8 @@ DataObject DataObject::operator==(DataObject& rhs)
     }
 
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous | rhs.m_continuous);
+    copyTagMapTo(resMat);
+    copyAxisTagsTo(resMat);
 
     fListCmpFunc[m_type](this, &rhs, &resMat, cv::CMP_EQ);
 
@@ -6875,6 +6896,8 @@ DataObject DataObject::operator!=(DataObject& rhs)
     }
 
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous | rhs.m_continuous);
+    copyTagMapTo(resMat);
+    copyAxisTagsTo(resMat);
     fListCmpFunc[m_type](this, &rhs, &resMat, cv::CMP_NE);
 
     return resMat;
@@ -7129,9 +7152,7 @@ RetVal CmpFuncScalarComplex64(
     \param *src2 is the second source matrix
     \param *dst is the destination matrix, which must have the same ROI than src1 and src2 and must
    be of type uint8 \param cmpOp is the compare operator (cv::CMP_EQ, cv::CMP_GT, cv::CMP_GE,
-   cv::CMP_LT, cv::CMP_LE, cv::CMP_NE) \remark no comparison is possible for source matrices of type
-   int8 (due to openCV-problems) \throws cv::Exception if source matrix is of type int8 \return
-   retOk
+   cv::CMP_LT, cv::CMP_LE, cv::CMP_NE) \return retOk
 */
 template <typename _Tp>
 RetVal CmpFuncScalar(const DataObject* src, const float64& value, DataObject* dst, int cmpOp)
@@ -7148,9 +7169,6 @@ RetVal CmpFuncScalar(const DataObject* src, const float64& value, DataObject* ds
     case ito::tTimeDelta:
     case ito::tRGBA32:
         CV_Error(cv::Error::StsAssert, "A scalar number cannot be compared to the dataObject with the given dtype.");
-        break;
-    case ito::tInt8:
-        CV_Error(cv::Error::StsAssert, "Compare operator not defined for int8.");
         break;
     }
 
@@ -7190,6 +7208,8 @@ MAKEFUNCLIST(CmpFuncScalar);
 DataObject DataObject::operator<(const float64& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyTagMapTo(resMat);
+    copyAxisTagsTo(resMat);
     RetVal retValue = fListCmpFuncScalar[m_type](this, value, &resMat, cv::CMP_LT);
 
     return resMat;
@@ -7205,6 +7225,8 @@ DataObject DataObject::operator<(const float64& value)
 DataObject DataObject::operator>(const float64& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyTagMapTo(resMat);
+    copyAxisTagsTo(resMat);
     RetVal retValue = fListCmpFuncScalar[m_type](this, value, &resMat, cv::CMP_GT);
 
     return resMat;
@@ -7220,6 +7242,8 @@ DataObject DataObject::operator>(const float64& value)
 DataObject DataObject::operator<=(const float64& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyTagMapTo(resMat);
+    copyAxisTagsTo(resMat);
     RetVal retValue = fListCmpFuncScalar[m_type](this, value, &resMat, cv::CMP_LE);
 
     return resMat;
@@ -7235,6 +7259,8 @@ DataObject DataObject::operator<=(const float64& value)
 DataObject DataObject::operator>=(const float64& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyTagMapTo(resMat);
+    copyAxisTagsTo(resMat);
     RetVal retValue = fListCmpFuncScalar[m_type](this, value, &resMat, cv::CMP_GE);
 
     return resMat;
@@ -7250,6 +7276,8 @@ DataObject DataObject::operator>=(const float64& value)
 DataObject DataObject::operator==(const float64& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyTagMapTo(resMat);
+    copyAxisTagsTo(resMat);
     RetVal retValue = fListCmpFuncScalar[m_type](this, value, &resMat, cv::CMP_EQ);
 
     return resMat;
@@ -7265,6 +7293,8 @@ DataObject DataObject::operator==(const float64& value)
 DataObject DataObject::operator!=(const float64& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyTagMapTo(resMat);
+    copyAxisTagsTo(resMat);
     fListCmpFuncScalar[m_type](this, value, &resMat, cv::CMP_NE);
 
     return resMat;
@@ -7375,6 +7405,8 @@ void ScalarDateTimeCmp(
 DataObject DataObject::operator<(const DateTime& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyTagMapTo(resMat);
+    copyAxisTagsTo(resMat);
     ScalarDateTimeCmp(this, &resMat, value, cv::CMP_LT);
     return resMat;
 }
@@ -7389,6 +7421,8 @@ DataObject DataObject::operator<(const DateTime& value)
 DataObject DataObject::operator>(const DateTime& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyTagMapTo(resMat);
+    copyAxisTagsTo(resMat);
     ScalarDateTimeCmp(this, &resMat, value, cv::CMP_GT);
     return resMat;
 }
@@ -7403,6 +7437,8 @@ DataObject DataObject::operator>(const DateTime& value)
 DataObject DataObject::operator<=(const DateTime& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyTagMapTo(resMat);
+    copyAxisTagsTo(resMat);
     ScalarDateTimeCmp(this, &resMat, value, cv::CMP_LE);
     return resMat;
 }
@@ -7417,6 +7453,8 @@ DataObject DataObject::operator<=(const DateTime& value)
 DataObject DataObject::operator>=(const DateTime& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyTagMapTo(resMat);
+    copyAxisTagsTo(resMat);
     ScalarDateTimeCmp(this, &resMat, value, cv::CMP_GE);
     return resMat;
 }
@@ -7431,6 +7469,8 @@ DataObject DataObject::operator>=(const DateTime& value)
 DataObject DataObject::operator==(const DateTime& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyTagMapTo(resMat);
+    copyAxisTagsTo(resMat);
     ScalarDateTimeCmp(this, &resMat, value, cv::CMP_EQ);
     return resMat;
 }
@@ -7445,6 +7485,8 @@ DataObject DataObject::operator==(const DateTime& value)
 DataObject DataObject::operator!=(const DateTime& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyTagMapTo(resMat);
+    copyAxisTagsTo(resMat);
     ScalarDateTimeCmp(this, &resMat, value, cv::CMP_NE);
 
     return resMat;
@@ -7543,6 +7585,8 @@ void ScalarTimeDeltaCmp(
 DataObject DataObject::operator<(const TimeDelta& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyTagMapTo(resMat);
+    copyAxisTagsTo(resMat);
     ScalarTimeDeltaCmp(this, &resMat, value, cv::CMP_LT);
     return resMat;
 }
@@ -7557,6 +7601,8 @@ DataObject DataObject::operator<(const TimeDelta& value)
 DataObject DataObject::operator>(const TimeDelta& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyTagMapTo(resMat);
+    copyAxisTagsTo(resMat);
     ScalarTimeDeltaCmp(this, &resMat, value, cv::CMP_GT);
     return resMat;
 }
@@ -7571,6 +7617,8 @@ DataObject DataObject::operator>(const TimeDelta& value)
 DataObject DataObject::operator<=(const TimeDelta& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyTagMapTo(resMat);
+    copyAxisTagsTo(resMat);
     ScalarTimeDeltaCmp(this, &resMat, value, cv::CMP_LE);
     return resMat;
 }
@@ -7585,6 +7633,8 @@ DataObject DataObject::operator<=(const TimeDelta& value)
 DataObject DataObject::operator>=(const TimeDelta& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyTagMapTo(resMat);
+    copyAxisTagsTo(resMat);
     ScalarTimeDeltaCmp(this, &resMat, value, cv::CMP_GE);
     return resMat;
 }
@@ -7599,6 +7649,8 @@ DataObject DataObject::operator>=(const TimeDelta& value)
 DataObject DataObject::operator==(const TimeDelta& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyTagMapTo(resMat);
+    copyAxisTagsTo(resMat);
     ScalarTimeDeltaCmp(this, &resMat, value, cv::CMP_EQ);
     return resMat;
 }
@@ -7613,6 +7665,8 @@ DataObject DataObject::operator==(const TimeDelta& value)
 DataObject DataObject::operator!=(const TimeDelta& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyTagMapTo(resMat);
+    copyAxisTagsTo(resMat);
     ScalarTimeDeltaCmp(this, &resMat, value, cv::CMP_NE);
 
     return resMat;
@@ -7692,6 +7746,8 @@ void ScalarRgbaCmp(
 DataObject DataObject::operator==(const Rgba32& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyTagMapTo(resMat);
+    copyAxisTagsTo(resMat);
     ScalarRgbaCmp(this, &resMat, value, cv::CMP_EQ);
     return resMat;
 }
@@ -7706,6 +7762,8 @@ DataObject DataObject::operator==(const Rgba32& value)
 DataObject DataObject::operator!=(const Rgba32& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyTagMapTo(resMat);
+    copyAxisTagsTo(resMat);
     ScalarRgbaCmp(this, &resMat, value, cv::CMP_NE);
 
     return resMat;
@@ -7723,6 +7781,8 @@ DataObject DataObject::operator!=(const Rgba32& value)
 DataObject DataObject::operator!=(const ito::complex64& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyTagMapTo(resMat);
+    copyAxisTagsTo(resMat);
     CmpFuncScalarComplex64(this, value, &resMat, cv::CMP_NE);
 
     return resMat;
@@ -7732,6 +7792,8 @@ DataObject DataObject::operator!=(const ito::complex64& value)
 DataObject DataObject::operator==(const ito::complex64& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyTagMapTo(resMat);
+    copyAxisTagsTo(resMat);
     CmpFuncScalarComplex64(this, value, &resMat, cv::CMP_EQ);
 
     return resMat;
@@ -7740,6 +7802,8 @@ DataObject DataObject::operator==(const ito::complex64& value)
 DataObject DataObject::operator!=(const ito::complex128& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyTagMapTo(resMat);
+    copyAxisTagsTo(resMat);
     CmpFuncScalarComplex128(this, value, &resMat, cv::CMP_NE);
 
     return resMat;
@@ -7749,6 +7813,8 @@ DataObject DataObject::operator!=(const ito::complex128& value)
 DataObject DataObject::operator==(const ito::complex128& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyTagMapTo(resMat);
+    copyAxisTagsTo(resMat);
     CmpFuncScalarComplex128(this, value, &resMat, cv::CMP_EQ);
 
     return resMat;

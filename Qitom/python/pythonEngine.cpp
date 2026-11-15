@@ -2289,7 +2289,7 @@ ito::RetVal PythonEngine::debugFile(const QString &pythonFileName)
             std::cerr << tr("Error while clearing all breakpoints in itoDebugger.").toUtf8().data() << "\n" << std::endl;
             printPythonErrorWithoutTraceback(); //traceback is sense-less, since the traceback is in itoDebugger.py only!
 
-            PyGILState_STATE gstate = PyGILState_Ensure();
+            PyGILState_Release(gstate);
 
             return RetVal(retError);
         }
