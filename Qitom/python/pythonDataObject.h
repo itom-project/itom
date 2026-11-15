@@ -244,7 +244,7 @@ class PythonDataObject
         //-------------------------------------------------------------------------------------------------
         // mapping protocol
         //-------------------------------------------------------------------------------------------------
-        static int PyDataObj_mappingLength(PyDataObject* self);
+        static Py_ssize_t PyDataObj_mappingLength(PyDataObject* self);
         static PyObject* PyDataObj_mappingGetElem(PyDataObject* self, PyObject* key);
         static int PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key, PyObject* value);
 

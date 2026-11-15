@@ -1070,14 +1070,26 @@ namespace ito {
          */
         inline int getTotal() const
         {
+            return static_cast<int>(getNumElements());
+        }
+
+        //! gets total number of elements within the current data object ROI
+        /*!
+         Same as getTotal, but without the overflow of an int for objects with more than
+         2^31 elements.
+
+         \return number of elements
+         \sa getTotal, getDims, getSize
+         */
+        inline size_t getNumElements() const
+        {
             int dims = getDims();
-            int total = dims > 0 ? 1 : 0;
+            size_t total = dims > 0 ? 1 : 0;
             for(int i = 0 ; i < dims ; i++)
             {
-                total *= m_size[i];
+                total *= static_cast<size_t>(m_size[i]);
             }
             return total;
-
         }
 
         //! gets total number of elements of the whole data object
@@ -1087,11 +1099,24 @@ namespace ito {
          */
         inline int getOriginalTotal() const
         {
+            return static_cast<int>(getOriginalNumElements());
+        }
+
+        //! gets total number of elements of the whole data object
+        /*!
+         Same as getOriginalTotal, but without the overflow of an int for objects with more
+         than 2^31 elements.
+
+         \return number of elements
+         \sa getOriginalTotal, getDims, getSize
+         */
+        inline size_t getOriginalNumElements() const
+        {
             int dims = getDims();
-            int total = dims > 0 ? 1 : 0;
+            size_t total = dims > 0 ? 1 : 0;
             for(int i = 0 ; i<dims ; i++)
             {
-                total *= m_osize[i];
+                total *= static_cast<size_t>(m_osize[i]);
             }
             return total;
         }

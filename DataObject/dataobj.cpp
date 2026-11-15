@@ -830,11 +830,13 @@ template <typename _Tp> RetVal FreeFunc(DataObject* dObj)
     // there is data?
     if (dObj->m_pRefCount)
     {
-        // check if we are the last one
-        if (*(dObj->m_pRefCount))
+        // decrement the reference counter atomically and check if we were the last one
+        // (CV_XADD returns the value before the decrement; 0 means that this object was the
+        // only remaining user of the data). A separate read and decrement would not be
+        // thread-safe if two objects sharing the same data are released at the same time.
+        if (CV_XADD(dObj->m_pRefCount, -1) > 0)
         {
             // no so just remove matrix headers and return
-            CV_XADD(dObj->m_pRefCount, -1);
 
             // this version of deleting the m_data vector is much faster than the version above (M.
             // Gronle, 13.02.2012)
@@ -936,10 +938,9 @@ template <typename _Tp> RetVal SecureFreeFunc(DataObject* dObj)
     // does the data object contain a reference counter
     if (dObj->m_pRefCount)
     {
-        if (*(dObj->m_pRefCount) > 0) // we are not the last to use the data
+        // atomic decrement, the returned value is the one before the decrement
+        if (CV_XADD(dObj->m_pRefCount, -1) > 0) // we are not the last to use the data
         {
-            // decrease reference counter
-            CV_XADD(dObj->m_pRefCount, -1);
 
             // delete cvMats in m_data array (OpenCV organizes the rest)
             if (dObj->m_data)
@@ -10256,13 +10257,13 @@ DataObject DataObject::squeeze() const
 //----------------------------------------------------------------------------------------------------------------------------------
 DataObject DataObject::reshape(int newDims, const int* newSizes) const
 {
-    int newTotal = 1;
+    size_t newTotal = 1;
     for (int i = 0; i < newDims; ++i)
     {
-        newTotal *= newSizes[i];
+        newTotal *= static_cast<size_t>(newSizes[i]);
     }
 
-    if (getTotal() != newTotal)
+    if (getNumElements() != newTotal)
     {
         CV_Error(cv::Error::StsAssert, "Total size of new dataObject must be unchanged.");
     }
@@ -13591,7 +13592,7 @@ template <> void coutValue(const ito::int16* val, char* buf, size_t bufsize)
 
 template <> void coutValue(const ito::uint32* val, char* buf, size_t bufsize)
 {
-    sprintf_s(buf, bufsize, "%d", *val);
+    sprintf_s(buf, bufsize, "%u", *val);
 }
 
 template <> void coutValue(const ito::int32* val, char* buf, size_t bufsize)
