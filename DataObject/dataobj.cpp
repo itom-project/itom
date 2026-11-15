@@ -31,6 +31,7 @@
 #include <cmath>
 
 #include <functional>
+#include <type_traits>
 #include <map>
 #include <vector>
 
@@ -7795,7 +7796,11 @@ template <typename _Tp> RetVal ShiftLFunc(DataObject* src, const unsigned char s
                 dstPtr = (_Tp*)tempMat->ptr(y);
                 for (int x = 0; x < sizex; x++)
                 {
-                    dstPtr[x] <<= shiftbit;
+                    // shift the unsigned representation: a left shift of a negative signed value
+                    // is undefined behaviour before C++20. The result is the same as the usual
+                    // two's complement result of the compilers.
+                    dstPtr[x] = static_cast<_Tp>(
+                        static_cast<typename std::make_unsigned<_Tp>::type>(dstPtr[x]) << shiftbit);
                 }
             }
 #if (USEOMP)
@@ -9318,6 +9323,33 @@ DataObject DataObject::diag(void)
 }
 */
 //----------------------------------------------------------------------------------------------------------------------------------
+//! element-wise multiplication with the usual wrap-around for integer types
+/*
+    A signed integer overflow is undefined behaviour in C++. The multiplication of integer types
+    is therefore done with the unsigned representation, which wraps around (two's complement), like
+    the compilers also do in practice for signed types.
+*/
+template <typename _Tp> inline _Tp mulWrap(const _Tp& a, const _Tp& b, std::true_type /*integral*/)
+{
+    // at least unsigned int, since smaller unsigned types are promoted to (signed) int
+    typedef typename std::conditional<
+        (sizeof(_Tp) < sizeof(unsigned int)),
+        unsigned int,
+        typename std::make_unsigned<_Tp>::type>::type U;
+    return static_cast<_Tp>(static_cast<U>(a) * static_cast<U>(b));
+}
+
+template <typename _Tp> inline _Tp mulWrap(const _Tp& a, const _Tp& b, std::false_type /*integral*/)
+{
+    return a * b;
+}
+
+template <typename _Tp> inline _Tp mulWrap(const _Tp& a, const _Tp& b)
+{
+    return mulWrap(a, b, std::is_integral<_Tp>());
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 //!
 /*
     \todo think about the definition (operator * ...)
@@ -9365,7 +9397,7 @@ RetVal MulFunc(
 
                 for (int j = 0; j < srcMat1->cols; j++)
                 {
-                    resRowPtr[j] = src1RowPtr[j] * src2RowPtr[j];
+                    resRowPtr[j] = mulWrap(src1RowPtr[j], src2RowPtr[j]);
                 }
             }
 #if (USEOMP)

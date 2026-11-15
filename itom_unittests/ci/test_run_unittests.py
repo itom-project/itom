@@ -24,6 +24,9 @@ json.dump({{"tests": len(tests), "testsuites": [{{"name": "Suite", "testsuite": 
 
 CRASHING_EXE = "#!/bin/sh\nkill -SEGV $$\n"
 
+# writes a complete result file and then exits with the exit code of LeakSanitizer
+LEAKING_EXE = FAKE_EXE + "sys.exit(23)\n"
+
 
 class RunnerTest(unittest.TestCase):
     def setUp(self):
@@ -98,6 +101,15 @@ class RunnerTest(unittest.TestCase):
         result = self.run_runner("--build-dir", self.build, "--known", self.known())
         self.assertEqual(result.returncode, 1)
         self.assertIn("crashed", result.stdout)
+
+    def test_nonzero_exit_code_after_the_tests_fails_the_run(self):
+        self.add_exe(
+            "unittest_leak",
+            content=LEAKING_EXE.format(python=sys.executable, tests=repr([("A.ok", "COMPLETED")])),
+        )
+        result = self.run_runner("--build-dir", self.build, "--known", self.known())
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn("exit code 23", result.stdout)
 
     def test_missing_executable_fails_the_run_without_traceback(self):
         result = self.run_runner("--build-dir", self.build, "--exe", "unittest_missing", "--known", self.known())

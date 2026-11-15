@@ -85,6 +85,74 @@ jobs:
           path: test-results/
           if-no-files-found: ignore
 
+  sanitizers:
+    name: Linux, Qt6, AddressSanitizer + UndefinedBehaviorSanitizer
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+
+    # Only the non-Qt libraries are checked: Qt itself reports leaks and undefined behaviour
+    # in a sanitizer build, which would hide the findings in the itom code.
+    env:
+      SANITIZER_TARGETS: unittest_dataobject unittest_commonlib
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake ccache python3-dev python3-numpy libopencv-dev \
+            qt6-base-dev qt6-tools-dev qt6-tools-dev-tools qt6-l10n-tools \
+            libqt6svg6-dev libqt6opengl6-dev qt6-5compat-dev libgl-dev
+
+      - name: Cache the compiler results
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: linux-qt6-sanitizers
+
+      # Build type 'Release' keeps the names of the executables; -O1 keeps the run fast enough.
+      # -fno-sanitize-recover=undefined aborts the executable at the first undefined behaviour,
+      # so that no result file is written and run_unittests.py reports a crash. AddressSanitizer
+      # aborts anyway; LeakSanitizer reports at the end with exit code 23, which the runner
+      # treats as a failure too.
+      - name: Configure
+        run: |
+          cmake -S . -B build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CXX_FLAGS_RELEASE="-O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -fno-sanitize-recover=undefined" \
+            -DCMAKE_SHARED_LINKER_FLAGS="-fsanitize=address,undefined" \
+            -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined" \
+            -DBUILD_WITH_PCL=OFF \
+            -DBUILD_WITH_HELPVIEWER=OFF \
+            -DBUILD_UNITTEST=ON \
+            -DBUILD_UNITTEST_INTERNAL_ENABLE=ON \
+            -DBUILD_QTVERSION=Qt6 \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+
+      - name: Build the unittests
+        run: cmake --build build --parallel $(nproc) --target $SANITIZER_TARGETS
+
+      - name: Run the unittests with sanitizers
+        env:
+          ASAN_OPTIONS: detect_leaks=1:abort_on_error=0
+          UBSAN_OPTIONS: print_stacktrace=1
+        run: >
+          python3 itom_unittests/ci/run_unittests.py
+          --build-dir build
+          --known itom_unittests/ci/known_failures_linux.txt
+          --json-dir test-results
+          --exe unittest_dataobject --exe unittest_commonlib
+
+      - name: Upload the test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-linux-qt6-sanitizers
+          path: test-results/
+          if-no-files-found: ignore
+
   coverage:
     name: Linux, Qt6, line coverage (gcov)
     runs-on: ubuntu-24.04

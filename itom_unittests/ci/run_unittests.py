@@ -9,6 +9,8 @@ Why this script exists:
 Result:
     - a failing test, that is NOT listed in the file of known failures, fails the run (exit code 1),
     - a crashing executable (no result file) fails the run,
+    - an executable that returns a non-zero exit code after the tests ran (e.g. the leak report of
+      LeakSanitizer) fails the run,
     - a known failure that passes now is reported as a notice. Remove it from the list of known
       failures (or run this script with --update-known).
 
@@ -152,6 +154,13 @@ def main():
         fixed = sorted(expected - failing)
         total = result.get("tests", 0)
 
+        # The executables always return 0 with -googletestadapter. A different exit code after a
+        # complete run therefore comes from outside GoogleTest, e.g. from LeakSanitizer (exit code
+        # 23), which reports leaks after the result file has been written.
+        if returncode != 0:
+            print(f"::error::{name} returned exit code {returncode} after the tests ran (sanitizer report?)")
+            ok = False
+
         if total == 0:
             print(
                 "::error::%s ran no tests. Are tests compiled out by a missing CMake option "
@@ -169,7 +178,14 @@ def main():
         skipped = count_skipped(result)
         if skipped:
             print("::notice::%s: %d test(s) skipped (see the output above)" % (name, skipped))
-        status = "NO TESTS" if total == 0 else ("FAILED" if new else "ok")
+        if total == 0:
+            status = "NO TESTS"
+        elif new:
+            status = "FAILED"
+        elif returncode != 0:
+            status = "EXIT CODE %s" % returncode
+        else:
+            status = "ok"
         rows.append((name, total, skipped, len(failing) - len(new), len(new), status))
 
     if args.update_known:
