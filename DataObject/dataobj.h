@@ -1327,9 +1327,10 @@ namespace ito {
             Like numpy.clip: values below a_min become a_min, values above a_max become a_max,
             NaN stays NaN. Different to numpy, the result keeps the data type of this object
             (numpy returns a float array for an integer array with float bounds); the bounds are
-            converted to the data type with rounding and saturation. The result has the ROI size
-            of this object and a copy of the tags, axis and value information. a_min must not be
-            greater than a_max.
+            converted to the data type with rounding and saturation (-Inf or +Inf can be passed
+            to clip at one side only). The result has the ROI size of this object and a copy of
+            the tags, axis and value information. a_min must not be greater than a_max and both
+            must not be NaN (cv::Exception).
         */
         DataObject clip(float64 a_min, float64 a_max) const;
         //@}

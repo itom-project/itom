@@ -305,3 +305,63 @@ TEST(DataObjectReductions, clipKeepsNaNAndRejectsInvertedBounds)
     EXPECT_DOUBLE_EQ(d.at<float64>(1, 2), 5.0); // Inf is clipped
     EXPECT_THROW(a.clip(5.0, 4.0), cv::Exception);
 }
+
+TEST(DataObjectReductions, clipAcceptsInfAndHugeBounds)
+{
+    const float64 inf = std::numeric_limits<float64>::infinity();
+
+    // bounds beyond the int32 range or +/-Inf mean "no bound" for integer types
+    DataObject a = arange24(tUInt8);
+    DataObject d = a.clip(5.0, inf);
+    EXPECT_EQ(d.at<uint8>(0, 0, 0), 5);
+    EXPECT_EQ(d.at<uint8>(2, 1, 3), 23);
+    d = a.clip(-inf, 18.0);
+    EXPECT_EQ(d.at<uint8>(0, 0, 0), 0);
+    EXPECT_EQ(d.at<uint8>(2, 1, 3), 18);
+    d = a.clip(5.0, 1e10);
+    EXPECT_EQ(d.at<uint8>(0, 0, 0), 5);
+    EXPECT_EQ(d.at<uint8>(2, 1, 3), 23);
+
+    DataObject b = arange24(tInt32);
+    d = b.clip(5.0, 1e10);
+    EXPECT_EQ(d.at<int32>(0, 0, 0), 5);
+    EXPECT_EQ(d.at<int32>(2, 1, 3), 23);
+    d = b.clip(-1e10, 18.0);
+    EXPECT_EQ(d.at<int32>(0, 0, 0), 0);
+    EXPECT_EQ(d.at<int32>(2, 1, 3), 18);
+    d = b.clip(-inf, inf);
+    EXPECT_EQ(d.at<int32>(0, 0, 0), 0);
+    EXPECT_EQ(d.at<int32>(2, 1, 3), 23);
+
+    DataObject c = withNaN();
+    d = c.clip(0.0, inf);
+    EXPECT_TRUE(std::isinf(d.at<float64>(1, 2))); // Inf is kept
+    EXPECT_DOUBLE_EQ(d.at<float64>(0, 2), 0.0);
+
+    // -Inf must stay -Inf for float32 and float64 (no lower bound)
+    const tDataType floatTypes[] = {tFloat32, tFloat64};
+    for (tDataType type : floatTypes)
+    {
+        SCOPED_TRACE(type);
+        DataObject f = arange24(type);
+        d = f.clip(-inf, 18.0);
+        EXPECT_DOUBLE_EQ(d.min(), 0.0);
+        EXPECT_DOUBLE_EQ(d.max(), 18.0);
+        d = f.clip(5.0, inf);
+        EXPECT_DOUBLE_EQ(d.min(), 5.0);
+        EXPECT_DOUBLE_EQ(d.max(), 23.0);
+        d = f.clip(-inf, inf);
+        EXPECT_DOUBLE_EQ(d.min(), 0.0);
+        EXPECT_DOUBLE_EQ(d.max(), 23.0);
+    }
+}
+
+TEST(DataObjectReductions, clipRejectsNaNBounds)
+{
+    const float64 nan = std::numeric_limits<float64>::quiet_NaN();
+    DataObject a = arange24(tUInt8);
+    EXPECT_THROW(a.clip(nan, 4.0), cv::Exception);
+    EXPECT_THROW(a.clip(0.0, nan), cv::Exception);
+    DataObject c = withNaN();
+    EXPECT_THROW(c.clip(nan, nan), cv::Exception);
+}

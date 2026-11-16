@@ -382,12 +382,41 @@ float64 medianImpl(const DataObject& obj, bool ignoreNaN, const char* function)
     return (lower + upper) / 2.0;
 }
 
+//! converts a clip bound to _Tp with rounding and saturation
+/*!
+    cv::saturate_cast is not defined for Inf and for values beyond the int32 range (it then
+    returns the lowest value of an integer type). Therefore the bound is limited to the range
+    of an integer type first. For floating point types, -Inf and +Inf are kept.
+*/
+template <typename _Tp> _Tp clipBound(float64 value)
+{
+    if (std::numeric_limits<_Tp>::is_integer)
+    {
+        if (value <= static_cast<float64>(std::numeric_limits<_Tp>::lowest()))
+        {
+            return std::numeric_limits<_Tp>::lowest();
+        }
+        else if (value >= static_cast<float64>(std::numeric_limits<_Tp>::max()))
+        {
+            return std::numeric_limits<_Tp>::max();
+        }
+    }
+    else if (cvIsInf(value))
+    {
+        // cv::saturate_cast<float32>(float64) of dataobj.h returns +Inf for -Inf
+        const _Tp inf = std::numeric_limits<_Tp>::infinity();
+        return (value > 0) ? inf : static_cast<_Tp>(-inf);
+    }
+
+    return cv::saturate_cast<_Tp>(value);
+}
+
 //! clips the values of src (type _Tp) to [lower, upper] and writes them to dst (same size and type)
 template <typename _Tp>
 void clipImpl(const DataObject& src, DataObject& dst, float64 a_min, float64 a_max)
 {
-    const _Tp lower = cv::saturate_cast<_Tp>(a_min);
-    const _Tp upper = cv::saturate_cast<_Tp>(a_max);
+    const _Tp lower = clipBound<_Tp>(a_min);
+    const _Tp upper = clipBound<_Tp>(a_max);
     const int numMats = src.getNumPlanes();
 
     for (int nmat = 0; nmat < numMats; ++nmat)
@@ -548,6 +577,11 @@ bool DataObject::any() const
 DataObject DataObject::clip(float64 a_min, float64 a_max) const
 {
     requireRealType(*this, "clip");
+
+    if (cvIsNaN(a_min) || cvIsNaN(a_max))
+    {
+        CV_Error(cv::Error::StsBadArg, "DataObject::clip: a_min and a_max must not be NaN");
+    }
 
     if (a_min > a_max)
     {
