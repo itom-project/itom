@@ -636,6 +636,11 @@ np.fft.fft2(a), np.fft.ifft2(a)                                                 
 a[a>0]=5                                a[a>0] = 5                                    sets all elements > 0 of a to 5
 a[np.isnan(a)]=0                        a[np.isnan(a)]=5                              sets all NaN values of a to 5
 arr2 = arr1.reshape([3,2])              dObj2 = dObj1.reshape([3,2])                  reshapes arr1 to new size (equal number of items)
+arr.sum(), arr.mean()                   dObj.sum(), dObj.mean()                       sum or mean of all values (also: std, var, median, ptp, count_nonzero, all, any)
+arr.min(), arr.max()                    dObj.min(), dObj.max()                        minimum or maximum of all values
+arr.argmin(), arr.argmax()              dObj.argmin(), dObj.argmax()                  flat index of the first minimum or maximum
+np.nansum(arr), np.nanmin(arr)          dObj.nansum(), dObj.nanmin()                  like above, but NaN values are ignored (also: nanmean, nanmax, nanstd, nanargmin...)
+arr2 = arr1.clip(0, 10)                 dObj2 = dObj1.clip(0, 10)                     limits all values to the range [0, 10] (deep copy)
 ======================================= ============================================= ===========================================================================================
 
 

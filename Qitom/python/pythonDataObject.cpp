@@ -7586,6 +7586,1152 @@ PyObject* PythonDataObject::PyDataObject_arg(PyDataObject* self, void* /*closure
 }
 
 //-------------------------------------------------------------------------------------
+// numpy-like reductions and element-wise functions (see ito::DataObject in dataobj.h)
+
+//! sets the Python exception for a cv::Exception, thrown by a reduction of ito::DataObject
+/*
+    numpy raises a ValueError for an invalid value (e.g. the minimum of an empty array) and a
+    TypeError for an unsupported data type.
+*/
+static void PyDataObject_setReductionError(const cv::Exception& exc)
+{
+    PyObject* errorType = PyExc_RuntimeError;
+
+    if (exc.code == cv::Error::StsBadArg)
+    {
+        errorType = PyExc_ValueError;
+    }
+    else if (exc.code == cv::Error::StsUnsupportedFormat)
+    {
+        errorType = PyExc_TypeError;
+    }
+
+    PyErr_SetString(errorType, (exc.err).c_str());
+}
+
+//! returns true if the method has been called without any argument
+static bool PyDataObject_noArguments(PyObject* args, PyObject* kwds)
+{
+    return (args == nullptr || PyTuple_GET_SIZE(args) == 0) &&
+        (kwds == nullptr || PyDict_GET_SIZE(kwds) == 0);
+}
+
+//! returns the result of numpy.<function>(numpy.ndarray of self, *args, **kwds) (new reference)
+/*
+    numpy functions like numpy.sum(obj, ...) call the method obj.sum(axis=..., out=..., ...)
+    if obj is not a numpy.ndarray and has such a method. The reductions of ito::DataObject
+    have no arguments like axis. Therefore every call with arguments is forwarded to numpy.
+*/
+static PyObject* PyDataObject_callNumpy(
+    PythonDataObject::PyDataObject* self, const char* function, PyObject* args, PyObject* kwds)
+{
+    PyObject* result = nullptr;
+    PyObject* func = nullptr;
+    PyObject* allArgs = nullptr;
+    PyObject* numpy = nullptr;
+    PyObject* arr = PyObject_CallMethod((PyObject*)self, "__array__", nullptr); // new reference
+
+    if (arr != nullptr)
+    {
+        numpy = PyImport_ImportModule("numpy"); // new reference
+    }
+
+    if (numpy != nullptr)
+    {
+        func = PyObject_GetAttrString(numpy, function); // new reference
+    }
+
+    if (func != nullptr)
+    {
+        PyObject* first = PyTuple_Pack(1, arr); // new reference
+
+        if (first != nullptr)
+        {
+            allArgs = PySequence_Concat(first, args); // new reference
+            Py_DECREF(first);
+        }
+    }
+
+    if (allArgs != nullptr)
+    {
+        result = PyObject_Call(func, allArgs, kwds); // new reference
+    }
+
+    Py_XDECREF(allArgs);
+    Py_XDECREF(func);
+    Py_XDECREF(numpy);
+    Py_XDECREF(arr);
+    return result;
+}
+
+//! calls a reduction of ito::DataObject without arguments and returns its result as Python float
+static PyObject* PyDataObject_floatReduction(
+    PythonDataObject::PyDataObject* self, ito::float64 (ito::DataObject::*func)() const)
+{
+    if (self->dataObject == nullptr)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "data object is NULL");
+        return nullptr;
+    }
+
+    try
+    {
+        return PyFloat_FromDouble((self->dataObject->*func)());
+    }
+    catch (cv::Exception& exc)
+    {
+        PyDataObject_setReductionError(exc);
+        return nullptr;
+    }
+}
+
+//! calls a reduction of ito::DataObject with the optional keyword argument ddof
+/*
+    If numpyFunction is given, a call with other arguments is forwarded to this numpy function.
+*/
+static PyObject* PyDataObject_ddofReduction(
+    PythonDataObject::PyDataObject* self,
+    PyObject* args,
+    PyObject* kwds,
+    const char* format,
+    ito::float64 (ito::DataObject::*func)(int) const,
+    const char* numpyFunction = nullptr)
+{
+    if (self->dataObject == nullptr)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "data object is NULL");
+        return nullptr;
+    }
+
+    if (numpyFunction != nullptr)
+    {
+        // only "no argument" or the single keyword argument ddof are handled here
+        const bool noPosArgs = PyTuple_GET_SIZE(args) == 0;
+        const Py_ssize_t numKwds = (kwds != nullptr) ? PyDict_GET_SIZE(kwds) : 0;
+        const bool ddofOnly =
+            numKwds == 0 || (numKwds == 1 && PyDict_GetItemString(kwds, "ddof") != nullptr);
+
+        if (!noPosArgs || !ddofOnly)
+        {
+            return PyDataObject_callNumpy(self, numpyFunction, args, kwds);
+        }
+    }
+
+    int ddof = 0;
+    const char* kwlist[] = {"ddof", nullptr};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, format, const_cast<char**>(kwlist), &ddof))
+    {
+        return nullptr;
+    }
+
+    try
+    {
+        return PyFloat_FromDouble((self->dataObject->*func)(ddof));
+    }
+    catch (cv::Exception& exc)
+    {
+        PyDataObject_setReductionError(exc);
+        return nullptr;
+    }
+}
+
+//! calls a reduction of ito::DataObject without arguments and returns its result as Python int
+static PyObject* PyDataObject_sizeReduction(
+    PythonDataObject::PyDataObject* self, size_t (ito::DataObject::*func)() const)
+{
+    if (self->dataObject == nullptr)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "data object is NULL");
+        return nullptr;
+    }
+
+    try
+    {
+        return PyLong_FromSize_t((self->dataObject->*func)());
+    }
+    catch (cv::Exception& exc)
+    {
+        PyDataObject_setReductionError(exc);
+        return nullptr;
+    }
+}
+
+//! calls a reduction of ito::DataObject without arguments and returns its result as Python bool
+static PyObject* PyDataObject_boolReduction(
+    PythonDataObject::PyDataObject* self, bool (ito::DataObject::*func)() const)
+{
+    if (self->dataObject == nullptr)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "data object is NULL");
+        return nullptr;
+    }
+
+    try
+    {
+        return PyBool_FromLong((self->dataObject->*func)() ? 1 : 0);
+    }
+    catch (cv::Exception& exc)
+    {
+        PyDataObject_setReductionError(exc);
+        return nullptr;
+    }
+}
+
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectSum_doc, "sum(*args, **kwds) -> Union[float, Any] \n\
+\n\
+Returns the sum of all values of this dataObject. \n\
+\n\
+All values of this object (within its ROI) are considered. If at least one value is \n\
+``NaN``, the result is ``NaN``. The sum is accumulated as ``float64``. \n\
+\n\
+Parameters \n\
+---------- \n\
+*args, **kwds : Any, optional \n\
+    If at least one of these arguments is given, the call is forwarded to \n\
+    :func:`numpy.sum` (see Notes). \n\
+\n\
+Returns \n\
+------- \n\
+sum : float \n\
+    The sum of all values or ``0.0`` if this object is empty. \n\
+\n\
+Raises \n\
+------ \n\
+TypeError \n\
+    if the data type of this object is ``complex64``, ``complex128``, ``rgba32``, \n\
+    ``datetime`` or ``timedelta``. \n\
+\n\
+Notes \n\
+----- \n\
+This method is similar to :meth:`numpy.ndarray.sum` with ``axis = None``. Different to \n\
+numpy, the result is always a :obj:`float`, also for integer data types. \n\
+\n\
+If this method is called with any argument (e.g. ``axis = 0``), :func:`numpy.sum` is \n\
+called with a :class:`numpy.ndarray` of this object and all given arguments, and its \n\
+result is returned (usually a numpy scalar or a :class:`numpy.ndarray`). This is also \n\
+the case for ``numpy.sum(thisObj)``. All data types, that can be converted to a \n\
+:class:`numpy.ndarray`, are supported then.");
+PyObject* PythonDataObject::PyDataObject_sum(
+    PyDataObject* self, PyObject* args, PyObject* kwds)
+{
+    if (!PyDataObject_noArguments(args, kwds))
+    {
+        return PyDataObject_callNumpy(self, "sum", args, kwds);
+    }
+
+    return PyDataObject_floatReduction(self, &ito::DataObject::sum);
+}
+
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectNansum_doc, "nansum() -> float \n\
+\n\
+Returns the sum of all values of this dataObject, ignoring NaN values. \n\
+\n\
+All values of this object (within its ROI) are considered. ``NaN`` values are skipped. \n\
+\n\
+Returns \n\
+------- \n\
+sum : float \n\
+    The sum of all values, that are not ``NaN``, or ``0.0`` if no values remain. \n\
+\n\
+Raises \n\
+------ \n\
+TypeError \n\
+    if the data type of this object is ``complex64``, ``complex128``, ``rgba32``, \n\
+    ``datetime`` or ``timedelta``. \n\
+\n\
+Notes \n\
+----- \n\
+This method is similar to :func:`numpy.nansum` with ``axis = None``. Different to \n\
+numpy, the result is always a :obj:`float`, also for integer data types.");
+PyObject* PythonDataObject::PyDataObject_nansum(PyDataObject* self, PyObject* /*args*/)
+{
+    return PyDataObject_floatReduction(self, &ito::DataObject::nansum);
+}
+
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectMean_doc, "mean(*args, **kwds) -> Union[float, Any] \n\
+\n\
+Returns the arithmetic mean of all values of this dataObject. \n\
+\n\
+All values of this object (within its ROI) are considered. If at least one value is \n\
+``NaN``, the result is ``NaN``. \n\
+\n\
+Parameters \n\
+---------- \n\
+*args, **kwds : Any, optional \n\
+    If at least one of these arguments is given, the call is forwarded to \n\
+    :func:`numpy.mean` (see Notes). \n\
+\n\
+Returns \n\
+------- \n\
+mean : float \n\
+    The mean value or ``NaN`` if this object is empty. \n\
+\n\
+Raises \n\
+------ \n\
+TypeError \n\
+    if the data type of this object is ``complex64``, ``complex128``, ``rgba32``, \n\
+    ``datetime`` or ``timedelta``. \n\
+\n\
+Notes \n\
+----- \n\
+This method is similar to :meth:`numpy.ndarray.mean` with ``axis = None``. \n\
+\n\
+If this method is called with any argument (e.g. ``axis = 0``), :func:`numpy.mean` is \n\
+called with a :class:`numpy.ndarray` of this object and all given arguments, and its \n\
+result is returned (usually a numpy scalar or a :class:`numpy.ndarray`). This is also \n\
+the case for ``numpy.mean(thisObj)``. All data types, that can be converted to a \n\
+:class:`numpy.ndarray`, are supported then.");
+PyObject* PythonDataObject::PyDataObject_mean(
+    PyDataObject* self, PyObject* args, PyObject* kwds)
+{
+    if (!PyDataObject_noArguments(args, kwds))
+    {
+        return PyDataObject_callNumpy(self, "mean", args, kwds);
+    }
+
+    return PyDataObject_floatReduction(self, &ito::DataObject::mean);
+}
+
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectNanmean_doc, "nanmean() -> float \n\
+\n\
+Returns the arithmetic mean of all values of this dataObject, ignoring NaN values. \n\
+\n\
+All values of this object (within its ROI) are considered. ``NaN`` values are skipped. \n\
+\n\
+Returns \n\
+------- \n\
+mean : float \n\
+    The mean of all values, that are not ``NaN``, or ``NaN`` if no values remain. \n\
+\n\
+Raises \n\
+------ \n\
+TypeError \n\
+    if the data type of this object is ``complex64``, ``complex128``, ``rgba32``, \n\
+    ``datetime`` or ``timedelta``. \n\
+\n\
+Notes \n\
+----- \n\
+This method is similar to :func:`numpy.nanmean` with ``axis = None``.");
+PyObject* PythonDataObject::PyDataObject_nanmean(PyDataObject* self, PyObject* /*args*/)
+{
+    return PyDataObject_floatReduction(self, &ito::DataObject::nanmean);
+}
+
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectMin_doc, "min(*args, **kwds) -> Union[float, Any] \n\
+\n\
+Returns the minimum value of this dataObject. \n\
+\n\
+All values of this object (within its ROI) are considered. If at least one value is \n\
+``NaN``, the result is ``NaN``. \n\
+\n\
+Parameters \n\
+---------- \n\
+*args, **kwds : Any, optional \n\
+    If at least one of these arguments is given, the call is forwarded to \n\
+    :func:`numpy.min` (see Notes). \n\
+\n\
+Returns \n\
+------- \n\
+min : float \n\
+    The minimum value. \n\
+\n\
+Raises \n\
+------ \n\
+TypeError \n\
+    if the data type of this object is ``complex64``, ``complex128``, ``rgba32``, \n\
+    ``datetime`` or ``timedelta``. \n\
+ValueError \n\
+    if this object is empty. \n\
+\n\
+Notes \n\
+----- \n\
+This method is similar to :meth:`numpy.ndarray.min` with ``axis = None``. Different to \n\
+numpy, the result is always a :obj:`float`, also for integer data types. \n\
+\n\
+If this method is called with any argument (e.g. ``axis = 0``), :func:`numpy.min` is \n\
+called with a :class:`numpy.ndarray` of this object and all given arguments, and its \n\
+result is returned (usually a numpy scalar or a :class:`numpy.ndarray`). This is also \n\
+the case for ``numpy.min(thisObj)``. All data types, that can be converted to a \n\
+:class:`numpy.ndarray`, are supported then.");
+PyObject* PythonDataObject::PyDataObject_min(
+    PyDataObject* self, PyObject* args, PyObject* kwds)
+{
+    if (!PyDataObject_noArguments(args, kwds))
+    {
+        return PyDataObject_callNumpy(self, "min", args, kwds);
+    }
+
+    return PyDataObject_floatReduction(self, &ito::DataObject::min);
+}
+
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectMax_doc, "max(*args, **kwds) -> Union[float, Any] \n\
+\n\
+Returns the maximum value of this dataObject. \n\
+\n\
+All values of this object (within its ROI) are considered. If at least one value is \n\
+``NaN``, the result is ``NaN``. \n\
+\n\
+Parameters \n\
+---------- \n\
+*args, **kwds : Any, optional \n\
+    If at least one of these arguments is given, the call is forwarded to \n\
+    :func:`numpy.max` (see Notes). \n\
+\n\
+Returns \n\
+------- \n\
+max : float \n\
+    The maximum value. \n\
+\n\
+Raises \n\
+------ \n\
+TypeError \n\
+    if the data type of this object is ``complex64``, ``complex128``, ``rgba32``, \n\
+    ``datetime`` or ``timedelta``. \n\
+ValueError \n\
+    if this object is empty. \n\
+\n\
+Notes \n\
+----- \n\
+This method is similar to :meth:`numpy.ndarray.max` with ``axis = None``. Different to \n\
+numpy, the result is always a :obj:`float`, also for integer data types. \n\
+\n\
+If this method is called with any argument (e.g. ``axis = 0``), :func:`numpy.max` is \n\
+called with a :class:`numpy.ndarray` of this object and all given arguments, and its \n\
+result is returned (usually a numpy scalar or a :class:`numpy.ndarray`). This is also \n\
+the case for ``numpy.max(thisObj)``. All data types, that can be converted to a \n\
+:class:`numpy.ndarray`, are supported then.");
+PyObject* PythonDataObject::PyDataObject_max(
+    PyDataObject* self, PyObject* args, PyObject* kwds)
+{
+    if (!PyDataObject_noArguments(args, kwds))
+    {
+        return PyDataObject_callNumpy(self, "max", args, kwds);
+    }
+
+    return PyDataObject_floatReduction(self, &ito::DataObject::max);
+}
+
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectNanmin_doc, "nanmin() -> float \n\
+\n\
+Returns the minimum value of this dataObject, ignoring NaN values. \n\
+\n\
+All values of this object (within its ROI) are considered. ``NaN`` values are skipped. \n\
+\n\
+Returns \n\
+------- \n\
+min : float \n\
+    The minimum of all values, that are not ``NaN``, or ``NaN`` if no values remain. \n\
+\n\
+Raises \n\
+------ \n\
+TypeError \n\
+    if the data type of this object is ``complex64``, ``complex128``, ``rgba32``, \n\
+    ``datetime`` or ``timedelta``. \n\
+ValueError \n\
+    if this object is empty. \n\
+\n\
+Notes \n\
+----- \n\
+This method is similar to :func:`numpy.nanmin` with ``axis = None``. Different to \n\
+numpy, the result is always a :obj:`float`, also for integer data types.");
+PyObject* PythonDataObject::PyDataObject_nanmin(PyDataObject* self, PyObject* /*args*/)
+{
+    return PyDataObject_floatReduction(self, &ito::DataObject::nanmin);
+}
+
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectNanmax_doc, "nanmax() -> float \n\
+\n\
+Returns the maximum value of this dataObject, ignoring NaN values. \n\
+\n\
+All values of this object (within its ROI) are considered. ``NaN`` values are skipped. \n\
+\n\
+Returns \n\
+------- \n\
+max : float \n\
+    The maximum of all values, that are not ``NaN``, or ``NaN`` if no values remain. \n\
+\n\
+Raises \n\
+------ \n\
+TypeError \n\
+    if the data type of this object is ``complex64``, ``complex128``, ``rgba32``, \n\
+    ``datetime`` or ``timedelta``. \n\
+ValueError \n\
+    if this object is empty. \n\
+\n\
+Notes \n\
+----- \n\
+This method is similar to :func:`numpy.nanmax` with ``axis = None``. Different to \n\
+numpy, the result is always a :obj:`float`, also for integer data types.");
+PyObject* PythonDataObject::PyDataObject_nanmax(PyDataObject* self, PyObject* /*args*/)
+{
+    return PyDataObject_floatReduction(self, &ito::DataObject::nanmax);
+}
+
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectPtp_doc, "ptp(*args, **kwds) -> Union[float, Any] \n\
+\n\
+Returns the peak to peak value (maximum - minimum) of this dataObject. \n\
+\n\
+All values of this object (within its ROI) are considered. If at least one value is \n\
+``NaN``, the result is ``NaN``. \n\
+\n\
+Parameters \n\
+---------- \n\
+*args, **kwds : Any, optional \n\
+    If at least one of these arguments is given, the call is forwarded to \n\
+    :func:`numpy.ptp` (see Notes). \n\
+\n\
+Returns \n\
+------- \n\
+ptp : float \n\
+    The difference between the maximum and the minimum value. \n\
+\n\
+Raises \n\
+------ \n\
+TypeError \n\
+    if the data type of this object is ``complex64``, ``complex128``, ``rgba32``, \n\
+    ``datetime`` or ``timedelta``. \n\
+ValueError \n\
+    if this object is empty. \n\
+\n\
+Notes \n\
+----- \n\
+This method is similar to :func:`numpy.ptp` with ``axis = None``. Different to numpy, \n\
+the result is always a :obj:`float`, also for integer data types. \n\
+\n\
+If this method is called with any argument (e.g. ``axis = 0``), :func:`numpy.ptp` is \n\
+called with a :class:`numpy.ndarray` of this object and all given arguments, and its \n\
+result is returned (usually a numpy scalar or a :class:`numpy.ndarray`). This is also \n\
+the case for ``numpy.ptp(thisObj)``. All data types, that can be converted to a \n\
+:class:`numpy.ndarray`, are supported then.");
+PyObject* PythonDataObject::PyDataObject_ptp(
+    PyDataObject* self, PyObject* args, PyObject* kwds)
+{
+    if (!PyDataObject_noArguments(args, kwds))
+    {
+        return PyDataObject_callNumpy(self, "ptp", args, kwds);
+    }
+
+    return PyDataObject_floatReduction(self, &ito::DataObject::ptp);
+}
+
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectMedian_doc, "median() -> float \n\
+\n\
+Returns the median of all values of this dataObject. \n\
+\n\
+All values of this object (within its ROI) are considered. For an even number of \n\
+values, the mean of the two middle values is returned. If at least one value is \n\
+``NaN``, the result is ``NaN``. \n\
+\n\
+Returns \n\
+------- \n\
+median : float \n\
+    The median value or ``NaN`` if this object is empty. \n\
+\n\
+Raises \n\
+------ \n\
+TypeError \n\
+    if the data type of this object is ``complex64``, ``complex128``, ``rgba32``, \n\
+    ``datetime`` or ``timedelta``. \n\
+\n\
+Notes \n\
+----- \n\
+This method is similar to :func:`numpy.median` with ``axis = None``.");
+PyObject* PythonDataObject::PyDataObject_median(PyDataObject* self, PyObject* /*args*/)
+{
+    return PyDataObject_floatReduction(self, &ito::DataObject::median);
+}
+
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectNanmedian_doc, "nanmedian() -> float \n\
+\n\
+Returns the median of all values of this dataObject, ignoring NaN values. \n\
+\n\
+All values of this object (within its ROI) are considered. ``NaN`` values are skipped. \n\
+For an even number of remaining values, the mean of the two middle values is returned. \n\
+\n\
+Returns \n\
+------- \n\
+median : float \n\
+    The median of all values, that are not ``NaN``, or ``NaN`` if no values remain. \n\
+\n\
+Raises \n\
+------ \n\
+TypeError \n\
+    if the data type of this object is ``complex64``, ``complex128``, ``rgba32``, \n\
+    ``datetime`` or ``timedelta``. \n\
+\n\
+Notes \n\
+----- \n\
+This method is similar to :func:`numpy.nanmedian` with ``axis = None``.");
+PyObject* PythonDataObject::PyDataObject_nanmedian(PyDataObject* self, PyObject* /*args*/)
+{
+    return PyDataObject_floatReduction(self, &ito::DataObject::nanmedian);
+}
+
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectVar_doc, "var(*args, ddof = 0, **kwds) -> Union[float, Any] \n\
+\n\
+Returns the variance of all values of this dataObject. \n\
+\n\
+All values of this object (within its ROI) are considered. If at least one value is \n\
+``NaN``, the result is ``NaN``. \n\
+\n\
+Parameters \n\
+---------- \n\
+ddof : int, optional \n\
+    Keyword-only argument. Delta degrees of freedom. The divisor is ``N - ddof``, \n\
+    where ``N`` is the number of considered values. Use ``1`` for the unbiased \n\
+    estimate of a sample. \n\
+*args, **kwds : Any, optional \n\
+    If at least one of these arguments is given, the call is forwarded to \n\
+    :func:`numpy.var` (see Notes). \n\
+\n\
+Returns \n\
+------- \n\
+var : float \n\
+    The variance or ``NaN`` if this object is empty. \n\
+\n\
+Raises \n\
+------ \n\
+TypeError \n\
+    if the data type of this object is ``complex64``, ``complex128``, ``rgba32``, \n\
+    ``datetime`` or ``timedelta``. \n\
+\n\
+Notes \n\
+----- \n\
+This method is similar to :meth:`numpy.ndarray.var` with ``axis = None``. \n\
+\n\
+If this method is called with any argument besides ``ddof`` (e.g. ``axis = 0``), \n\
+:func:`numpy.var` is called with a :class:`numpy.ndarray` of this object and all given \n\
+arguments, and its result is returned (usually a numpy scalar or a \n\
+:class:`numpy.ndarray`). This is also the case for ``numpy.var(thisObj)``. All data \n\
+types, that can be converted to a :class:`numpy.ndarray`, are supported then.");
+PyObject* PythonDataObject::PyDataObject_var(
+    PyDataObject* self, PyObject* args, PyObject* kwds)
+{
+    return PyDataObject_ddofReduction(
+        self, args, kwds, "|$i:var", &ito::DataObject::var, "var");
+}
+
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectStd_doc, "std(*args, ddof = 0, **kwds) -> Union[float, Any] \n\
+\n\
+Returns the standard deviation of all values of this dataObject. \n\
+\n\
+All values of this object (within its ROI) are considered. The result is the square \n\
+root of :meth:`var`. If at least one value is ``NaN``, the result is ``NaN``. \n\
+\n\
+Parameters \n\
+---------- \n\
+ddof : int, optional \n\
+    Keyword-only argument. Delta degrees of freedom. The divisor is ``N - ddof``, \n\
+    where ``N`` is the number of considered values. Use ``1`` for the unbiased \n\
+    estimate of a sample. \n\
+*args, **kwds : Any, optional \n\
+    If at least one of these arguments is given, the call is forwarded to \n\
+    :func:`numpy.std` (see Notes). \n\
+\n\
+Returns \n\
+------- \n\
+std : float \n\
+    The standard deviation or ``NaN`` if this object is empty. \n\
+\n\
+Raises \n\
+------ \n\
+TypeError \n\
+    if the data type of this object is ``complex64``, ``complex128``, ``rgba32``, \n\
+    ``datetime`` or ``timedelta``. \n\
+\n\
+Notes \n\
+----- \n\
+This method is similar to :meth:`numpy.ndarray.std` with ``axis = None``. \n\
+\n\
+If this method is called with any argument besides ``ddof`` (e.g. ``axis = 0``), \n\
+:func:`numpy.std` is called with a :class:`numpy.ndarray` of this object and all given \n\
+arguments, and its result is returned (usually a numpy scalar or a \n\
+:class:`numpy.ndarray`). This is also the case for ``numpy.std(thisObj)``. All data \n\
+types, that can be converted to a :class:`numpy.ndarray`, are supported then.");
+PyObject* PythonDataObject::PyDataObject_std(
+    PyDataObject* self, PyObject* args, PyObject* kwds)
+{
+    return PyDataObject_ddofReduction(
+        self, args, kwds, "|$i:std", &ito::DataObject::std, "std");
+}
+
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectNanvar_doc, "nanvar(*, ddof = 0) -> float \n\
+\n\
+Returns the variance of all values of this dataObject, ignoring NaN values. \n\
+\n\
+All values of this object (within its ROI) are considered. ``NaN`` values are skipped. \n\
+\n\
+Parameters \n\
+---------- \n\
+ddof : int, optional \n\
+    Keyword-only argument. Delta degrees of freedom. The divisor is ``N - ddof``, \n\
+    where ``N`` is the number of considered values. Use ``1`` for the unbiased \n\
+    estimate of a sample. \n\
+\n\
+Returns \n\
+------- \n\
+var : float \n\
+    The variance of all values, that are not ``NaN``, or ``NaN`` if no values remain. \n\
+\n\
+Raises \n\
+------ \n\
+TypeError \n\
+    if the data type of this object is ``complex64``, ``complex128``, ``rgba32``, \n\
+    ``datetime`` or ``timedelta``. \n\
+\n\
+Notes \n\
+----- \n\
+This method is similar to :func:`numpy.nanvar` with ``axis = None``.");
+PyObject* PythonDataObject::PyDataObject_nanvar(
+    PyDataObject* self, PyObject* args, PyObject* kwds)
+{
+    return PyDataObject_ddofReduction(self, args, kwds, "|$i:nanvar", &ito::DataObject::nanvar);
+}
+
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectNanstd_doc, "nanstd(*, ddof = 0) -> float \n\
+\n\
+Returns the standard deviation of all values of this dataObject, ignoring NaN values. \n\
+\n\
+All values of this object (within its ROI) are considered. ``NaN`` values are skipped. \n\
+The result is the square root of :meth:`nanvar`. \n\
+\n\
+Parameters \n\
+---------- \n\
+ddof : int, optional \n\
+    Keyword-only argument. Delta degrees of freedom. The divisor is ``N - ddof``, \n\
+    where ``N`` is the number of considered values. Use ``1`` for the unbiased \n\
+    estimate of a sample. \n\
+\n\
+Returns \n\
+------- \n\
+std : float \n\
+    The standard deviation of all values, that are not ``NaN``, or ``NaN`` if no \n\
+    values remain. \n\
+\n\
+Raises \n\
+------ \n\
+TypeError \n\
+    if the data type of this object is ``complex64``, ``complex128``, ``rgba32``, \n\
+    ``datetime`` or ``timedelta``. \n\
+\n\
+Notes \n\
+----- \n\
+This method is similar to :func:`numpy.nanstd` with ``axis = None``.");
+PyObject* PythonDataObject::PyDataObject_nanstd(
+    PyDataObject* self, PyObject* args, PyObject* kwds)
+{
+    return PyDataObject_ddofReduction(self, args, kwds, "|$i:nanstd", &ito::DataObject::nanstd);
+}
+
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectArgmin_doc, "argmin(*args, **kwds) -> Union[int, Any] \n\
+\n\
+Returns the flat index of the first minimum value of this dataObject. \n\
+\n\
+The index is the flat, row-major index within the ROI of this object. It is the same \n\
+index that :func:`numpy.argmin` returns for ``numpy.array(thisObj)``. Use \n\
+:func:`numpy.unravel_index` with :attr:`shape` to get the index for each dimension. If \n\
+at least one value is ``NaN``, the index of the first ``NaN`` is returned. \n\
+\n\
+Parameters \n\
+---------- \n\
+*args, **kwds : Any, optional \n\
+    If at least one of these arguments is given, the call is forwarded to \n\
+    :func:`numpy.argmin` (see Notes). \n\
+\n\
+Returns \n\
+------- \n\
+index : int \n\
+    The flat index of the first occurrence of the minimum value. \n\
+\n\
+Raises \n\
+------ \n\
+TypeError \n\
+    if the data type of this object is ``complex64``, ``complex128``, ``rgba32``, \n\
+    ``datetime`` or ``timedelta``. \n\
+ValueError \n\
+    if this object is empty. \n\
+\n\
+Notes \n\
+----- \n\
+This method is similar to :meth:`numpy.ndarray.argmin` with ``axis = None``. \n\
+\n\
+If this method is called with any argument (e.g. ``axis = 0``), :func:`numpy.argmin` \n\
+is called with a :class:`numpy.ndarray` of this object and all given arguments, and \n\
+its result is returned (usually a numpy scalar or a :class:`numpy.ndarray`). This is \n\
+also the case for ``numpy.argmin(thisObj)``. All data types, that can be converted to \n\
+a :class:`numpy.ndarray`, are supported then.");
+PyObject* PythonDataObject::PyDataObject_argmin(
+    PyDataObject* self, PyObject* args, PyObject* kwds)
+{
+    if (!PyDataObject_noArguments(args, kwds))
+    {
+        return PyDataObject_callNumpy(self, "argmin", args, kwds);
+    }
+
+    return PyDataObject_sizeReduction(self, &ito::DataObject::argmin);
+}
+
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectArgmax_doc, "argmax(*args, **kwds) -> Union[int, Any] \n\
+\n\
+Returns the flat index of the first maximum value of this dataObject. \n\
+\n\
+The index is the flat, row-major index within the ROI of this object. It is the same \n\
+index that :func:`numpy.argmax` returns for ``numpy.array(thisObj)``. Use \n\
+:func:`numpy.unravel_index` with :attr:`shape` to get the index for each dimension. If \n\
+at least one value is ``NaN``, the index of the first ``NaN`` is returned. \n\
+\n\
+Parameters \n\
+---------- \n\
+*args, **kwds : Any, optional \n\
+    If at least one of these arguments is given, the call is forwarded to \n\
+    :func:`numpy.argmax` (see Notes). \n\
+\n\
+Returns \n\
+------- \n\
+index : int \n\
+    The flat index of the first occurrence of the maximum value. \n\
+\n\
+Raises \n\
+------ \n\
+TypeError \n\
+    if the data type of this object is ``complex64``, ``complex128``, ``rgba32``, \n\
+    ``datetime`` or ``timedelta``. \n\
+ValueError \n\
+    if this object is empty. \n\
+\n\
+Notes \n\
+----- \n\
+This method is similar to :meth:`numpy.ndarray.argmax` with ``axis = None``. \n\
+\n\
+If this method is called with any argument (e.g. ``axis = 0``), :func:`numpy.argmax` \n\
+is called with a :class:`numpy.ndarray` of this object and all given arguments, and \n\
+its result is returned (usually a numpy scalar or a :class:`numpy.ndarray`). This is \n\
+also the case for ``numpy.argmax(thisObj)``. All data types, that can be converted to \n\
+a :class:`numpy.ndarray`, are supported then.");
+PyObject* PythonDataObject::PyDataObject_argmax(
+    PyDataObject* self, PyObject* args, PyObject* kwds)
+{
+    if (!PyDataObject_noArguments(args, kwds))
+    {
+        return PyDataObject_callNumpy(self, "argmax", args, kwds);
+    }
+
+    return PyDataObject_sizeReduction(self, &ito::DataObject::argmax);
+}
+
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectNanargmin_doc, "nanargmin() -> int \n\
+\n\
+Returns the flat index of the first minimum value, ignoring NaN values. \n\
+\n\
+The index is the flat, row-major index within the ROI of this object. It is the same \n\
+index that :func:`numpy.nanargmin` returns for ``numpy.array(thisObj)``. Use \n\
+:func:`numpy.unravel_index` with :attr:`shape` to get the index for each dimension. \n\
+``NaN`` values are skipped. \n\
+\n\
+Returns \n\
+------- \n\
+index : int \n\
+    The flat index of the first occurrence of the minimum of all values, that are \n\
+    not ``NaN``. \n\
+\n\
+Raises \n\
+------ \n\
+TypeError \n\
+    if the data type of this object is ``complex64``, ``complex128``, ``rgba32``, \n\
+    ``datetime`` or ``timedelta``. \n\
+ValueError \n\
+    if this object is empty or if all values are ``NaN``. \n\
+\n\
+Notes \n\
+----- \n\
+This method is similar to :func:`numpy.nanargmin` with ``axis = None``.");
+PyObject* PythonDataObject::PyDataObject_nanargmin(PyDataObject* self, PyObject* /*args*/)
+{
+    return PyDataObject_sizeReduction(self, &ito::DataObject::nanargmin);
+}
+
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectNanargmax_doc, "nanargmax() -> int \n\
+\n\
+Returns the flat index of the first maximum value, ignoring NaN values. \n\
+\n\
+The index is the flat, row-major index within the ROI of this object. It is the same \n\
+index that :func:`numpy.nanargmax` returns for ``numpy.array(thisObj)``. Use \n\
+:func:`numpy.unravel_index` with :attr:`shape` to get the index for each dimension. \n\
+``NaN`` values are skipped. \n\
+\n\
+Returns \n\
+------- \n\
+index : int \n\
+    The flat index of the first occurrence of the maximum of all values, that are \n\
+    not ``NaN``. \n\
+\n\
+Raises \n\
+------ \n\
+TypeError \n\
+    if the data type of this object is ``complex64``, ``complex128``, ``rgba32``, \n\
+    ``datetime`` or ``timedelta``. \n\
+ValueError \n\
+    if this object is empty or if all values are ``NaN``. \n\
+\n\
+Notes \n\
+----- \n\
+This method is similar to :func:`numpy.nanargmax` with ``axis = None``.");
+PyObject* PythonDataObject::PyDataObject_nanargmax(PyDataObject* self, PyObject* /*args*/)
+{
+    return PyDataObject_sizeReduction(self, &ito::DataObject::nanargmax);
+}
+
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectCountNonzero_doc, "count_nonzero() -> int \n\
+\n\
+Returns the number of values of this dataObject, that are not zero. \n\
+\n\
+All values of this object (within its ROI) are considered. ``NaN`` counts as non-zero \n\
+value. \n\
+\n\
+Returns \n\
+------- \n\
+count : int \n\
+    The number of non-zero values (``0`` if this object is empty). \n\
+\n\
+Raises \n\
+------ \n\
+TypeError \n\
+    if the data type of this object is ``complex64``, ``complex128``, ``rgba32``, \n\
+    ``datetime`` or ``timedelta``. \n\
+\n\
+Notes \n\
+----- \n\
+This method is similar to :func:`numpy.count_nonzero` with ``axis = None``.");
+PyObject* PythonDataObject::PyDataObject_count_nonzero(PyDataObject* self, PyObject* /*args*/)
+{
+    return PyDataObject_sizeReduction(self, &ito::DataObject::count_nonzero);
+}
+
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectAll_doc, "all(*args, **kwds) -> Union[bool, Any] \n\
+\n\
+Returns True if all values of this dataObject are not zero. \n\
+\n\
+All values of this object (within its ROI) are considered. ``NaN`` counts as non-zero \n\
+value. \n\
+\n\
+Parameters \n\
+---------- \n\
+*args, **kwds : Any, optional \n\
+    If at least one of these arguments is given, the call is forwarded to \n\
+    :func:`numpy.all` (see Notes). \n\
+\n\
+Returns \n\
+------- \n\
+result : bool \n\
+    ``True`` if no value is zero or if this object is empty, else ``False``. \n\
+\n\
+Raises \n\
+------ \n\
+TypeError \n\
+    if the data type of this object is ``complex64``, ``complex128``, ``rgba32``, \n\
+    ``datetime`` or ``timedelta``. \n\
+\n\
+Notes \n\
+----- \n\
+This method is similar to :meth:`numpy.ndarray.all` with ``axis = None``. \n\
+\n\
+If this method is called with any argument (e.g. ``axis = 0``), :func:`numpy.all` is \n\
+called with a :class:`numpy.ndarray` of this object and all given arguments, and its \n\
+result is returned (usually a numpy scalar or a :class:`numpy.ndarray`). This is also \n\
+the case for ``numpy.all(thisObj)``. All data types, that can be converted to a \n\
+:class:`numpy.ndarray`, are supported then.");
+PyObject* PythonDataObject::PyDataObject_all(
+    PyDataObject* self, PyObject* args, PyObject* kwds)
+{
+    if (!PyDataObject_noArguments(args, kwds))
+    {
+        return PyDataObject_callNumpy(self, "all", args, kwds);
+    }
+
+    return PyDataObject_boolReduction(self, &ito::DataObject::all);
+}
+
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectAny_doc, "any(*args, **kwds) -> Union[bool, Any] \n\
+\n\
+Returns True if at least one value of this dataObject is not zero. \n\
+\n\
+All values of this object (within its ROI) are considered. ``NaN`` counts as non-zero \n\
+value. \n\
+\n\
+Parameters \n\
+---------- \n\
+*args, **kwds : Any, optional \n\
+    If at least one of these arguments is given, the call is forwarded to \n\
+    :func:`numpy.any` (see Notes). \n\
+\n\
+Returns \n\
+------- \n\
+result : bool \n\
+    ``True`` if at least one value is not zero, else ``False`` (also if this object \n\
+    is empty). \n\
+\n\
+Raises \n\
+------ \n\
+TypeError \n\
+    if the data type of this object is ``complex64``, ``complex128``, ``rgba32``, \n\
+    ``datetime`` or ``timedelta``. \n\
+\n\
+Notes \n\
+----- \n\
+This method is similar to :meth:`numpy.ndarray.any` with ``axis = None``. \n\
+\n\
+If this method is called with any argument (e.g. ``axis = 0``), :func:`numpy.any` is \n\
+called with a :class:`numpy.ndarray` of this object and all given arguments, and its \n\
+result is returned (usually a numpy scalar or a :class:`numpy.ndarray`). This is also \n\
+the case for ``numpy.any(thisObj)``. All data types, that can be converted to a \n\
+:class:`numpy.ndarray`, are supported then.");
+PyObject* PythonDataObject::PyDataObject_any(
+    PyDataObject* self, PyObject* args, PyObject* kwds)
+{
+    if (!PyDataObject_noArguments(args, kwds))
+    {
+        return PyDataObject_callNumpy(self, "any", args, kwds);
+    }
+
+    return PyDataObject_boolReduction(self, &ito::DataObject::any);
+}
+
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectClip_doc, "clip(a_min = None, a_max = None) -> dataObject \n\
+\n\
+Returns a new dataObject with all values clipped to the range [a_min, a_max]. \n\
+\n\
+Values below ``a_min`` are set to ``a_min``, values above ``a_max`` are set to \n\
+``a_max``. ``NaN`` values stay ``NaN``. If one bound is ``None``, the values are only \n\
+clipped at the other bound. \n\
+\n\
+The returned object has the same shape (ROI) and data type than this object. The tags, \n\
+axis and value information are copied to the returned object. \n\
+\n\
+Parameters \n\
+---------- \n\
+a_min : float or None, optional \n\
+    Lower bound or ``None`` if the values should not be clipped at the lower side. \n\
+a_max : float or None, optional \n\
+    Upper bound or ``None`` if the values should not be clipped at the upper side. \n\
+\n\
+Returns \n\
+------- \n\
+clipped : dataObject \n\
+    New object (deep copy) with the clipped values. \n\
+\n\
+Raises \n\
+------ \n\
+TypeError \n\
+    if the data type of this object is ``complex64``, ``complex128``, ``rgba32``, \n\
+    ``datetime`` or ``timedelta``. \n\
+ValueError \n\
+    if both ``a_min`` and ``a_max`` are ``None``, if ``a_min`` is greater than \n\
+    ``a_max`` or if one of them is ``NaN``. \n\
+\n\
+Notes \n\
+----- \n\
+This method is similar to :meth:`numpy.ndarray.clip`. Different to numpy, the result \n\
+always keeps the data type of this object. For integer data types, the bounds are \n\
+rounded and limited to the range of the data type.");
+PyObject* PythonDataObject::PyDataObject_clip(PyDataObject* self, PyObject* args, PyObject* kwds)
+{
+    if (self->dataObject == nullptr)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "data object is NULL");
+        return nullptr;
+    }
+
+    PyObject* pyMin = Py_None; // borrowed
+    PyObject* pyMax = Py_None; // borrowed
+    const char* kwlist[] = {"a_min", "a_max", nullptr};
+
+    if (!PyArg_ParseTupleAndKeywords(
+            args, kwds, "|OO:clip", const_cast<char**>(kwlist), &pyMin, &pyMax))
+    {
+        return nullptr;
+    }
+
+    if (pyMin == Py_None && pyMax == Py_None)
+    {
+        PyErr_SetString(PyExc_ValueError, "One of a_min or a_max must be given.");
+        return nullptr;
+    }
+
+    // a bound of -Inf or +Inf does not clip at this side
+    double minVal = -std::numeric_limits<double>::infinity();
+    double maxVal = std::numeric_limits<double>::infinity();
+
+    if (pyMin != Py_None)
+    {
+        minVal = PyFloat_AsDouble(pyMin);
+
+        if (minVal == -1.0 && PyErr_Occurred())
+        {
+            return nullptr;
+        }
+    }
+
+    if (pyMax != Py_None)
+    {
+        maxVal = PyFloat_AsDouble(pyMax);
+
+        if (maxVal == -1.0 && PyErr_Occurred())
+        {
+            return nullptr;
+        }
+    }
+
+    PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+
+    if (retObj == nullptr)
+    {
+        return nullptr;
+    }
+
+    try
+    {
+        // the result is always the owner of its data, therefore the base of retObj remains None
+        retObj->dataObject = new ito::DataObject(self->dataObject->clip(minVal, maxVal));
+    }
+    catch (cv::Exception& exc)
+    {
+        Py_DECREF(retObj);
+        PyDataObject_setReductionError(exc);
+        return nullptr;
+    }
+
+    char buf[200] = {0};
+    sprintf_s(buf, 200, "Clipped values to the range [%g, %g] via clip().", minVal, maxVal);
+    retObj->dataObject->addToProtocol(buf);
+
+    return (PyObject*)retObj;
+}
+
+//-------------------------------------------------------------------------------------
 int PythonDataObject::PyDataObj_mappingLength(PyDataObject* self)
 {
     if (self->dataObject == NULL)
@@ -12120,6 +13266,98 @@ PyMethodDef PythonDataObject::PyDataObject_methods[] = {
      pyDataObjectLineCut_doc},
     {"abs", (PyCFunction)PythonDataObject::PyDataObject_abs, METH_NOARGS, pyDataObjectAbs_doc},
     {"arg", (PyCFunction)PythonDataObject::PyDataObject_arg, METH_NOARGS, pyDataObjectArg_doc},
+    {"sum",
+     (PyCFunction)PythonDataObject::PyDataObject_sum,
+     METH_VARARGS | METH_KEYWORDS,
+     pyDataObjectSum_doc},
+    {"nansum",
+     (PyCFunction)PythonDataObject::PyDataObject_nansum,
+     METH_NOARGS,
+     pyDataObjectNansum_doc},
+    {"mean",
+     (PyCFunction)PythonDataObject::PyDataObject_mean,
+     METH_VARARGS | METH_KEYWORDS,
+     pyDataObjectMean_doc},
+    {"nanmean",
+     (PyCFunction)PythonDataObject::PyDataObject_nanmean,
+     METH_NOARGS,
+     pyDataObjectNanmean_doc},
+    {"min",
+     (PyCFunction)PythonDataObject::PyDataObject_min,
+     METH_VARARGS | METH_KEYWORDS,
+     pyDataObjectMin_doc},
+    {"max",
+     (PyCFunction)PythonDataObject::PyDataObject_max,
+     METH_VARARGS | METH_KEYWORDS,
+     pyDataObjectMax_doc},
+    {"nanmin",
+     (PyCFunction)PythonDataObject::PyDataObject_nanmin,
+     METH_NOARGS,
+     pyDataObjectNanmin_doc},
+    {"nanmax",
+     (PyCFunction)PythonDataObject::PyDataObject_nanmax,
+     METH_NOARGS,
+     pyDataObjectNanmax_doc},
+    {"ptp",
+     (PyCFunction)PythonDataObject::PyDataObject_ptp,
+     METH_VARARGS | METH_KEYWORDS,
+     pyDataObjectPtp_doc},
+    {"median",
+     (PyCFunction)PythonDataObject::PyDataObject_median,
+     METH_NOARGS,
+     pyDataObjectMedian_doc},
+    {"nanmedian",
+     (PyCFunction)PythonDataObject::PyDataObject_nanmedian,
+     METH_NOARGS,
+     pyDataObjectNanmedian_doc},
+    {"var",
+     (PyCFunction)PythonDataObject::PyDataObject_var,
+     METH_VARARGS | METH_KEYWORDS,
+     pyDataObjectVar_doc},
+    {"std",
+     (PyCFunction)PythonDataObject::PyDataObject_std,
+     METH_VARARGS | METH_KEYWORDS,
+     pyDataObjectStd_doc},
+    {"nanvar",
+     (PyCFunction)PythonDataObject::PyDataObject_nanvar,
+     METH_VARARGS | METH_KEYWORDS,
+     pyDataObjectNanvar_doc},
+    {"nanstd",
+     (PyCFunction)PythonDataObject::PyDataObject_nanstd,
+     METH_VARARGS | METH_KEYWORDS,
+     pyDataObjectNanstd_doc},
+    {"argmin",
+     (PyCFunction)PythonDataObject::PyDataObject_argmin,
+     METH_VARARGS | METH_KEYWORDS,
+     pyDataObjectArgmin_doc},
+    {"argmax",
+     (PyCFunction)PythonDataObject::PyDataObject_argmax,
+     METH_VARARGS | METH_KEYWORDS,
+     pyDataObjectArgmax_doc},
+    {"nanargmin",
+     (PyCFunction)PythonDataObject::PyDataObject_nanargmin,
+     METH_NOARGS,
+     pyDataObjectNanargmin_doc},
+    {"nanargmax",
+     (PyCFunction)PythonDataObject::PyDataObject_nanargmax,
+     METH_NOARGS,
+     pyDataObjectNanargmax_doc},
+    {"count_nonzero",
+     (PyCFunction)PythonDataObject::PyDataObject_count_nonzero,
+     METH_NOARGS,
+     pyDataObjectCountNonzero_doc},
+    {"all",
+     (PyCFunction)PythonDataObject::PyDataObject_all,
+     METH_VARARGS | METH_KEYWORDS,
+     pyDataObjectAll_doc},
+    {"any",
+     (PyCFunction)PythonDataObject::PyDataObject_any,
+     METH_VARARGS | METH_KEYWORDS,
+     pyDataObjectAny_doc},
+    {"clip",
+     (PyCFunction)PythonDataObject::PyDataObject_clip,
+     METH_VARARGS | METH_KEYWORDS,
+     pyDataObjectClip_doc},
 
     {"tolist",
      (PyCFunction)PythonDataObject::PyDataObj_ToList,
