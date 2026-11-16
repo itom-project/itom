@@ -14,6 +14,7 @@ import dataobject_np_conversion
 import dataobject_makecontinuous
 import dataobject_scale_offset
 import dataobject_datetime
+import dataobject_reductions
 import datatype_conversion_test
 import pointcloud_pickle
 import idc_test
@@ -77,6 +78,11 @@ def suite():
     suite.addTest(
         unittest.defaultTestLoader.loadTestsFromTestCase(
             dataobject_datetime.DataObjectDatetime
+        )
+    )
+    suite.addTest(
+        unittest.defaultTestLoader.loadTestsFromTestCase(
+            dataobject_reductions.DataObjectReductions
         )
     )
     suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(plot_test.PlotTest))

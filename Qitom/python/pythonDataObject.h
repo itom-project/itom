@@ -167,6 +167,31 @@ class PythonDataObject
 		static PyObject* PyDataObject_abs(PyDataObject *self, void *closure);
 		static PyObject* PyDataObject_arg(PyDataObject *self, void *closure);
 
+        // numpy-like reductions and element-wise functions
+        static PyObject* PyDataObject_sum(PyDataObject *self, PyObject *args, PyObject *kwds);
+        static PyObject* PyDataObject_nansum(PyDataObject *self, PyObject *args);
+        static PyObject* PyDataObject_mean(PyDataObject *self, PyObject *args, PyObject *kwds);
+        static PyObject* PyDataObject_nanmean(PyDataObject *self, PyObject *args);
+        static PyObject* PyDataObject_min(PyDataObject *self, PyObject *args, PyObject *kwds);
+        static PyObject* PyDataObject_max(PyDataObject *self, PyObject *args, PyObject *kwds);
+        static PyObject* PyDataObject_nanmin(PyDataObject *self, PyObject *args);
+        static PyObject* PyDataObject_nanmax(PyDataObject *self, PyObject *args);
+        static PyObject* PyDataObject_ptp(PyDataObject *self, PyObject *args, PyObject *kwds);
+        static PyObject* PyDataObject_median(PyDataObject *self, PyObject *args);
+        static PyObject* PyDataObject_nanmedian(PyDataObject *self, PyObject *args);
+        static PyObject* PyDataObject_var(PyDataObject *self, PyObject *args, PyObject *kwds);
+        static PyObject* PyDataObject_std(PyDataObject *self, PyObject *args, PyObject *kwds);
+        static PyObject* PyDataObject_nanvar(PyDataObject *self, PyObject *args, PyObject *kwds);
+        static PyObject* PyDataObject_nanstd(PyDataObject *self, PyObject *args, PyObject *kwds);
+        static PyObject* PyDataObject_argmin(PyDataObject *self, PyObject *args, PyObject *kwds);
+        static PyObject* PyDataObject_argmax(PyDataObject *self, PyObject *args, PyObject *kwds);
+        static PyObject* PyDataObject_nanargmin(PyDataObject *self, PyObject *args);
+        static PyObject* PyDataObject_nanargmax(PyDataObject *self, PyObject *args);
+        static PyObject* PyDataObject_count_nonzero(PyDataObject *self, PyObject *args);
+        static PyObject* PyDataObject_all(PyDataObject *self, PyObject *args, PyObject *kwds);
+        static PyObject* PyDataObject_any(PyDataObject *self, PyObject *args, PyObject *kwds);
+        static PyObject* PyDataObject_clip(PyDataObject *self, PyObject *args, PyObject *kwds);
+
         static int PyDataObject_setXYRotationalMatrix(PyDataObject *self, PyObject *value, void *closure);
         static PyObject* PyDataObject_getXYRotationalMatrix(PyDataObject *self, void *closure);
 
