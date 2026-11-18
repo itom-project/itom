@@ -144,7 +144,7 @@ a children respectively, called *Button2* and *Button3*.
 
 .. note::
 
-    Please consider, that in line 8 an *argtuple* is appended to the function-call to *btn2*.
+    Please note that in line 8 an *argtuple* is appended to the function-call to *btn2*.
     Although only one argument is passed, it must be included in a tuple. Usually a tuple is created by the brace operator *(2)*. However, since only
     one argument is given, python is interpreting this brace-operator as mathematical expression and it is reduced to *2* only.
     Therefore, we use the square bracket in order to create a list, that is implicitly converted to a tuple or append a comma to the brace operator *(2,)*.
@@ -157,7 +157,7 @@ removal of all menus created above, is done by:
 
     removeMenu("Menu1")
 
-The only argument of the command :py:func:`~itom.removeMenu` is only the key of the menu-item to delete.
+The only argument of the command :py:func:`~itom.removeMenu` is the key of the menu-item to delete.
 
 .. _toolbar-icons:
 

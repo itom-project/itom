@@ -23,44 +23,43 @@
 #include "dialogProperties.h"
 
 #include "../global.h"
-#include <qmetaobject.h>
 #include <qdialogbuttonbox.h>
+#include <qmetaobject.h>
 #include <qscrollarea.h>
 
-#include "widgetPropEditorCalltips.h"
-#include "widgetPropEditorStyles.h"
-#include "widgetPropEditorAutoCompletion.h"
-#include "widgetPropEditorAutoCodeFormat.h"
-#include "widgetPropEditorGotoAssignment.h"
-#include "widgetPropEditorDocstringGenerator.h"
-#include "widgetPropEditorCodeCheckers.h"
-#include "widgetPropEditorGeneral.h"
-#include "widgetPropEditorScripts.h"
-#include "widgetPropGeneralLanguage.h"
-#include "widgetPropPythonStartup.h"
-#include "widgetPropPythonGeneral.h"
 #include "widgetPropConsoleGeneral.h"
-#include "widgetPropConsoleWrap.h"
 #include "widgetPropConsoleLastCommand.h"
+#include "widgetPropConsoleWrap.h"
+#include "widgetPropEditorAutoCodeFormat.h"
+#include "widgetPropEditorAutoCompletion.h"
+#include "widgetPropEditorCalltips.h"
+#include "widgetPropEditorCodeCheckers.h"
+#include "widgetPropEditorDocstringGenerator.h"
+#include "widgetPropEditorGeneral.h"
+#include "widgetPropEditorGotoAssignment.h"
+#include "widgetPropEditorScripts.h"
+#include "widgetPropEditorStyles.h"
 #include "widgetPropFigurePlugins.h"
 #include "widgetPropGeneralApplication.h"
-#include "widgetPropHelpDock.h"
-#include "widgetPropGeneralStyles.h"
-#include "widgetPropPluginsAlgorithms.h"
-#include "widgetPropPluginsActuators.h"
-#include "widgetPropWorkspaceUnpack.h"
+#include "widgetPropGeneralLanguage.h"
 #include "widgetPropGeneralPlotSettings.h"
+#include "widgetPropGeneralStyles.h"
+#include "widgetPropHelpDock.h"
 #include "widgetPropPalettes.h"
+#include "widgetPropPluginsActuators.h"
+#include "widgetPropPluginsAlgorithms.h"
+#include "widgetPropPythonGeneral.h"
+#include "widgetPropPythonStartup.h"
+#include "widgetPropWorkspaceUnpack.h"
 
-#include "AppManagement.h"
 #include "../helper/guiHelper.h"
+#include "../languageServer/languageServerManager.h"
+#include "AppManagement.h"
 
-namespace ito
-{
+namespace ito {
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DialogProperties::DialogProperties(QWidget* parent, Qt::WindowFlags f) :
-    QDialog(parent, f)
+DialogProperties::DialogProperties(QWidget* parent, Qt::WindowFlags f) : QDialog(parent, f)
 {
     setWindowTitle(tr("Properties"));
 
@@ -73,15 +72,18 @@ DialogProperties::DialogProperties(QWidget* parent, Qt::WindowFlags f) :
     m_pCategories->setHeaderHidden(true);
     m_pCategories->setSortingEnabled(false);
 
-	float screenFactorDpi = GuiHelper::screenDpiFactor();
+    float screenFactorDpi = GuiHelper::screenDpiFactor();
 
     m_pCategories->setMinimumWidth(200 * screenFactorDpi);
 
     connect(
-        m_pCategories, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
-        this, SLOT(categoryChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
+        m_pCategories,
+        SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
+        this,
+        SLOT(categoryChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
 
-    m_pButtonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Apply , Qt::Horizontal);
+    m_pButtonBox = new QDialogButtonBox(
+        QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Apply, Qt::Horizontal);
     connect(m_pButtonBox, &QDialogButtonBox::accepted, this, &DialogProperties::accepted);
     connect(m_pButtonBox, &QDialogButtonBox::rejected, this, &DialogProperties::rejected);
     connect(m_pButtonBox->button(QDialogButtonBox::Apply), SIGNAL(clicked()), this, SLOT(apply()));
@@ -92,9 +94,9 @@ DialogProperties::DialogProperties(QWidget* parent, Qt::WindowFlags f) :
 
     m_pPageTitle = new QLabel("page title");
 
-    QVBoxLayout *m_pVerticalLayoutRight;
-    QVBoxLayout *m_pVerticalLayout;
-    QWidget *m_pSplitterRightWidget = new QWidget();
+    QVBoxLayout* m_pVerticalLayoutRight;
+    QVBoxLayout* m_pVerticalLayout;
+    QWidget* m_pSplitterRightWidget = new QWidget();
 
     m_pVerticalLayoutRight = new QVBoxLayout();
 
@@ -110,7 +112,7 @@ DialogProperties::DialogProperties(QWidget* parent, Qt::WindowFlags f) :
     m_pSplitter->addWidget(m_pCategories);
     m_pSplitter->addWidget(m_pSplitterRightWidget);
     m_pSplitter->setStretchFactor(1, 10);
-	m_pSplitter->setChildrenCollapsible(false);
+    m_pSplitter->setChildrenCollapsible(false);
 
     m_pVerticalLayout = new QVBoxLayout(this);
     m_pVerticalLayout->addWidget(m_pSplitter);
@@ -120,7 +122,7 @@ DialogProperties::DialogProperties(QWidget* parent, Qt::WindowFlags f) :
 
     initPages();
 
-	//resize(950 * screenFactorDpi, 450 * screenFactorDpi);
+    // resize(950 * screenFactorDpi, 450 * screenFactorDpi);
 
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("DialogProperties");
@@ -139,7 +141,7 @@ DialogProperties::~DialogProperties()
     settings.endGroup();
 
     PropertyPage page;
-    foreach(page, m_pages)
+    foreach (page, m_pages)
     {
         if (page.m_widget)
         {
@@ -178,8 +180,9 @@ void DialogProperties::initPages()
     // Step 2: if necessary, add parent page to the m_pages-map below
     // Step 3: add property page to the m_pages -map
     //
-    // Important: The key of the m_pages-map and the third entry in the PropertyPage-struct must have the same value.
-    // This value gives the tree-structure of the property-widgets. Every / (slash) indicates a new child of the parent tree
+    // Important: The key of the m_pages-map and the third entry in the PropertyPage-struct must
+    // have the same value. This value gives the tree-structure of the property-widgets. Every /
+    // (slash) indicates a new child of the parent tree
     //-----------------------------------------------------------------------------------------------------
 
 
@@ -218,7 +221,7 @@ void DialogProperties::initPages()
     PropertyPage page;
     QStringList paths;
 
-    foreach(page, m_pages)
+    foreach (page, m_pages)
     {
         paths = page.m_fullname.split("/");
         addPage(page, m_pCategories->invisibleRootItem(), paths);
@@ -233,9 +236,10 @@ void DialogProperties::initPages()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DialogProperties::addPage(PropertyPage page, QTreeWidgetItem *parent, QStringList remainingPathes)
+void DialogProperties::addPage(
+    PropertyPage page, QTreeWidgetItem* parent, QStringList remainingPathes)
 {
-    QTreeWidgetItem *newItem;
+    QTreeWidgetItem* newItem;
     bool found = false;
 
     if (remainingPathes.length() == 1)
@@ -273,7 +277,9 @@ void DialogProperties::addPage(PropertyPage page, QTreeWidgetItem *parent, QStri
 
         if (!found)
         {
-            qDebug() << "it was not possible to find a parent property page with name " << remainingPathes[0] << ". This should be a child of " << parent->data(0, Qt::DisplayRole).toString();
+            qDebug() << "it was not possible to find a parent property page with name "
+                     << remainingPathes[0] << ". This should be a child of "
+                     << parent->data(0, Qt::DisplayRole).toString();
         }
     }
     else
@@ -283,7 +289,7 @@ void DialogProperties::addPage(PropertyPage page, QTreeWidgetItem *parent, QStri
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-bool DialogProperties::selectTabByKey(QString &key, QTreeWidgetItem *parent /*= NULL*/)
+bool DialogProperties::selectTabByKey(QString& key, QTreeWidgetItem* parent /*= NULL*/)
 {
     bool found = false;
 
@@ -302,9 +308,9 @@ bool DialogProperties::selectTabByKey(QString &key, QTreeWidgetItem *parent /*= 
         }
     }
 
-    if (!found) //search all child's...
+    if (!found) // search all child's...
     {
-        for(int i = 0; i < parent->childCount(); ++i)
+        for (int i = 0; i < parent->childCount(); ++i)
         {
             found = selectTabByKey(key, parent->child(i));
             if (found)
@@ -318,7 +324,7 @@ bool DialogProperties::selectTabByKey(QString &key, QTreeWidgetItem *parent /*= 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DialogProperties::categoryChanged(QTreeWidgetItem *current, QTreeWidgetItem * /*previous*/)
+void DialogProperties::categoryChanged(QTreeWidgetItem* current, QTreeWidgetItem* /*previous*/)
 {
     bool found = false;
 
@@ -370,7 +376,7 @@ void DialogProperties::apply()
 {
     PropertyPage page;
 
-    foreach(page, m_pages)
+    foreach (page, m_pages)
     {
         if (page.m_widget && page.m_visited)
         {
@@ -378,11 +384,13 @@ void DialogProperties::apply()
         }
     }
 
-    QObject *mainApplication = AppManagement::getMainApplication();
+    QObject* mainApplication = AppManagement::getMainApplication();
+
+    LanguageServerManager::getInstance()->reloadSettings();
 
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
     QMetaObject::invokeMethod(mainApplication, "_propertiesChanged");
     QApplication::restoreOverrideCursor();
 }
 
-} //end namespace ito
+} // end namespace ito

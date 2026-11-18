@@ -43,14 +43,14 @@ Depending on the version of pip, each package is described by
 * its current version
 * the location where the package is locally installed
 * dependent packages that are required to run this package (comma-separated)
-* information about possible updates in the internet (click *check for updates*
+* information about possible updates on the internet (click *check for updates*
   to obtain this information)
 * the package's summary
 * a homepage about the package
 * the package's license
 
 Click the *check for updates* button, to screen the official python package
-index (https://pypi.python.org) for newer versions of the installed packages.
+index (https://pypi.org/) for newer versions of the installed packages.
 *pip* itself is also listed as package.
 
 If you want to install new packages or update an existing package, click the
@@ -68,7 +68,7 @@ to install a package:
 2. Install a package from a tar.gz source archive. Indicate the path
     to the *tar.gz* file by clicking the tool button below.
 3. Indicate the name of the package only and let the package manager search
-    the official python package index (https://pypi.python.org) for the newest
+    the official python package index (https://pypi.org/) for the newest
     version of this package. If found, the package is downloaded and automatically
     installed.
 4. It is also possible to create a **requirements.txt** file and list all
@@ -110,7 +110,7 @@ used by the python package) at installation time at your computer. Sometimes
 these packages also required further 3rd party libraries (e.g. Numpy, Scipy or
 Matplotlib). If so, it might be easier to directly get pre-compiled packages
 from the internet. One source for such precompiled packages is the
-website http://www.lfd.uci.edu/~gohlke/pythonlibs/:
+website https://www.lfd.uci.edu/~gohlke/pythonlibs/:
 
 .. figure:: images/pipManager4.png
     :scale: 100%

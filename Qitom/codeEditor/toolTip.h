@@ -43,6 +43,7 @@ public:
     void adjustTooltipScreen(const QPoint &pos);
     void updateSize(const QPoint &pos);
     bool eventFilter(QObject *, QEvent *) override;
+    bool isPopupWindow(QObject *o) const;
     QBasicTimer hideTimer, expireTimer;
     bool fadingOut;
     void reuseTip(const QString &text, int msecDisplayTime, const QPoint &pos);

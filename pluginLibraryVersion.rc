@@ -26,8 +26,13 @@
 *********************************************************************** */
 
 #include <windows.h>
+
+#pragma code_page(65001) // UTF-8
+
 #include "itom_sdk.h"
 #include "pluginVersion.h"
+
+
 
 VS_VERSION_INFO     VERSIONINFO
 FILEVERSION         PLUGIN_VERSION

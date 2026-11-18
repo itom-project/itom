@@ -38,7 +38,12 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURC
 
 # add 3rd party packages
 itom_find_package_qt(ON Core Widgets Xml Designer Svg PrintSupport LinguistTools)
-find_package(OpenCV COMPONENTS core REQUIRED)
+find_package(OpenCV REQUIRED COMPONENTS core REQUIRED)
+
+# Verify OpenCV version is 3.0 or higher
+if(OpenCV_VERSION VERSION_LESS "3.0")
+	message(FATAL_ERROR "OpenCV version ${OpenCV_VERSION} found, but version 3.0 or higher is required (supports 3.x, 4.x, and 5.0+)")
+endif()
 
 # set some preprocessor directives
 add_definitions(-DADDINMGR_DLL -D_ADDINMGR_DLL)

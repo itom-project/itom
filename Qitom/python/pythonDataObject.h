@@ -177,7 +177,7 @@ class PythonDataObject
 
         static PyObject* PyDataObj_Array_StructGet(PyDataObject *self);
         static PyObject* PyDataObj_Array_Interface(PyDataObject *self);
-        static PyObject* PyDataObj_Array_(PyDataObject *self, PyObject *args);
+        static PyObject* PyDataObj_Array_(PyDataObject *self, PyObject *args, PyObject *kwds);
 
         static PyObject* PyDataObject_real(PyDataObject *self);
         static PyObject* PyDataObject_imag(PyDataObject *self);

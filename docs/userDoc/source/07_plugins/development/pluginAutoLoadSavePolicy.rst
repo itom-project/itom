@@ -19,7 +19,7 @@ Additionally, the decision whether these parameters should be saved or not, is s
         autoSaveNever           = 0x2  /*!< never saves parameters to xml-file at shutdown (default) */
     };
 
-If the member has the value *autoSaveAlways*, all parameters contained in the map *m_params* of the plugin instance are saved in a xml-subtree. This subtree is dependent on the unique identifier of the plugin. Remember, that only plugins which do not have the flag *typeNoAutoSave* will be saved (see :ref:`plugin-params`).
+If the member has the value *autoSaveAlways*, all parameters contained in the map *m_params* of the plugin instance are saved in a xml-subtree. This subtree is dependent on the unique identifier of the plugin. Remember, that only plugins which do not have the flag *typeNoAutoSave* will be saved (see :ref:`plugin-Params`).
 
 Inversely, saved parameters in a plugin specific xml-file can also be set after that the plugin instance has been created and initialized (with the mandatory and optional parameters given by the constructor in python). The loading of these xml-parameters is dependent on the value of the member variable **m_autoLoadPolicy** of the plugin's interface class. This variable can have the following values:
 

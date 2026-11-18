@@ -145,6 +145,21 @@
           <string>icon theme for dark background</string>
          </property>
         </item>
+        <item>
+         <property name="text">
+          <string>refined classic icons, auto selection based on base color of stylesheet</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>refined classic icons for bright background</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>refined classic icons for dark background</string>
+         </property>
+        </item>
        </widget>
       </item>
      </layout>

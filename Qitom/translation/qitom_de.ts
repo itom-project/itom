@@ -495,7 +495,7 @@ p, li { white-space: pre-wrap; }
         <translation>Installierte Pakete</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+28"/>
         <source>Install...</source>
         <translation>Installieren...</translation>
     </message>
@@ -545,7 +545,12 @@ p, li { white-space: pre-wrap; }
         <translation>Nach Updates suchen</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="-64"/>
+        <source>Filter Package Name...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+78"/>
         <source>Verify installed packages have compatible dependencies.</source>
         <translation>Kompatibilitätsabhängigkeiten installierter Pakete prüfen.</translation>
     </message>
@@ -667,26 +672,51 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <location line="+6"/>
+        <source>pip install --prefer-binary &lt;filepath.whl&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>Install from Wheel archive (whl)</source>
         <translation>Von Wheel-Archiv (whl) installieren</translation>
     </message>
     <message>
         <location line="+10"/>
+        <source>pip install --prefer-binary &lt;filenpath.tar.gz or .zip&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>Install from tar.gz or zip archive</source>
         <translation>Von tar.gz oder zip-Archiv installieren</translation>
     </message>
     <message>
         <location line="+7"/>
+        <source>pip install --prefer-binary &lt;package-name&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>Search Python package index for package name, download and install it</source>
         <translation>Python-Paket manuell herunterladen und installieren</translation>
     </message>
     <message>
         <location line="+7"/>
+        <source>pip install -r &lt;requirements-filename.txt&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>Install or upgrade listed packages in requirements text file</source>
         <translation>Installiert oder aktualisiert Pakete, die in einer &quot;requirements.txt&quot; Textdatei eingetragen sind</translation>
     </message>
     <message>
         <location line="+7"/>
+        <source>pip install -e &lt;path-to-source-folder&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>Install from package source (setup.py or pyproject.toml must be included)</source>
         <translation>Installiere aus Paketquelle (setup.py oder pyproject.toml muss enthalten sein)</translation>
     </message>
@@ -697,12 +727,12 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <location line="+16"/>
-        <location line="+70"/>
+        <location line="+91"/>
         <source>...</source>
         <translation>...</translation>
     </message>
     <message>
-        <location line="-61"/>
+        <location line="-82"/>
         <source>Examples: package-name; package-name=23.2; package-name&gt;=0.7.5. Separate multiple packages by spaces: package1 package2 ...</source>
         <translation>Beispiele: Paketname; Paketname=23.2; Paketname&gt;=0.7.5. Mehrere Pakete durch Leerzeichen trennen: Paket1 Paket2 ...</translation>
     </message>
@@ -713,26 +743,42 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <location line="+6"/>
-        <source>Upgrade existing package if newer version is available</source>
-        <translation>Aktualisieren wenn eine neuere Version verfügbar ist</translation>
+        <source>pip install --upgrade</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Upgrade existing package if newer version is available,</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+10"/>
+        <source>If not set: pip install --no-deps</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <location line="+16"/>
+        <source>If checked, indicate an URL or a local path that is searched for the indicated package; pip install --find-links</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-28"/>
         <source>Install dependencies if required (if upgrade flag is set, dependencies will be updated, too)</source>
         <translation>Installation von abhängigen Modulen wenn nötig (bei Upgrades werden Abhängigkeiten auch aktualisiert)</translation>
     </message>
     <message>
-        <location line="+12"/>
-        <source>If checked, indicate an URL or a local path that is searched for the indicated package</source>
-        <translation>Eine URL oder ein lokales Verzeichnis, in dem nach dem Paket gesucht wird</translation>
-    </message>
-    <message>
-        <location line="+3"/>
+        <location line="+18"/>
         <source>Find links:</source>
         <translation>Suchpfad:</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+32"/>
+        <source>pip install --no-index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>Ignore Python package index (pypi.python.org/simple). Only look at find-links URLs.</source>
         <translation>Online Python-Pakete ignorieren (pypi.python.org/simple). Es wird nur der Suchpfad berücksichtigt.</translation>
     </message>
@@ -778,18 +824,14 @@ li.checked::marker { content: &quot;\2612&quot;; }
         <translation>Filter</translation>
     </message>
     <message>
-        <source>show build-in modules</source>
-        <translation type="vanished">BuildIn-Module anzeigen</translation>
-    </message>
-    <message>
         <location line="+18"/>
         <source>show built-in modules</source>
         <translation>BuildIn-Module anzeigen</translation>
     </message>
     <message>
         <location line="+7"/>
-        <source>show modules lying in python-folder(s)</source>
-        <translation>Module im Python-Ordner anzeigen</translation>
+        <source>show modules within in python-folder(s)</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+10"/>
@@ -818,13 +860,13 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <location line="+14"/>
-        <source>Reload Modules</source>
-        <translation>Modul neu laden</translation>
+        <source>Exit</source>
+        <translation type="unfinished">Beenden</translation>
     </message>
     <message>
-        <location line="+10"/>
-        <source>Cancel</source>
-        <translation>Abbrechen</translation>
+        <location line="+7"/>
+        <source>Reload Selected Modules</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -871,8 +913,8 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <location line="+10"/>
-        <source>Expand</source>
-        <translation>Erweitert</translation>
+        <source>Show Options</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+12"/>
@@ -1916,139 +1958,133 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <location line="+40"/>
-        <source>%s with message:
+        <source>%s with message: 
 %s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>Could not load plugin %s with error message:
-%s</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Error executing function %s with error message:
-%s</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Error invoking function %s with error message:
-%s</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Error while getting property info %s with error message:
-%s</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Error invoking exec-function %s with error message:
-%s</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+21"/>
-        <source>Warning while %s:
-%s</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Warning while loading plugin %s:
-%s</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Warning while executing function %s:
-%s</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Warning while invoking function %s:
-%s</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Warning while getting property info %s:
-%s</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Warning while invoking exec-function %s:
-%s</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>%s with message:
-%s</source>
-        <translation type="obsolete">%s mit Meldung:
-%s</translation>
-    </message>
-    <message>
-        <location line="-60"/>
+        <location line="+1"/>
         <source>%s with unspecified error.</source>
         <translation type="unfinished">%s mit nicht spezifiziertem Fehler.</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+3"/>
+        <source>Could not load plugin %s with error message: 
+%s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Could not load plugin %s with unspecified error.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+3"/>
+        <source>Error executing function %s with error message: 
+%s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Error executing function %s with unspecified error.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+3"/>
+        <source>Error invoking function %s with error message: 
+%s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Unspecified error invoking function %s.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+3"/>
+        <source>Error while getting property info %s with error message: 
+%s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Unspecified error while getting property info %s.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+3"/>
+        <source>Error invoking exec-function %s with error message: 
+%s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Error invoking exec-function %s with unspecified error.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+20"/>
+        <source>Warning while %s: 
+%s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>%s with unspecified warning.</source>
         <translation type="unfinished">%s mit nicht spezifizierter Warnung.</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+3"/>
+        <source>Warning while loading plugin %s: 
+%s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Unspecified warning while loading plugin %s.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+3"/>
+        <source>Warning while executing function %s: 
+%s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Unspecified warning while executing function %s.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+3"/>
+        <source>Warning while invoking function %s: 
+%s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Unspecified warning while invoking function %s.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+3"/>
+        <source>Warning while getting property info %s: 
+%s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Unspecified warning while getting property info %s.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+3"/>
+        <source>Warning while invoking exec-function %s: 
+%s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Unspecified warning invoking exec-function %s.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3176,10 +3212,6 @@ Syntax, Style und weiteres wird geprüft  (hierfür wird das Python-Package &quo
         <translation type="unfinished">&quot;Flake8&quot;-Optionen</translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Hint:&lt;/span&gt; all options can be overwriten by .flake8, tox.ini... settings files (&lt;a href=&quot;https://flake8.pycqa.org/en/latest/user/configuration.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;more...&lt;/span&gt;&lt;/a&gt;).&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Common number groups are (extendable):&lt;/span&gt;&lt;br/&gt;F: errors from &lt;a href=&quot;https://pypi.org/project/pyflakes&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;PyFlakes&lt;/span&gt;&lt;/a&gt;; E: errors from &lt;a href=&quot;https://pycodestyle.pycqa.org/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;PyCodeStyle&lt;/span&gt;&lt;/a&gt;;&lt;br/&gt;W: warnings from &lt;a href=&quot;https://pycodestyle.pycqa.org/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;PyCodeStyle&lt;/span&gt;&lt;/a&gt;; C: messages from &lt;a href=&quot;https://pypi.org/project/mccabe/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;McCabe&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="obsolete">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Hinweis:&lt;/span&gt; Flake8 kann auch mit Hilfe der Einstellungsdateien .flake8, tox.ini... selbst konfiguriert werden (&lt;a href=&quot;https://flake8.pycqa.org/en/latest/user/configuration.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;siehe...&lt;/span&gt;&lt;/a&gt;).&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Allgemeine Gruppen sind (erweiterbar):&lt;/span&gt;&lt;br/&gt;F: Fehler von &lt;a href=&quot;https://pypi.org/project/pyflakes&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;PyFlakes&lt;/span&gt;&lt;/a&gt;; E: Fehler von &lt;a href=&quot;https://pycodestyle.pycqa.org/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;PyCodeStyle&lt;/span&gt;&lt;/a&gt;;&lt;br/&gt;W:Warnungen von &lt;a href=&quot;https://pycodestyle.pycqa.org/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;PyCodeStyle&lt;/span&gt;&lt;/a&gt;; C: Hinweise von &lt;a href=&quot;https://pypi.org/project/mccabe/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;McCabe&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
         <location line="+6"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Hint:&lt;/span&gt; all options can be overwritten by .flake8, tox.ini... settings files (&lt;a href=&quot;https://flake8.pycqa.org/en/latest/user/configuration.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;more...&lt;/span&gt;&lt;/a&gt;).&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Common number groups are (extendable):&lt;/span&gt;&lt;br/&gt;F: errors from &lt;a href=&quot;https://pypi.org/project/pyflakes&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;PyFlakes&lt;/span&gt;&lt;/a&gt;; E: errors from &lt;a href=&quot;https://pycodestyle.pycqa.org/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;PyCodeStyle&lt;/span&gt;&lt;/a&gt;;&lt;br/&gt;W: warnings from &lt;a href=&quot;https://pycodestyle.pycqa.org/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;PyCodeStyle&lt;/span&gt;&lt;/a&gt;; C: messages from &lt;a href=&quot;https://pypi.org/project/mccabe/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;McCabe&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Hinweis:&lt;/span&gt; Flake8 kann auch mit Hilfe der Einstellungsdateien .flake8, tox.ini... selbst konfiguriert werden (&lt;a href=&quot;https://flake8.pycqa.org/en/latest/user/configuration.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;siehe...&lt;/span&gt;&lt;/a&gt;).&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Allgemeine Gruppen sind (erweiterbar):&lt;/span&gt;&lt;br/&gt;F: Fehler von &lt;a href=&quot;https://pypi.org/project/pyflakes&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;PyFlakes&lt;/span&gt;&lt;/a&gt;; E: Fehler von &lt;a href=&quot;https://pycodestyle.pycqa.org/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;PyCodeStyle&lt;/span&gt;&lt;/a&gt;;&lt;br/&gt;W:Warnungen von &lt;a href=&quot;https://pycodestyle.pycqa.org/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;PyCodeStyle&lt;/span&gt;&lt;/a&gt;; C: Hinweise von &lt;a href=&quot;https://pypi.org/project/mccabe/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;McCabe&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
@@ -3369,7 +3401,7 @@ Syntax, Style und weiteres wird geprüft  (hierfür wird das Python-Package &quo
 <context>
     <name>WidgetPropEditorGeneral</name>
     <message>
-        <location filename="../ui/widgetPropEditorGeneral.ui" line="+34"/>
+        <location filename="../ui/widgetPropEditorGeneral.ui" line="+72"/>
         <source>Indentation</source>
         <translation>Einzug</translation>
     </message>
@@ -3407,12 +3439,32 @@ der einzelnen Zeilen an die aktuelle Cursor-Position anpassen.</translation>
         <translation>Modus für Zeilenende</translation>
     </message>
     <message>
-        <location line="-165"/>
+        <location line="-203"/>
         <source>Form</source>
         <translation>Fenster</translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="+8"/>
+        <source>Script Editors - Zoom Factor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Zoom Factor:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Ctrl+Mouse Wheel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source> %</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+55"/>
         <source>Automatically strip trailing spaces in the current line after pressed return or enter</source>
         <translation>Leerzeichen und Tabs am Ende der aktuellen Zeile löschen sobald
 Return oder Enter gedrückt wurde.</translation>
@@ -3431,13 +3483,6 @@ Return oder Enter gedrückt wurde.</translation>
         <location line="+6"/>
         <source>Cut or copy the full current line if nothing is currently selected</source>
         <translation>Falls nichts markiert wurde, die aktuelle Zeile kopieren oder ausschneiden</translation>
-    </message>
-    <message>
-        <source>If code is pasted to a script, remove the identation level of the first line
-from all lines and add all spaces and tabs from the beginning of the
-current line until the current cursor position.</source>
-        <translation type="obsolete">Beim Einfügen in ein Skript den Einzug (vorangestellte Tabs oder Leerzeichen)
-der einzelnen Zeilen an die aktuelle Cursor-Position anpassen.</translation>
     </message>
     <message>
         <location line="+25"/>
@@ -3898,12 +3943,7 @@ transparent anzeigen</translation>
         <translation type="unfinished">Y-Achse umdrehen</translation>
     </message>
     <message>
-        <location line="+30"/>
-        <source>color map</source>
-        <translation type="unfinished">Farbgebung</translation>
-    </message>
-    <message>
-        <location line="+169"/>
+        <location line="+199"/>
         <source>Tracker Settings</source>
         <translation type="unfinished">Cursor-Positionsmarker</translation>
     </message>
@@ -3973,16 +4013,17 @@ transparent anzeigen</translation>
         <translation type="unfinished">Größe des zentrierten Fadenkreuzes</translation>
     </message>
     <message>
-        <source>When opening any plot supported by itom a set of default style settings is loaded. Each plot decides whehter the setting is relevant or not for its type (e.g. the line style does not affect a 2D plot). Plots, that are integrated in an ui-file, only consider these settings above, that cannot be set in the QtDesigner properties.</source>
-        <translation type="obsolete">Wenn über itom ein Plot geöffnet wird, werden diese Werte standardmäßig geladen. Dabei werden natürlich nur Werte berücksichtigt, die für den entsprechenden Typ des Plots relevant sind (so z. B. hat der Linienstil keinen Effekt auf einen 2D-Plot). Plots, die in eine UI-Datei integriert wurden, können nicht über die QtDesigner-Optionen gesetzt werden.</translation>
-    </message>
-    <message>
         <location line="+24"/>
         <source>Center marker pen</source>
         <translation type="unfinished">Stil des zentrierten Fadenkreuzes</translation>
     </message>
     <message>
-        <location line="+89"/>
+        <location line="+23"/>
+        <source>Default color map</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+66"/>
         <source>Anti aliasing</source>
         <translation type="unfinished">Anti-Aliasing</translation>
     </message>
@@ -4624,12 +4665,6 @@ transparent anzeigen</translation>
         <translation>Fehler beim Anzeigen des Konfigurationsdialogs</translation>
     </message>
     <message>
-        <source>Error while creating new instance.
-Message: %1</source>
-        <translation type="obsolete">Fehler beim Erzeugen einer neuen Instanz.
-Meldung: &apos;%1&apos;</translation>
-    </message>
-    <message>
         <location line="+62"/>
         <location line="+61"/>
         <source>Error while creating new instance</source>
@@ -4703,7 +4738,7 @@ Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+103"/>
-        <source>Error while creating new instance.
+        <source>Error while creating new instance. 
 Message: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5053,7 +5088,7 @@ Message: %1</source>
 <context>
     <name>ito::ConsoleWidget</name>
     <message>
-        <location filename="../widgets/consoleWidget.cpp" line="+1111"/>
+        <location filename="../widgets/consoleWidget.cpp" line="+1141"/>
         <location line="+15"/>
         <source>Python is not available</source>
         <translation>Python ist nicht verfügbar</translation>
@@ -5404,10 +5439,6 @@ Message: %1</source>
         <translation>Die Variable &apos;%1&apos; existiert bereits in diesem Workspace. Diese kann nicht überschrieben werden, da sie eine Funktion, Methode, Typ oder Klasse repräsentiert. Bitte einen anderen Namen wählen.</translation>
     </message>
     <message>
-        <source>Timeout while verifiying variable name</source>
-        <translation type="vanished">Zeitüberschreitung während der Prüfung der Variablennamen</translation>
-    </message>
-    <message>
         <location line="+6"/>
         <source>A timeout occurred while checking for the existence of the variable name in Python. Please try it again.</source>
         <translation>Zeitüberschreitung während der Prüfung auf existierende Variablennamen in Python. Bitte nochmals versuchen.</translation>
@@ -5465,7 +5496,7 @@ Message: %1</source>
 <context>
     <name>ito::DialogPipManager</name>
     <message>
-        <location filename="../ui/dialogPipManager.cpp" line="+115"/>
+        <location filename="../ui/dialogPipManager.cpp" line="+123"/>
         <source>Python initialization error</source>
         <translation>Inizialisierungsfehler von Python</translation>
     </message>
@@ -5475,7 +5506,7 @@ Message: %1</source>
         <translation type="unfinished">In der Ini-Datei des aktuellen itom-Benutzers wurde ein Proxy-Server ohne Passwort angelegt. Bitte unter den Pip-Einstellungen (siehe unten) den Proxy erneut angeben.</translation>
     </message>
     <message>
-        <location line="+228"/>
+        <location line="+237"/>
         <source>Abort</source>
         <translation>Abbruch</translation>
     </message>
@@ -5495,40 +5526,16 @@ Message: %1</source>
         <translation>Warnung bei der Installation von Numpy bei laufendem itom.</translation>
     </message>
     <message>
-        <source>If you try to install / upgrade Numpy if itom is already running, a file access error might occur, since itom already uses parts of Numpy.
-
-You have now three possibilities:
-1. Try to continue the installation in spite of possible problems by clicking &apos;Ignore&apos;
-2. Click &apos;OK&apos;, close and restart itom. Then this package manager is opened as standalone application and you can install or upgrade Numpy and other packages. After another restart, itom is restarted as usual.
-3. Click &apos;Cancel&apos; to cancel the installation process without any changes.
-
-Information:
-If the case of the restart (&apos;OK&apos;), an empty file &apos;restart_itom_with_pip_manager.txt&apos; is created in the directory &apos;%1&apos;. If itom locates this file at startup, the pip manager is directly started.
-
-It is also possible to directly start the package manager by calling the itom application with the argument &apos;pipManager&apos;.</source>
-        <translation type="vanished">Die Installation oder das Updaten von Numpy im laufenden itom könnte einen Fehler verursachen, wenn Teile von Numby bereits verwendet werden.
-
-Es gibt nun drei Möglichkeiten:
-1.Durch Klick auf &apos;Ignorieren&apos; versuchen die Installation fortzusetzen.
-2. &apos;OK&apos; anklicken, itom schließen und neustarten. Daraufhin öffnet sich der Paket-Manager im &apos;Standalone&apos;-Modus und die Installation oder das Upgrade von Numpy und anderen Paketen sind möglich. Nach einem weitern Neustart wird sich wie gewohnt itom öffnen.
-3. Den Installationsprozess ohne Ändernungen abbrechen.
-
-Hinweis:
-Nach dem Klick auf &apos;OK&apos; wird die Datei &apos;restart_itom_with_pip_manager.txt&apos; im Verzeichnis &apos;%1&apos; erstellt. Wird diese beim nächsten itom-Start entdeckt, startet der Pip-Manager direkt.
-
-Es ist ebenfalls möglich über das Argument &apos;pipManager&apos; beim Programmstart den Paket-Manager direkt zu starten.</translation>
-    </message>
-    <message>
         <location line="+1"/>
-        <source>If you try to install / upgrade Numpy if itom is already running, a file access error might occur, since itom already uses parts of Numpy.
+        <source>If you try to install / upgrade Numpy if itom is already running, a file access error might occur, since itom already uses parts of Numpy. 
 
-You have now three possibilities:
-1. Try to continue the installation in spite of possible problems by clicking &apos;Ignore&apos;
-2. Click &apos;OK&apos;, close and restart itom. Then this package manager is opened as standalone application and you can install or upgrade Numpy and other packages. After another restart, itom is restarted as usual.
-3. Click &apos;Cancel&apos; to cancel the installation process without any changes.
+You have now three possibilities: 
+1. Try to continue the installation in spite of possible problems by clicking &apos;Ignore&apos; 
+2. Click &apos;OK&apos;, close and restart itom. Then this package manager is opened as standalone application and you can install or upgrade Numpy and other packages. After another restart, itom is restarted as usual. 
+3. Click &apos;Cancel&apos; to cancel the installation process without any changes. 
 
-Information:
-If the case of the restart (&apos;OK&apos;), an empty file &apos;restart_itom_with_pip_manager.txt&apos; is created in the directory &apos;%1&apos;. If itom locates this file at startup, the pip manager is directly started.
+Information: 
+If the case of the restart (&apos;OK&apos;), an empty file &apos;restart_itom_with_pip_manager.txt&apos; is created in the directory &apos;%1&apos;. If itom locates this file at startup, the pip manager is directly started. 
 
 It is also possible to directly start the package manager by calling the itom application with the argument &apos;pipManager&apos;.</source>
         <translation type="unfinished"></translation>
@@ -5536,25 +5543,25 @@ It is also possible to directly start the package manager by calling the itom ap
     <message>
         <location line="+55"/>
         <location line="+7"/>
-        <location line="+24"/>
+        <location line="+25"/>
         <location line="+7"/>
         <source>Uninstall package</source>
         <translation>Paket deinstallation</translation>
     </message>
     <message>
-        <location line="-38"/>
-        <location line="+31"/>
+        <location line="-39"/>
+        <location line="+32"/>
         <source>The package &apos;%1&apos; is used by at least one other package. Do you really want to uninstall it?</source>
         <translation>Das Paket &apos;%1&apos; wird von mindestens einem anderen Paket gebraucht. Soll es wirklich deinstalliert werden?</translation>
     </message>
     <message>
-        <location line="-24"/>
-        <location line="+31"/>
+        <location line="-25"/>
+        <location line="+32"/>
         <source>Do you really want to uninstall the package &apos;%1&apos;?</source>
         <translation>Soll das Paket &apos;%1&apos; wirklich deinstalliert werden?</translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+32"/>
         <source>Export table to clipboard</source>
         <translation>Tabelle in die Zwischenablage kopieren</translation>
     </message>
@@ -5651,12 +5658,6 @@ It is also possible to directly start the package manager by calling the itom ap
 <context>
     <name>ito::DialogPluginPicker</name>
     <message>
-        <source>Error while creating new instance.
-Message: %1</source>
-        <translation type="vanished">Fehler beim Erzeugen einer neuen Instanz.
-Meldung: &apos;%1&apos;</translation>
-    </message>
-    <message>
         <location filename="../ui/dialogPluginPicker.cpp" line="+179"/>
         <location line="+39"/>
         <source>Error while creating new instance</source>
@@ -5684,7 +5685,7 @@ Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="-35"/>
-        <source>Error while creating new instance.
+        <source>Error while creating new instance. 
 Message: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5702,7 +5703,7 @@ Message: %1</source>
         <translation>Optionen</translation>
     </message>
     <message>
-        <location line="+101"/>
+        <location line="+121"/>
         <source>Editor</source>
         <translation>Editor</translation>
     </message>
@@ -6003,19 +6004,19 @@ Message: %1</source>
 <context>
     <name>ito::DialogReloadModule</name>
     <message>
-        <location filename="../ui/dialogReloadModule.cpp" line="+68"/>
-        <location line="+75"/>
+        <location filename="../ui/dialogReloadModule.cpp" line="+72"/>
+        <location line="+76"/>
         <source>Python Engine is invalid</source>
         <translation>Python-Engine ist ungültig</translation>
     </message>
     <message>
-        <location line="-75"/>
-        <location line="+75"/>
+        <location line="-76"/>
+        <location line="+76"/>
         <source>The Python Engine could not be found</source>
         <translation>Python-Engine wurde nicht gefunden</translation>
     </message>
     <message>
-        <location line="-57"/>
+        <location line="-58"/>
         <source>Connection problem</source>
         <translation>Verbindungsproblem</translation>
     </message>
@@ -6037,22 +6038,22 @@ Message: %1</source>
         <translation>Fehler beim erneuten Laden der Module</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+41"/>
         <source>&lt;click on item to view detailed information&gt;</source>
         <translation>&lt;für detailiertere Informationen auf den Eintrag klicken&gt;</translation>
     </message>
     <message>
-        <location line="-111"/>
+        <location line="-126"/>
         <source>No information about loaded modules could be retrieved by python.</source>
         <translation>Keine Informationen über geladene Module von Python verfügbar.</translation>
     </message>
     <message>
-        <location line="-38"/>
+        <location line="-39"/>
         <source>Module Name</source>
         <translation>Modulname</translation>
     </message>
     <message>
-        <location line="+49"/>
+        <location line="+50"/>
         <location line="+74"/>
         <source>Unknown error</source>
         <translation>Unbekannter Fehler</translation>
@@ -6078,14 +6079,14 @@ Message: %1</source>
 <context>
     <name>ito::DialogReplace</name>
     <message>
-        <location filename="../ui/dialogReplace.cpp" line="+295"/>
-        <source>Expand</source>
-        <translation>Erweitert</translation>
+        <location filename="../ui/dialogReplace.cpp" line="+286"/>
+        <source>Show Options</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+10"/>
-        <source>Collapse</source>
-        <translation>Einfach</translation>
+        <source>Hide Options</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -6170,10 +6171,6 @@ Message: %1</source>
         <location line="-132"/>
         <source>Timeout while searching file name at workspace</source>
         <translation>Zeitüberschreitung beim Suchen von Dateinamen im Workspace</translation>
-    </message>
-    <message>
-        <source>Timeout while seaching file name at workspace</source>
-        <translation type="vanished">Zeitüberschreitung beim Suchen von Dateinamen im Workspace</translation>
     </message>
     <message>
         <location line="+50"/>
@@ -6472,12 +6469,12 @@ Sind Sie sicher?</translation>
 <context>
     <name>ito::FileSystemDockWidget</name>
     <message>
-        <location filename="../widgets/fileSystemDockWidget.cpp" line="+121"/>
+        <location filename="../widgets/fileSystemDockWidget.cpp" line="+120"/>
         <source>Filter:</source>
         <translation>Filter:</translation>
     </message>
     <message>
-        <location line="+218"/>
+        <location line="+229"/>
         <source>F2</source>
         <translation></translation>
     </message>
@@ -6492,29 +6489,29 @@ Sind Sie sicher?</translation>
         <translation></translation>
     </message>
     <message>
-        <location line="+279"/>
+        <location line="+301"/>
         <source>Directory &apos;%1&apos; does not exist!</source>
         <translation>Verzeichnis &apos;%1&apos; existiert nicht!</translation>
     </message>
     <message>
-        <location line="-567"/>
+        <location line="-600"/>
         <source>Last used directories</source>
         <translation>Zuletzt verwendete Verzeichnisse</translation>
     </message>
     <message>
-        <location line="+271"/>
+        <location line="+282"/>
         <source>Rename</source>
         <translation>Umbenennen</translation>
     </message>
     <message>
         <location line="+2"/>
-        <location line="+633"/>
+        <location line="+657"/>
         <location line="+13"/>
         <source>Delete</source>
         <translation>Löschen</translation>
     </message>
     <message>
-        <location line="-644"/>
+        <location line="-668"/>
         <source>Cut</source>
         <translation>Ausschneiden</translation>
     </message>
@@ -6539,12 +6536,12 @@ Sind Sie sicher?</translation>
         <translation>Neues Verzeichnis öffnen</translation>
     </message>
     <message>
-        <location line="-192"/>
+        <location line="-203"/>
         <source>file name filters (semicolon or space separated list)</source>
         <translation>Dateinamen der Filter (mit Semikolon oder Leerzeichen separierte Liste)</translation>
     </message>
     <message>
-        <location line="+194"/>
+        <location line="+205"/>
         <source>Change To Parent Folder</source>
         <translation>Zum übergeordneten Verzeichnis wechseln</translation>
     </message>
@@ -6589,12 +6586,12 @@ Sind Sie sicher?</translation>
         <translation>Dateisystem</translation>
     </message>
     <message>
-        <location line="+337"/>
+        <location line="+360"/>
         <source>Select base directory</source>
         <translation>Aktuelles Stammverzeichnis auswählen</translation>
     </message>
     <message>
-        <location line="+232"/>
+        <location line="+233"/>
         <source>the selected items</source>
         <translation>der ausgewählte Eintrag</translation>
     </message>
@@ -7008,23 +7005,9 @@ Sind Sie sicher?</translation>
         <translation>Beim Senden des Dateiinhalts der geladenen Datei an Python ist eine Zeitüberschreitung aufgetreten</translation>
     </message>
     <message>
-        <source>An error occured while importing the loaded file into the python workspace.</source>
-        <translation type="vanished">Beim Import der geladenen Datei in den Python-Workspace ist ein Fehler aufgetreten.</translation>
-    </message>
-    <message>
-        <source>A warning occured while importing the loaded file into the python workspace.</source>
-        <translation type="vanished">Beim Import der geladenen Datei in den Python-Workspace ist eine Warnung aufgetreten.</translation>
-    </message>
-    <message>
         <location line="+13"/>
         <source>Error while sending values to python</source>
         <translation>Fehler beim Senden der Werte an Python</translation>
-    </message>
-    <message>
-        <source>Please indicate a variable name for the dictionary in file &apos;%1&apos;
-(name must start with a letter followed by numbers or letters).</source>
-        <translation type="vanished">Bitte einen Variablenname für das &apos;Dictionary&apos; der Datei &apos;%1&apos; eingeben
-(Der Name muss mit einem Buchstaben beginnen und darf nur Zahlen und Buchstaben enthalten).</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -7164,7 +7147,7 @@ Sind Sie sicher?</translation>
     </message>
     <message>
         <location line="+0"/>
-        <source>Please indicate a variable name for the dictionary in file &apos;%1&apos;
+        <source>Please indicate a variable name for the dictionary in file &apos;%1&apos; 
 (name must start with a letter followed by numbers or letters).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7333,7 +7316,7 @@ Sind Sie sicher?</translation>
         <translation>Themen und Stile werden geladen...</translation>
     </message>
     <message>
-        <location line="+118"/>
+        <location line="+125"/>
         <source>load process organizer...</source>
         <translation>&apos;Process Organizer&apos; wird geladen...</translation>
     </message>
@@ -7358,14 +7341,6 @@ Sind Sie sicher?</translation>
         <translation>Inkompatible Designer-Plugins</translation>
     </message>
     <message>
-        <source>The &apos;designer&apos; folder contains incompatible designer plugins. The load of itom or subsequent ui&apos;s might fail if these files are not removed or updated:
-
-%1</source>
-        <translation type="vanished">Der Ordner &apos;designer&apos; enthält nicht kompatible Designer-Plugins. Beim Öffnen von itom oder dazugehörigen ui-Dateien können diese zu Problemen führen wenn sie nicht gelöscht oder aktualisiert werden:
-
-%1</translation>
-    </message>
-    <message>
         <location line="+4"/>
         <source>load ui organizer...</source>
         <translation>&apos;UI Organizer&apos; wird geladen...</translation>
@@ -7386,7 +7361,7 @@ Sind Sie sicher?</translation>
         <translation>&apos;Designer Widgets&apos; werden gescannt und geladen...</translation>
     </message>
     <message>
-        <location line="-518"/>
+        <location line="-525"/>
         <source>Version %1</source>
         <translation>Version %1</translation>
     </message>
@@ -7401,8 +7376,8 @@ Sind Sie sicher?</translation>
         <translation>32 bit</translation>
     </message>
     <message>
-        <location line="+520"/>
-        <source>The &apos;designer&apos; folder contains incompatible designer plugins. The load of itom or subsequent ui&apos;s might fail if these files are not removed or updated:
+        <location line="+527"/>
+        <source>The &apos;designer&apos; folder contains incompatible designer plugins. The load of itom or subsequent ui&apos;s might fail if these files are not removed or updated: 
 
 %1</source>
         <translation type="unfinished"></translation>
@@ -7471,13 +7446,7 @@ Sind Sie sicher?</translation>
         <translation></translation>
     </message>
     <message>
-        <source>Python could not be started. itom cannot be used in the desired way.
-Start itom again with the argument &apos;log&apos; and look-up the error message in the file itomlog.txt.</source>
-        <translation type="obsolete">Python konnte nicht gestartet werden. itom kann ohne Python nicht genutzt werden.
-Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldungen in der Datei &apos;itomlog.txt&apos; auswerten.</translation>
-    </message>
-    <message>
-        <location line="+508"/>
+        <location line="+522"/>
         <source>Ln %1, Col %2, %3 </source>
         <translation>Zeile %1, Spalte %2, %3 </translation>
     </message>
@@ -7647,12 +7616,12 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
         <translation>Über itom...</translation>
     </message>
     <message>
-        <location line="-744"/>
+        <location line="-758"/>
         <source>Command History</source>
         <translation>Befehlsliste</translation>
     </message>
     <message>
-        <location line="+754"/>
+        <location line="+768"/>
         <source>Loaded Plugins...</source>
         <translation>Geladene Plugins...</translation>
     </message>
@@ -7793,7 +7762,7 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
         <translation>Hilfe</translation>
     </message>
     <message>
-        <location line="-953"/>
+        <location line="-967"/>
         <source>Bookmarks</source>
         <translation>Lesezeichen</translation>
     </message>
@@ -7804,12 +7773,12 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
     </message>
     <message>
         <location line="+160"/>
-        <source>Python could not be started. itom cannot be used in the desired way.
+        <source>Python could not be started. itom cannot be used in the desired way. 
 Start itom again with the argument &apos;log&apos; and look-up the error message in the file itomlog.txt.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+562"/>
+        <location line="+576"/>
         <source>Plugin Help Viewer...</source>
         <translation>Pugin-Hilfeansicht...</translation>
     </message>
@@ -7955,7 +7924,7 @@ Start itom again with the argument &apos;log&apos; and look-up the error message
 <context>
     <name>ito::PaletteOrganizer</name>
     <message>
-        <location filename="../organizer/paletteOrganizer.cpp" line="+561"/>
+        <location filename="../organizer/paletteOrganizer.cpp" line="+827"/>
         <source>Settings do not contain a color palette entry for the palette name &apos;%s&apos;</source>
         <translation>Es existiert kein Farbpaletteneintrag mit dem Palettennamen &apos;%s&apos;</translation>
     </message>
@@ -8251,32 +8220,16 @@ Bitte das Python Hauptverzeichnis im itom Eigenschaftendialog überprüfen und i
     <message>
         <location line="+34"/>
         <source>The home directory of Python is currently set to the non-existing directory &apos;%s&apos;
-Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python
+Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python 
 or correct the base directory in the property dialog of itom.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+22"/>
         <source>The built-in library path of Python could not be found. The current home directory is &apos;%s&apos;
-Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python
+Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python 
 or correct the base directory in the preferences dialog of itom.</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The home directory of Python is currently set to the non-existing directory &apos;%s&apos;
-Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python
-or correct the base directory in the property dialog of itom.</source>
-        <translation type="obsolete">Das Stammverzeichnis von Python ist aktuell auf ein nicht existierendes Verzeichnis gesetzt (&apos;%s&apos;)
-Python kann nicht gestartet werden. Bitte entweder im System die Umgebungsvariable &apos;PYTHONHOME&apos; mit dem Stammverzeichnis von Python setzen
-oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
-    </message>
-    <message>
-        <source>The built-in library path of Python could not be found. The current home directory is &apos;%s&apos;
-Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python
-or correct the base directory in the preferences dialog of itom.</source>
-        <translation type="obsolete">Das Verzeichnis zur &apos;built-in library&apos; von Python wurde nicht gefunden. Der aktuelle Pfad des Python-Stammverzeichnisses lautet &apos;%s&apos;
-Python kann nicht gestartet werden. Bitte entweder im System die Umgebungsvariable &apos;PYTHONHOME&apos; mit dem Stammverzeichnis von Python setzen
-oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     </message>
     <message>
         <location line="+129"/>
@@ -8580,7 +8533,7 @@ Soll dennoch fortgesetzt werden?</translation>
         <translation type="unfinished">Fehler beim Löschen aller Haltepunkte im ITO-Debugger.</translation>
     </message>
     <message>
-        <location line="+2997"/>
+        <location line="+3029"/>
         <source>It is not allowed to save a variable in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8625,25 +8578,9 @@ Soll dennoch fortgesetzt werden?</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-5578"/>
+        <location line="-5610"/>
         <source>Settings value Python::pyHome has not been set as Python Home directory since it does not exist:  %s</source>
         <translation type="unfinished">Der unter &apos;Python::pyHome&apos; eingestellte Wert wurde nicht als Python-Verzeichnis gesetzt, da dieses Verzeichnis nicht existiert: %s</translation>
-    </message>
-    <message>
-        <source>The home directory of Python is currently set to the non-existing directory &apos;%s&apos;
-Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python
-or correct the base directory in the property dialog of itom.</source>
-        <translation type="obsolete">Das Stammverzeichnis von Python ist aktuell auf ein nicht existierendes Verzeichnis gesetzt (&apos;%s&apos;)
-Python kann nicht gestartet werden. Bitte entweder im System die Umgebungsvariable &apos;PYTHONHOME&apos; mit dem Stammverzeichnis von Python setzen
-oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
-    </message>
-    <message>
-        <source>The built-in library path of Python could not be found. The current home directory is &apos;%s&apos;
-Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python
-or correct the base directory in the preferences dialog of itom.</source>
-        <translation type="obsolete">Das Verzeichnis zur &apos;built-in library&apos; von Python wurde nicht gefunden. Der aktuelle Pfad des Python-Stammverzeichnisses lautet &apos;%s&apos;
-Python kann nicht gestartet werden. Bitte entweder im System die Umgebungsvariable &apos;PYTHONHOME&apos; mit dem Stammverzeichnis von Python setzen
-oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     </message>
     <message>
         <location line="+557"/>
@@ -8775,7 +8712,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2339"/>
+        <location line="+2371"/>
         <source>Variables cannot be saved since dictionary is not available</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8897,7 +8834,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-5145"/>
+        <location line="-5177"/>
         <source>The itom subdirectory of Python &apos;%s&apos; does not exist.
 Please change setting in the property dialog of itom.</source>
         <translation type="unfinished"></translation>
@@ -8926,14 +8863,14 @@ Verify the Python base directory in the itom property dialog and restart itom.</
     <message>
         <location line="+38"/>
         <source>The home directory of Python is currently set to the non-existing directory &apos;%s&apos;
-Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python
+Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python 
 or correct the base directory in the property dialog of itom.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+22"/>
         <source>The built-in library path of Python could not be found. The current home directory is &apos;%s&apos;
-Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python
+Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python 
 or correct the base directory in the preferences dialog of itom.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8985,7 +8922,7 @@ Numpy load error: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2650"/>
+        <location line="+2682"/>
         <source>could not save dataObject since it is not available.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -9090,12 +9027,12 @@ Numpy load error: %1</source>
 <context>
     <name>ito::ScriptDockWidget</name>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="+989"/>
+        <location filename="../widgets/scriptDockWidget.cpp" line="+1035"/>
         <source>The following files have been changed and should be safed:</source>
         <translation>Folgende Dateien wurden geändert und sollten gespeichert werden:</translation>
     </message>
     <message>
-        <location line="+758"/>
+        <location line="+759"/>
         <source>Ctrl+R</source>
         <comment>QShortcut</comment>
         <translation></translation>
@@ -9113,7 +9050,7 @@ Numpy load error: %1</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+16"/>
         <location line="+8"/>
         <source>F6</source>
         <comment>QShortcut</comment>
@@ -9150,24 +9087,19 @@ Numpy load error: %1</source>
         <translation>Strg+D</translation>
     </message>
     <message>
-        <location line="+204"/>
+        <location line="+205"/>
         <source>Bookmark and Navigation Toolbar</source>
         <translation>Symbolleiste Lesezeichen und Navigation</translation>
     </message>
     <message>
-        <location line="+768"/>
-        <source>&apos;%1&apos; was not found</source>
-        <translation>&apos;%1&apos; wurde nicht gefunden</translation>
-    </message>
-    <message>
-        <location line="+0"/>
-        <location line="+94"/>
+        <location line="+810"/>
+        <location line="+89"/>
         <location line="+4"/>
         <source>Find And Replace</source>
         <translation>Suchen und Ersetzen</translation>
     </message>
     <message>
-        <location line="-1091"/>
+        <location line="-1129"/>
         <source>Ctrl+H</source>
         <comment>QShortcut</comment>
         <translation></translation>
@@ -9179,7 +9111,7 @@ Numpy load error: %1</source>
         <translation></translation>
     </message>
     <message>
-        <location line="-882"/>
+        <location line="-891"/>
         <location line="+12"/>
         <source>Open Script</source>
         <translation>Skript öffnen</translation>
@@ -9195,23 +9127,23 @@ Numpy load error: %1</source>
         <translation>Die Datei &apos;%1&apos;  ist kein Python-Skript.</translation>
     </message>
     <message>
-        <location line="+904"/>
+        <location line="+913"/>
         <source>Ctrl+B</source>
         <comment>QShortcut</comment>
         <translation></translation>
     </message>
     <message>
-        <location line="-944"/>
+        <location line="-953"/>
         <source>File Open</source>
         <translation>Datei öffnen</translation>
     </message>
     <message>
-        <location line="+442"/>
+        <location line="+445"/>
         <source>Ln %1, Col %2, %3 </source>
         <translation>Zeile %1, Spalte %2, %3 </translation>
     </message>
     <message>
-        <location line="+352"/>
+        <location line="+350"/>
         <source>Move Left</source>
         <translation>Nach Links verschieben</translation>
     </message>
@@ -9399,6 +9331,28 @@ Numpy load error: %1</source>
     </message>
     <message>
         <location line="+3"/>
+        <source>Run Code Cell</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Ctrl+F9</source>
+        <comment>QShortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Run Code Cell And Advance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Shift+F9</source>
+        <comment>QShortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>Debug</source>
         <translation>Debug</translation>
     </message>
@@ -9505,7 +9459,7 @@ Numpy load error: %1</source>
         <translation>&amp;Skript</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+13"/>
         <source>&amp;Windows</source>
         <translation>&amp;Fenster</translation>
     </message>
@@ -9525,7 +9479,12 @@ Numpy load error: %1</source>
         <translation>Symbolleiste Skript</translation>
     </message>
     <message>
-        <location line="+874"/>
+        <location line="+821"/>
+        <source>No or no more occurrence of &apos;%1&apos; found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+89"/>
         <source>One occurrence was replaced</source>
         <translation>Es wurde ein Element ersetzt</translation>
     </message>
@@ -9548,12 +9507,12 @@ Numpy load error: %1</source>
         <translation>Zurück navigieren</translation>
     </message>
     <message>
-        <location line="+282"/>
+        <location line="+302"/>
         <source>Script Editor</source>
         <translation>Skript-Editor</translation>
     </message>
     <message>
-        <location line="+116"/>
+        <location line="+117"/>
         <source>The following files have been changed and should be safed:</source>
         <translation>Folgende Dateien wurden geändert und sollten gespeichert werden:</translation>
     </message>
@@ -9607,7 +9566,7 @@ Numpy load error: %1</source>
 <context>
     <name>ito::ScriptEditorWidget</name>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="+3060"/>
+        <location filename="../widgets/scriptEditorWidget.cpp" line="+3242"/>
         <source>Print</source>
         <translation>Drucken</translation>
     </message>
@@ -9617,7 +9576,7 @@ Numpy load error: %1</source>
         <translation>Es gibt nichts zu drucken</translation>
     </message>
     <message>
-        <location line="-2460"/>
+        <location line="-2591"/>
         <source>Cut</source>
         <translation>Ausschneiden</translation>
     </message>
@@ -9737,6 +9696,30 @@ Numpy load error: %1</source>
     </message>
     <message>
         <location line="+4"/>
+        <location line="+733"/>
+        <location line="+43"/>
+        <source>Run Code Cell</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-773"/>
+        <source>Ctrl+F9</source>
+        <comment>QShortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Run Code Cell And Advance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Shift+F9</source>
+        <comment>QShortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
         <source>Debug Script</source>
         <translation>Skript im Debug-Modus starten</translation>
     </message>
@@ -9805,7 +9788,7 @@ Numpy load error: %1</source>
         <translation>Strg+D</translation>
     </message>
     <message>
-        <location line="+781"/>
+        <location line="+889"/>
         <source>Missing auto code format command</source>
         <translation>Fehlender Befehl</translation>
     </message>
@@ -9823,7 +9806,7 @@ Numpy load error: %1</source>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+361"/>
+        <location line="+364"/>
         <source>
 
 Should this feature be deactivated? This can be changed again in the property dialog of itom.</source>
@@ -9832,13 +9815,13 @@ Should this feature be deactivated? This can be changed again in the property di
 Soll dieses Feature deaktiviert werden? Dies kann später erneut im Eigenschaftendialog von itom geändert werden.</translation>
     </message>
     <message>
-        <location line="-354"/>
+        <location line="-357"/>
         <location line="+23"/>
         <source>Error starting auto code format</source>
         <translation>Fehler beim Start der automatischen Code-Formatierung</translation>
     </message>
     <message>
-        <location line="+330"/>
+        <location line="+333"/>
         <source>The code formatting failed:
 %1</source>
         <translation>Die automatische Code-Formatierung ist fehlgeschlagen:
@@ -9851,19 +9834,29 @@ Soll dieses Feature deaktiviert werden? Dies kann später erneut im Eigenschafte
         <translation>Fehler bei der automatischen Code-Formatierung</translation>
     </message>
     <message>
-        <location line="+1527"/>
+        <location line="+1532"/>
         <source>The file &apos;%1&apos; has been modified by another program.</source>
         <translation>Die Datei &apos;%1&apos; wurde durch ein anderes Programm geändert.</translation>
     </message>
     <message>
-        <location line="-1453"/>
-        <location line="+137"/>
+        <location line="-1458"/>
+        <location line="+143"/>
         <location line="+120"/>
         <source>Unsaved Changes</source>
         <translation>Ungespeicherte Änderungen</translation>
     </message>
     <message>
-        <location line="-665"/>
+        <location line="-969"/>
+        <source>For running a code cell, no text must be selected.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+43"/>
+        <source>The current cursor position is not within any code cell.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+252"/>
         <source>Error during renaming</source>
         <translation type="unfinished">Fehler beim Umbenennen</translation>
     </message>
@@ -9873,13 +9866,13 @@ Soll dieses Feature deaktiviert werden? Dies kann später erneut im Eigenschafte
         <translation type="unfinished">Allgemeiner Fehler beim Umbenennen</translation>
     </message>
     <message>
-        <location line="+403"/>
-        <location line="+257"/>
+        <location line="+406"/>
+        <location line="+263"/>
         <source>There are unsaved changes in the current document. Do you want to save it first?</source>
         <translation>Es gibt noch ungespeicherte Änderungen im aktuellen Dokument. Sollen diese zuerst gespeichert werden?</translation>
     </message>
     <message>
-        <location line="-234"/>
+        <location line="-240"/>
         <source>Error while opening file</source>
         <translation>Fehler beim Öffnen der Datei</translation>
     </message>
@@ -9889,7 +9882,7 @@ Soll dieses Feature deaktiviert werden? Dies kann später erneut im Eigenschafte
         <translation>Die Datei %1 konnte nicht geladen werden</translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+119"/>
         <source>There are unsaved changes in the document &apos;%1&apos;. Do you want to save it first?</source>
         <translation>Im Dokument &apos;%1&apos; gibt es noch ungespeicherte Änderungen. Sollen diese zuerst gespeichert werden?</translation>
     </message>
@@ -9944,7 +9937,7 @@ Soll dieses Feature deaktiviert werden? Dies kann später erneut im Eigenschafte
         <translation>Unbenannt</translation>
     </message>
     <message>
-        <location line="+325"/>
+        <location line="+324"/>
         <source>The file &apos;%1&apos; does not exist any more.</source>
         <translation>Die Datei &apos;%1&apos; existiert nicht mehr.</translation>
     </message>
@@ -9959,7 +9952,7 @@ Soll dieses Feature deaktiviert werden? Dies kann später erneut im Eigenschafte
         <translation>Soll diese neu geladen werden?</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.h" line="+118"/>
+        <location filename="../widgets/scriptEditorWidget.h" line="+116"/>
         <source>Untitled%1</source>
         <translation>Unbenannt%1</translation>
     </message>
@@ -10080,7 +10073,7 @@ Soll dieses Feature deaktiviert werden? Dies kann später erneut im Eigenschafte
         <translation type="unfinished">Der &apos;defaultButton&apos; muss ebenfalls in &apos;buttons&apos; erscheinen.</translation>
     </message>
     <message>
-        <location line="+2378"/>
+        <location line="+2381"/>
         <source>could not get figure with handle %i.</source>
         <translation type="unfinished">Es wurde kein Plot mit dem Handle %i gefunden.</translation>
     </message>
@@ -10103,7 +10096,7 @@ Soll dieses Feature deaktiviert werden? Dies kann später erneut im Eigenschafte
         <translation type="unfinished">Es wurde kein Plot mit dem Handle %1 gefunden</translation>
     </message>
     <message>
-        <location line="-2438"/>
+        <location line="-2441"/>
         <location line="+56"/>
         <source>property &apos;%1&apos; does not exist</source>
         <translation type="unfinished">Die Eigenschaft &apos;%1&apos; existiert nicht</translation>
@@ -10149,12 +10142,12 @@ Soll dieses Feature deaktiviert werden? Dies kann später erneut im Eigenschafte
         <translation type="unfinished">Die übergebene Objekt-ID ist unbekannt.</translation>
     </message>
     <message>
-        <location line="+510"/>
+        <location line="+513"/>
         <source>object ID is not available</source>
         <translation type="unfinished">Die Objekt-ID ist nicht verfügbar</translation>
     </message>
     <message>
-        <location line="-729"/>
+        <location line="-732"/>
         <source>could not get reference to main dialog or window</source>
         <translation type="unfinished">Es ist keine Referenz zum Hauptdialog oder -Fenster verfügbar</translation>
     </message>
@@ -10260,7 +10253,7 @@ Soll dieses Feature deaktiviert werden? Dies kann später erneut im Eigenschafte
         <translation type="unfinished">Slot konnte nicht gefunden werden</translation>
     </message>
     <message>
-        <location line="+825"/>
+        <location line="+828"/>
         <source>unsupported data type</source>
         <translation>Nicht unterstützter Datentyp</translation>
     </message>
@@ -10282,8 +10275,8 @@ Soll dieses Feature deaktiviert werden? Dies kann später erneut im Eigenschafte
         <translation>Abbildung %1</translation>
     </message>
     <message>
-        <location line="-2851"/>
-        <location line="+2606"/>
+        <location line="-2854"/>
+        <location line="+2609"/>
         <location line="+72"/>
         <location line="+71"/>
         <location line="+196"/>
@@ -10292,7 +10285,7 @@ Soll dieses Feature deaktiviert werden? Dies kann später erneut im Eigenschafte
         <translation type="unfinished">&quot;figHandle&quot; &apos;%i&apos; ist nicht verfügbar.</translation>
     </message>
     <message>
-        <location line="-2068"/>
+        <location line="-2071"/>
         <location line="+106"/>
         <location line="+102"/>
         <location line="+147"/>
@@ -10308,7 +10301,7 @@ Soll dieses Feature deaktiviert werden? Dies kann später erneut im Eigenschafte
         <translation>Das Widget ist (nicht länger) verfügbar.</translation>
     </message>
     <message>
-        <location line="+601"/>
+        <location line="+604"/>
         <source>The requested widget does not exist (any more).</source>
         <translation>Das angeforderte Widget existiert nicht (mehr).</translation>
     </message>
@@ -10656,7 +10649,13 @@ konnte nicht formatiert werden. Grund:
         <translation>Beispieltext</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+5"/>
+        <location line="+18"/>
+        <source></source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-12"/>
         <location line="+5"/>
         <source>color: %1; background-color: %2;</source>
         <translation>Farbe: %1, Hintergrundfarbe: %2;</translation>
@@ -11178,7 +11177,7 @@ konnte nicht formatiert werden. Grund:
         <translation>Details anzeigen</translation>
     </message>
     <message>
-        <location line="+431"/>
+        <location line="+459"/>
         <location line="+27"/>
         <source>timeout while asking python for detailed information</source>
         <translation>Zeitüberschreitung bei der Anfrage an Python für detailierte Informationen</translation>

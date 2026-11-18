@@ -135,7 +135,7 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/docs/pluginDoc
     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/docs)
 
 # copy the entire styles folder including subfolders to the binary dir
-# However ignore files with endings svg, png, qrc, py (mainly the source
+# However ignore files with endings svg, png, qrc, qss.in, py (mainly the source
 # files for Qt style, since these sources should be compiled to a rcc and
 # qss file).
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/styles
@@ -143,6 +143,7 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/styles
     PATTERN "*.svg" EXCLUDE
     PATTERN "*.png" EXCLUDE
     PATTERN "*.qrc" EXCLUDE
+    PATTERN "*.qss.in" EXCLUDE
     PATTERN "*.py" EXCLUDE
     PATTERN "*.odg" EXCLUDE)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/licenses
@@ -154,7 +155,16 @@ itom_define_sdk_platform()
 itom_define_sdk_compiler()
 
 find_package(OpenCV QUIET)
-string(REPLACE . "" OpenCV_LIB_VERSION ${OpenCV_VERSION})
+
+# Verify OpenCV version is 3.0 or higher
+if(OpenCV_VERSION VERSION_LESS "3.0")
+	message(FATAL_ERROR "OpenCV version ${OpenCV_VERSION} found, but version 3.0 or higher is required (supports 3.x, 4.x, and 5.0+)")
+endif()
+if(OpenCV_FOUND)
+    string(REPLACE . "" OpenCV_LIB_VERSION ${OpenCV_VERSION})
+else()
+    set(OpenCV_LIB_VERSION "")
+endif()
 
 if(BUILD_WITH_PCL)
     find_package(VTK QUIET)

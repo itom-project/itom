@@ -46,7 +46,9 @@ This module contains the WordHoverTooltipMode
 #include "../mode.h"
 #include "../textDecoration.h"
 #include "../delayJobRunner.h"
-#include "../../python/pythonJedi.h"
+#include "../../languageServer/languageServerTypes.h"
+#include "../../languageServer/languageServerBackend.h"
+#include <qpointer.h>
 #include <qobject.h>
 #include <qstring.h>
 #include <qtextcursor.h>
@@ -77,6 +79,8 @@ protected:
 
     void emitWordHover(QTextCursor cursor);
 
+    void connectToBackend(ILanguageServerBackend *backend);
+
     /*
     \returns (stringlist os signatures, docstring)
     */
@@ -85,13 +89,16 @@ protected:
 private:
     DelayJobRunnerBase *m_pTimer;
     QObject *m_pPythonEngine;
-    int m_requestCount;
+    QPointer<ILanguageServerBackend> m_pConnectedBackend;
+    bool m_waitingForBackend = false;
+    int m_pendingHelpId; //!< id of the pending help request or -1
     int m_tooltipsMaxLength;
     bool m_tooltipVisible;
 
 private slots:
     void onMouseMoved(QMouseEvent *e);
-    void onJediGetHelpResultAvailable(QVector<ito::JediGetHelp> helps);
+    void onGetHelpResultAvailable(QVector<ito::HelpItem> helps);
+    void onGetHelpReady(int requestId, ito::HelpItem help);
 
 };
 

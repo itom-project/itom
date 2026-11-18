@@ -39,6 +39,7 @@
 #include <qshortcut.h>
 #include <qrect.h>
 #include <qwidget.h>
+#include <qtimer.h>
 
 
 namespace ito
@@ -215,6 +216,19 @@ namespace ito
 
             void synchronizeTopLevelState();
 
+            //! enables or disables the docking by drag and drop (only for the floating style floatingWindow).
+            /*!
+                If enabled, a docked widget can be dragged out of the main window by its title bar and
+                becomes an undocked window then. An undocked window can be docked again by releasing it
+                over the main window (see undockedWindowDragged).
+            */
+            void setDragDockingEnabled(bool enabled);
+            inline bool dragDockingEnabled() const { return m_dragDockingEnabled; }
+
+            //! the layout of the main window is currently restored (e.g. restoreState). Then, no
+            //! undocking by drag and drop must be detected.
+            static void setLayoutRestoring(bool restoring);
+
             virtual QSize sizeHint() const;
             virtual QSize minimumSizeHint() const;
 
@@ -230,6 +244,11 @@ namespace ito
             */
             bool eventFilter(QObject *obj, QEvent *event)
             {
+                if (m_dragDockingEnabled && !m_docked && event->type() == QEvent::Move)
+                {
+                    windowMoved();
+                }
+
                 if (event->type() == QEvent::Close)
                 {
                     closeEvent((QCloseEvent*)event);
@@ -261,6 +280,9 @@ namespace ito
 
             virtual void windowStateChanged( bool /*windowNotToolbox*/ ) {}
 
+            //! called if the title bar of the undocked window is dragged by the user (only if drag docking is enabled).
+            virtual void undockedWindowDragged() {}
+
             void setContentWidget(QWidget *widget);
             inline QWidget* getContentWidget() const { return m_pWindow->centralWidget(); }   /*!<  returns reference to central widget of docking window */
             inline QMainWindow* getCanvas() { return m_pWindow; }
@@ -281,6 +303,9 @@ namespace ito
             QAction *m_actStayOnTopOfApp;
 
         private:
+
+            void windowMoved();
+            void undockToFloatingGeometry();
 
             void contextMenuEvent(QContextMenuEvent *e)
             {
@@ -314,6 +339,9 @@ namespace ito
             QSize m_oldMinSize;
             QSize m_oldMaxSize;
             QRect m_lastUndockedSize;
+            bool m_dragDockingEnabled = false;
+            QTimer* m_undockDragTimer = nullptr; //!< polls the mouse button while the dock widget is dragged out of the main window
+            static int s_layoutRestoring;
             QByteArray m_pendingGeometryState; //if the window has a loaded geometry state from the settings file, but has been hidden at startup, the geometry is saved here and applied once the window becomes visible. Then, this variable is cleared.
 
         public Q_SLOTS:
@@ -333,6 +361,8 @@ namespace ito
             RetVal setAdvancedWindowTitle(QString newCompleteTitle = QString(), bool appendToBasicTitle = true);
 
         private slots:
+            void onTopLevelChanged(bool floating);
+            void pollUndockDrag();
             void mnuStayOnTop(bool checked);
             void mnuStayOnTopOfApp(bool checked);
 

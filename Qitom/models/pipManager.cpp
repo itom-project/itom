@@ -32,6 +32,12 @@
 #include <qsettings.h>
 #include <QProcessEnvironment>
 #include <QRegularExpression>
+#include <qjsonarray.h>
+#include <qjsondocument.h>
+#include <qjsonobject.h>
+#include <qhash.h>
+#include <qfileinfo.h>
+#include <qcoreapplication.h>
 
 namespace ito
 {
@@ -50,7 +56,8 @@ namespace ito
         m_pipCallMode(PipMode::pipModeDirect),
         m_numberOfUnfetchedPackageDetails(0),
         m_numberOfNewlyObtainedPackageDetails(0),
-        m_fetchDetailCancelRequested(false)
+        m_fetchDetailCancelRequested(false),
+        m_fetchDetailsViaScript(false)
     {
         m_headers << tr("Name") << tr("Version") << tr("Location") << tr("Requires") << tr("Updates") << tr("Summary") << tr("Homepage") << tr("License");
         m_alignment << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft);
@@ -158,6 +165,7 @@ namespace ito
         if (!retval.containsError())
         {
             checkCallMode();
+            checkPackageDetailsScript();
         }
     }
 
@@ -443,6 +451,39 @@ ito::RetVal PipManager::checkCallMode()
     return ito::retOk;
 }
 
+//-------------------------------------------------------------------------------------
+/* The details of the installed packages (summary, homepage, license...) were obtained by
+"python -m pip show" in batches of a few packages. This is slow, since every call loads pip
+and pip computes the "Required-by" field, which parses the requirements of all installed
+packages for every requested package. The script itom-packages/pipProcess/packageDetails.py
+gets the same fields for all packages in one call via importlib.metadata. If it is not
+available or fails, pip show is used as fallback.
+*/
+void PipManager::checkPackageDetailsScript()
+{
+    QDir pipProcessDir = QCoreApplication::applicationDirPath();
+
+    if (pipProcessDir.cd("itom-packages") && pipProcessDir.cd("pipProcess"))
+    {
+        QFileInfo script(pipProcessDir, "packageDetails.py");
+
+        if (script.exists())
+        {
+            m_packageDetailsScriptPath = script.absoluteFilePath();
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------
+//! canonical package name (PEP 503): lower case, runs of '-', '_' and '.' replaced by '-'
+QString PipManager::canonicalPackageName(const QString& name)
+{
+    static const QRegularExpression separators("[-_.]+");
+    QString result = name.toLower();
+    result.replace(separators, "-");
+    return result;
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /** return parent element
 *   @param [in] index   the element's index for which the parent should be returned
@@ -691,7 +732,7 @@ void PipManager::listAvailablePackages(const PipGeneralOptions &options /*= PipG
 }
 
 //-------------------------------------------------------------------------------------
-void PipManager::fetchPackageDetails(const QStringList &names, int totalNumberOfUnfetchedDetails, bool firstCall)
+void PipManager::fetchPackageDetails(const QStringList &names, int totalNumberOfUnfetchedDetails, bool firstCall, bool viaScript /*= false*/)
 {
     if (m_pythonPath == "")
     {
@@ -724,10 +765,23 @@ void PipManager::fetchPackageDetails(const QStringList &names, int totalNumberOf
         clearBuffers();
         m_currentTask = taskFetchPackagesDetails;
 
-        QStringList arguments;
-        arguments << "pip" << "show" << names;
-        arguments << parseGeneralOptions(m_generalOptionsCache, false, true); //version has already been checked in listAvailablePackages. This is sufficient.
-        startProcess(arguments);
+        m_fetchDetailsViaScript = viaScript;
+
+        if (viaScript)
+        {
+            // the script always returns the details of all installed packages
+            m_requestedDetailNames.clear();
+            m_fetchDetailCancelRequested = false;
+            m_pipProcess.start(m_pythonPath, QStringList() << m_packageDetailsScriptPath);
+        }
+        else
+        {
+            m_requestedDetailNames = names;
+            QStringList arguments;
+            arguments << "pip" << "show" << names;
+            arguments << parseGeneralOptions(m_generalOptionsCache, false, true); //version has already been checked in listAvailablePackages. This is sufficient.
+            startProcess(arguments);
+        }
     }
 }
 
@@ -1063,7 +1117,7 @@ void PipManager::finalizeTask(int exitCode /*= 0*/)
         }
         else if (temp == taskFetchPackagesDetails)
         {
-            finalizeTaskFetchPackagesDetails(error, output);
+            finalizeTaskFetchPackagesDetails(error, output, exitCode);
         }
         else if (temp == taskCheckUpdates)
         {
@@ -1253,7 +1307,17 @@ bool PipManager::triggerFetchDetailsForOpenPackages(bool firstCall)
 
     if (packages_out.size() > 0)
     {
-        fetchPackageDetails(packages_out.mid(0, 5), packages_out.size(), firstCall);
+        if (firstCall && m_packageDetailsScriptPath != "")
+        {
+            // fast path: one call for the details of all packages
+            fetchPackageDetails(QStringList(), packages_out.size(), firstCall, true);
+        }
+        else
+        {
+            // fallback: pip show in batches (each call loads pip, therefore not too small batches)
+            fetchPackageDetails(packages_out.mid(0, 50), packages_out.size(), firstCall, false);
+        }
+
         return true;
     }
 
@@ -1275,8 +1339,32 @@ void PipManager::updatePythonPackageDetails(const PythonPackage& details)
 }
 
 //-------------------------------------------------------------------------------------
-void PipManager::finalizeTaskFetchPackagesDetails(const QString& error, const QString& output)
+void PipManager::finalizeTaskFetchPackagesDetails(const QString& error, const QString& output, int exitCode)
 {
+    if (m_fetchDetailsViaScript)
+    {
+        m_fetchDetailsViaScript = false;
+
+        if (parsePackageDetailsScriptOutput(output, exitCode))
+        {
+            continueFetchPackagesDetails();
+        }
+        else
+        {
+            // the script failed: do not use it any more and restart with pip show
+            emit outputAvailable(tr("Could not get the package details via packageDetails.py. Use pip show instead.\n"), false);
+            m_packageDetailsScriptPath.clear();
+
+            if (!triggerFetchDetailsForOpenPackages(true))
+            {
+                emit pipRequestFinished(taskFetchPackagesDetails, "List of packages obtained.\n", true);
+                emit pipFetchDetailsProgress(m_numberOfUnfetchedPackageDetails, m_numberOfUnfetchedPackageDetails, true);
+            }
+        }
+
+        return;
+    }
+
     if (error != "" && output == "")
     {
         emit pipRequestFinished(taskFetchPackagesDetails, "Error obtaining list of packages (show)\n", false);
@@ -1425,23 +1513,112 @@ void PipManager::finalizeTaskFetchPackagesDetails(const QString& error, const QS
             m_numberOfNewlyObtainedPackageDetails++;
         }
 
-        endResetModel();
-
-        emit pipFetchDetailsProgress(m_numberOfUnfetchedPackageDetails, m_numberOfNewlyObtainedPackageDetails, false);
-
-        if (!m_fetchDetailCancelRequested)
+        // packages that pip show did not return must not be requested again (endless loop)
+        for (auto it = m_pythonPackages.begin(); it != m_pythonPackages.end(); ++it)
         {
-            if (!triggerFetchDetailsForOpenPackages(false))
+            if (!it->m_detailsFetched && m_requestedDetailNames.contains(it->m_name))
             {
-                emit pipRequestFinished(taskFetchPackagesDetails, "List of packages obtained.\n", true);
-                emit pipFetchDetailsProgress(m_numberOfUnfetchedPackageDetails, m_numberOfUnfetchedPackageDetails, true);
+                it->m_detailsFetched = true;
+                m_numberOfNewlyObtainedPackageDetails++;
             }
         }
-        else
+
+        m_requestedDetailNames.clear();
+
+        endResetModel();
+
+        continueFetchPackagesDetails();
+    }
+}
+
+//-------------------------------------------------------------------------------------
+/* parses the JSON output of itom-packages/pipProcess/packageDetails.py and updates the
+details of all packages, whose details are not fetched yet.
+
+Returns false if the script failed or its output is invalid.
+*/
+bool PipManager::parsePackageDetailsScriptOutput(const QString& output, int exitCode)
+{
+    if (exitCode != 0)
+    {
+        return false;
+    }
+
+    QJsonParseError parseError;
+    const QJsonDocument doc = QJsonDocument::fromJson(output.toUtf8(), &parseError);
+
+    if (parseError.error != QJsonParseError::NoError || !doc.isArray())
+    {
+        return false;
+    }
+
+    QHash<QString, QJsonObject> details;
+    const QJsonArray items = doc.array();
+
+    for (const QJsonValue& item : items)
+    {
+        const QJsonObject obj = item.toObject();
+        const QString name = obj.value("name").toString();
+
+        if (name != "" && !details.contains(canonicalPackageName(name)))
         {
-            emit pipRequestFinished(taskFetchPackagesDetails, "List of packages obtained (details only partially available).\n", true);
-            emit pipFetchDetailsProgress(m_numberOfUnfetchedPackageDetails, m_numberOfUnfetchedPackageDetails, true);
+            details[canonicalPackageName(name)] = obj;
         }
+    }
+
+    beginResetModel();
+
+    for (auto it = m_pythonPackages.begin(); it != m_pythonPackages.end(); ++it)
+    {
+        if (it->m_detailsFetched)
+        {
+            continue;
+        }
+
+        const auto found = details.constFind(canonicalPackageName(it->m_name));
+
+        if (found != details.constEnd())
+        {
+            const QJsonObject& obj = found.value();
+            it->m_location = obj.value("location").toString();
+            it->m_requires = obj.value("requires").toString();
+            it->m_summary = obj.value("summary").toString();
+            it->m_homepage = obj.value("homepage").toString();
+            it->m_license = obj.value("license").toString();
+            it->m_detailsFetched = true;
+            m_numberOfNewlyObtainedPackageDetails++;
+        }
+    }
+
+    endResetModel();
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+//! reports the progress and fetches the next details (pip show) or finishes the task
+void PipManager::continueFetchPackagesDetails()
+{
+    emit pipFetchDetailsProgress(
+        m_numberOfUnfetchedPackageDetails, m_numberOfNewlyObtainedPackageDetails, false);
+
+    if (!m_fetchDetailCancelRequested)
+    {
+        if (!triggerFetchDetailsForOpenPackages(false))
+        {
+            emit pipRequestFinished(taskFetchPackagesDetails, "List of packages obtained.\n", true);
+            emit pipFetchDetailsProgress(
+                m_numberOfUnfetchedPackageDetails, m_numberOfUnfetchedPackageDetails, true);
+        }
+    }
+    else
+    {
+        emit pipRequestFinished(
+            taskFetchPackagesDetails,
+            "List of packages obtained (details only partially available).\n",
+            true);
+        emit pipFetchDetailsProgress(
+            m_numberOfUnfetchedPackageDetails, m_numberOfUnfetchedPackageDetails, true);
     }
 }
 

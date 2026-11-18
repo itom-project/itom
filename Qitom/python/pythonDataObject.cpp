@@ -46,6 +46,14 @@
 
 #define PROTOCOL_STR_LENGTH 128
 
+// The accessor PyDataType_C_METADATA has been introduced with numpy 2.0, where the
+// member c_metadata has been moved from PyArray_Descr to _PyArray_LegacyDescr.
+// For numpy 1.x the member can still be accessed directly. Do not use #ifndef here,
+// since numpy 2.0 provides the accessor as static inline function and not as macro.
+#if NPY_ABI_VERSION < 0x02000000
+#define PyDataType_C_METADATA(descr) ((descr)->c_metadata)
+#endif
+
 
 namespace ito {
 template<class T>
@@ -629,7 +637,7 @@ int PythonDataObject::PyDataObj_CreateFromShapeTypeData(
                         *(self->dataObject) = (int32)PyLong_AsLongAndOverflow(data, &overflow);
                         if (overflow)
                         {
-                            throw cv::Exception(
+                            throw ITOM_CV_EXCEPTION(
                                 0,
                                 "overflow: given data exceeds the integer boundaries.",
                                 "PyDataObject_init",
@@ -658,7 +666,7 @@ int PythonDataObject::PyDataObj_CreateFromShapeTypeData(
 
                         if (!ok)
                         {
-                            throw cv::Exception(
+                            throw ITOM_CV_EXCEPTION(
                                 0,
                                 "Value could not be parsed to an itom datetime value.",
                                 "PyDataObject_init",
@@ -675,7 +683,7 @@ int PythonDataObject::PyDataObj_CreateFromShapeTypeData(
 
                         if (!ok)
                         {
-                            throw cv::Exception(
+                            throw ITOM_CV_EXCEPTION(
                                 0,
                                 "Value could not be parsed to an itom timedelta value.",
                                 "PyDataObject_init",
@@ -742,7 +750,7 @@ int PythonDataObject::PyDataObj_CreateFromShapeTypeData(
 
                             if (npTypenum == -1)
                             {
-                                throw cv::Exception(
+                                throw ITOM_CV_EXCEPTION(
                                     0,
                                     "No compatible np datatype found for desired dtype",
                                     "PyDataObject_init",
@@ -756,7 +764,7 @@ int PythonDataObject::PyDataObj_CreateFromShapeTypeData(
                             {
                                 // Python error is set... Therefore just throw an exception without
                                 // message
-                                throw cv::Exception(0, "", "PyDataObject_init", __FILE__, __LINE__);
+                                throw ITOM_CV_EXCEPTION(0, "", "PyDataObject_init", __FILE__, __LINE__);
                             }
                             else
                             {
@@ -765,7 +773,7 @@ int PythonDataObject::PyDataObj_CreateFromShapeTypeData(
 
                                 if (retVal.containsError())
                                 {
-                                    throw cv::Exception(
+                                    throw ITOM_CV_EXCEPTION(
                                         0,
                                         retVal.errorMessage(),
                                         "PyDataObject_init",
@@ -779,7 +787,7 @@ int PythonDataObject::PyDataObj_CreateFromShapeTypeData(
                     }
                     else
                     {
-                        throw cv::Exception(
+                        throw ITOM_CV_EXCEPTION(
                             0, "invalid data value", "PyDataObject_init", __FILE__, __LINE__);
                     }
                 }
@@ -1173,12 +1181,7 @@ bool PythonDataObject::PyDataObj_CopyFromDatetimeNpNdArray(
 
     // in case of datetime or timedelta: The values are int64, based on 1.1.1970
     // the timebase is given by:
-    // Assuming NumPy 1.7+ has the new behavior for descr metadata
-#ifdef NPY_2_0_API_VERSION
-    const auto md = (PyArray_DatetimeDTypeMetaData*)(descr);
-#else
-    const auto md = (PyArray_DatetimeDTypeMetaData*)(descr->c_metadata);
-#endif
+    const auto md = (PyArray_DatetimeDTypeMetaData*)PyDataType_C_METADATA(descr);
 
     // timezone is ignored in numpy. If dataObject contains a timezone, ignore it and raise a
     // warning.
@@ -1309,11 +1312,7 @@ bool PythonDataObject::PyDataObj_CopyFromTimedeltaNpNdArray(
 
     // in case of datetime or timedelta: The values are int64, based on 1.1.1970
     // the timebase is given by:
-#ifdef NPY_2_0_API_VERSION
-    const auto md = (PyArray_DatetimeDTypeMetaData*)(descr);
-#else
-    const auto md = (PyArray_DatetimeDTypeMetaData*)(descr->c_metadata);
-#endif
+    const auto md = (PyArray_DatetimeDTypeMetaData*)PyDataType_C_METADATA(descr);
 
     if (md == nullptr)
     {
@@ -8989,12 +8988,7 @@ ito::RetVal PythonDataObject::copyNpArrayValuesToDataObject(
             const npy_datetime* td = reinterpret_cast<npy_datetime*>(data);
             ito::DateTime* rowPtr;
             PyArray_Descr* dtype = PyArray_DESCR(npNdArray);
-
-#ifdef NPY_2_0_API_VERSION
-            const auto md = (PyArray_DatetimeDTypeMetaData*)(dtype);
-#else
-            const auto md = (PyArray_DatetimeDTypeMetaData*)(dtype->c_metadata);
-#endif
+            const auto md = (PyArray_DatetimeDTypeMetaData*)PyDataType_C_METADATA(dtype);
             // timezone is ignored in numpy. If dataObject contains a timezone, ignore it and raise a
             // warning.
 
@@ -9023,12 +9017,7 @@ ito::RetVal PythonDataObject::copyNpArrayValuesToDataObject(
             const npy_timedelta* td = reinterpret_cast<npy_timedelta*>(data);
             ito::TimeDelta* rowPtr;
             PyArray_Descr* dtype = PyArray_DESCR(npNdArray);
-
-#ifdef NPY_2_0_API_VERSION
-            const auto md = (PyArray_DatetimeDTypeMetaData*)(dtype);
-#else
-            const auto md = (PyArray_DatetimeDTypeMetaData*)(dtype->c_metadata);
-#endif
+            const auto md = (PyArray_DatetimeDTypeMetaData*)PyDataType_C_METADATA(dtype);
             // timezone is ignored in numpy. If dataObject contains a timezone, ignore it and raise a
             // warning.
 
@@ -9570,11 +9559,7 @@ PyArrayObject* nparrayFromTimeDeltaDataObject(
 {
     // step 1: create numpy array
     PyArray_Descr* descr = PyArray_DescrNewFromType(NPY_TIMEDELTA);
-#ifdef NPY_2_0_API_VERSION
-    auto metaData = (PyArray_DatetimeDTypeMetaData*)(descr);
-#else
-    auto metaData = (PyArray_DatetimeDTypeMetaData*)(descr->c_metadata);
-#endif
+    auto metaData = (PyArray_DatetimeDTypeMetaData*)PyDataType_C_METADATA(descr);
 
     if (meta != nullptr)
     {
@@ -9695,11 +9680,7 @@ PyArrayObject* nparrayFromDateTimeDataObject(
 {
     // step 1: create numpy array
     PyArray_Descr* descr = PyArray_DescrNewFromType(NPY_DATETIME);
-#ifdef NPY_2_0_API_VERSION
-    auto metaData = (PyArray_DatetimeDTypeMetaData*)(descr);
-#else
-    auto metaData = (PyArray_DatetimeDTypeMetaData*)(descr->c_metadata);
-#endif
+    auto metaData = (PyArray_DatetimeDTypeMetaData*)PyDataType_C_METADATA(descr);
 
     if (meta != nullptr)
     {
@@ -9815,7 +9796,7 @@ PyArrayObject* nparrayFromDateTimeDataObject(
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(dataObject_Array__doc, "__array__(dtype = None) -> np.ndarray \n\
+PyDoc_STRVAR(dataObject_Array__doc, "__array__(dtype = None, copy = None) -> np.ndarray \n\
 \n\
 Returns a numpy.ndarray from this dataObject. If possible a shallow copy is returned. \n\
 \n\
@@ -9832,12 +9813,16 @@ Parameters \n\
 dtype : numpy.dtype, optional \n\
     A :class:`numpy.dtype` object that describes the data type, data alignment etc. \n\
     for the returned :class:`numpy.ndarray`. \n\
+copy : bool, optional \n\
+    If ``None`` (default), a copy is only created if it is unavoidable. \n\
+    If ``True``, a deep copy is always returned. If ``False``, a :obj:`ValueError` \n\
+    is raised if a copy cannot be avoided (this argument is required by numpy >= 2.0). \n\
 \n\
 Returns \n\
 ------- \n\
 arr : numpy.ndarray \n\
     The converted :class:`numpy.ndarray`");
-PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject* self, PyObject* args)
+PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject* self, PyObject* args, PyObject* kwds)
 {
     if (self->dataObject == nullptr)
     {
@@ -9847,15 +9832,54 @@ PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject* self, PyObject* args)
 
     PyArray_Descr* newtype = nullptr;
     PyArrayObject* newArray = nullptr;
+    PyObject* copyObj = Py_None;
 
-    if (!PyArg_ParseTuple(args, "|O&", PyArray_DescrConverter, &newtype))
+    // since numpy 2.0, __array__ must accept the keyword arguments 'dtype' and 'copy'.
+    // PyArray_DescrConverter2 also accepts None for 'dtype' (in this case newtype stays nullptr).
+    const char* kwlist[] = {"dtype", "copy", nullptr};
+
+    if (!PyArg_ParseTupleAndKeywords(
+            args, kwds, "|O&O", const_cast<char**>(kwlist),
+            PyArray_DescrConverter2, &newtype, &copyObj))
     {
         Py_XDECREF(newtype);
         return nullptr;
     }
 
-    PyObject* item = nullptr;
+    // copy == None: copy only if unavoidable, copy == True: always copy,
+    // copy == False: never copy, raise a ValueError if a copy would be necessary.
+    int copyMode = -1; // -1: if-needed, 0: never, 1: always
+
+    if (copyObj != Py_None)
+    {
+        copyMode = PyObject_IsTrue(copyObj);
+
+        if (copyMode < 0)
+        {
+            Py_XDECREF(newtype);
+            return nullptr;
+        }
+    }
+
     ito::DataObject* selfDO = self->dataObject;
+
+    // a shallow copy is only possible for continuous dataObjects, whose type is neither
+    // dateTime nor timeDelta and whose dtype is not changed.
+    const bool copyRequired =
+        (selfDO->getType() == ito::tDateTime) || (selfDO->getType() == ito::tTimeDelta) ||
+        (!selfDO->getContinuous());
+
+    if (copyMode == 0 && copyRequired)
+    {
+        Py_XDECREF(newtype);
+        PyErr_SetString(
+            PyExc_ValueError,
+            "a copy of this dataObject is unavoidable (non-continuous dataObject or dataObject of "
+            "type dateTime or timeDelta), however 'copy=False' has been requested.");
+        return nullptr;
+    }
+
+    PyObject* item = nullptr;
 
     if (selfDO->getType() == ito::tDateTime)
     {
@@ -9863,14 +9887,10 @@ PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject* self, PyObject* args)
 
         if (newtype && PyDataType_ISDATETIME(newtype))
         {
-#ifdef NPY_2_0_API_VERSION
-            meta = &(((PyArray_DatetimeDTypeMetaData*)newtype)->meta);
-#else
-            meta = &(((PyArray_DatetimeDTypeMetaData*)newtype->c_metadata)->meta);
-#endif
-        }
+    meta = &(((PyArray_DatetimeDTypeMetaData*)PyDataType_C_METADATA(newtype))->meta);
+}
 
-        newArray = nparrayFromDateTimeDataObject(selfDO, meta);
+newArray = nparrayFromDateTimeDataObject(selfDO, meta);
     }
     else if (selfDO->getType() == ito::tTimeDelta)
     {
@@ -9878,14 +9898,10 @@ PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject* self, PyObject* args)
 
         if (newtype && PyDataType_ISDATETIME(newtype))
         {
-#if (NPY_2_0_API_VERSION)
-            meta = &(((PyArray_DatetimeDTypeMetaData*)newtype)->meta);
-#else
-            meta = &(((PyArray_DatetimeDTypeMetaData*)newtype->c_metadata)->meta);
-#endif
-        }
+    meta = &(((PyArray_DatetimeDTypeMetaData*)PyDataType_C_METADATA(newtype))->meta);
+}
 
-        newArray = nparrayFromTimeDeltaDataObject(selfDO, meta);
+newArray = nparrayFromTimeDeltaDataObject(selfDO, meta);
     }
     else if (selfDO->getContinuous())
     {
@@ -9924,10 +9940,32 @@ PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject* self, PyObject* args)
 
     if ((newtype == nullptr) || PyArray_EquivTypes(PyArray_DESCR(newArray) /*->descr*/, newtype))
     {
+        Py_XDECREF(newtype);
+
+        if (copyMode == 1 && !copyRequired)
+        {
+            // no copy has been done so far, however 'copy=True' has been requested.
+            PyObject* ret = PyArray_NewCopy(newArray, NPY_KEEPORDER);
+            Py_DECREF(newArray);
+            return ret;
+        }
+
         return (PyObject*)newArray;
     }
     else
     {
+        if (copyMode == 0)
+        {
+            Py_DECREF(newArray);
+            Py_DECREF(newtype);
+            PyErr_SetString(
+                PyExc_ValueError,
+                "the requested 'dtype' requires a casted copy of this dataObject, however "
+                "'copy=False' has been requested.");
+            return nullptr;
+        }
+
+        // PyArray_CastToType steals a reference of newtype
         PyObject* ret = PyArray_CastToType(newArray, newtype, 0);
         Py_DECREF(newArray);
         return ret;
@@ -12066,7 +12104,7 @@ PyMethodDef PythonDataObject::PyDataObject_methods[] = {
      "__setstate__ method for handle unpickling commands"},
     {"__array__",
      (PyCFunction)PythonDataObject::PyDataObj_Array_,
-     METH_VARARGS,
+     METH_KEYWORDS | METH_VARARGS,
      dataObject_Array__doc},
     {"createMask",
      (PyCFunction)PythonDataObject::PyDataObject_createMask,

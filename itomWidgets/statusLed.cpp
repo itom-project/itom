@@ -181,11 +181,11 @@ void StatusLed::paintEvent(QPaintEvent * /*event*/)
 
         if (d->m_status)
         {
-            p.setPen(QPen(d->m_colorsOn->darker(200)));
+            p.setPen(QPen(d->m_colorsOn[1].darker(200))); // edge color
         }
         else
         {
-            p.setPen(QPen(d->m_colorsOff->darker(200)));
+            p.setPen(QPen(d->m_colorsOff[1].darker(200))); // edge color
         }
     }
     else

@@ -25,7 +25,7 @@ total = np.prod(Z.shape)
 
 ###############################################################################
 # First create a 2d polynomial fit with order x = 2 and order y = 2.
-# Z_ must be a regular grid where the x- and y- values are
+# ``Z`` must be a regular grid where the x- and y- values are
 # defined by its axisScales and axisOffsets attributes.
 Z_ = dataObject(Z)
 Z_.axisScales = (0.5, 0.5)

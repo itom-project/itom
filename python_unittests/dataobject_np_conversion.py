@@ -36,7 +36,12 @@ class DataObjectNpConversion(unittest.TestCase):
 
         # a non-continuous dataObject cannot share its data with a np.ndarray.
         # Instead, an implicit deep-copy is done.
-        b2 = np.array(a, copy=False)
+        with self.assertRaises(ValueError):
+            # copy=False will raise a ValueError (at least for numpy 2.3)
+            b2 = np.array(a, copy=False)
+
+        # accept the deep copy
+        b2 = np.array(a, copy=None)
 
         # make object continuous before going on
         b1 = np.array(a.makeContinuous(), copy=False)

@@ -29,7 +29,6 @@
 DataObjectMetaWidgetFactory::DataObjectMetaWidgetFactory(QObject* parent)
     : QObject(parent)
 {
-    initialized = false;
 }
 
 void DataObjectMetaWidgetFactory::initialize(QDesignerFormEditorInterface* /*core*/)

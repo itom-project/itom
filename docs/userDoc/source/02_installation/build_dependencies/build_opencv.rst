@@ -15,13 +15,13 @@ and build path. Configure the CMake file with following options:
 
 * **BUILD** options:
 
-.. figure:: ../images/all-in-one-create/CMake_BUILD_OPENCV.png
+.. figure:: ../images/all-in-one-create/CMake_BUILD_OPENCV.PNG
    :scale: 100%
    :align: center
 
 * **WITH** options:
 
-.. figure:: ../images/all-in-one-create/CMake_WITH_OPENCV.png
+.. figure:: ../images/all-in-one-create/CMake_WITH_OPENCV.PNG
    :scale: 100%
    :align: center
 

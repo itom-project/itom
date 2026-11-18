@@ -29,6 +29,7 @@
 #include <qapplication.h>
 
 #include <qevent.h>
+#include <qwindow.h>
 #include <qpointer.h>
 #include <qstyle.h>
 #include <qstyleoption.h>
@@ -210,6 +211,27 @@ void ToolTipLabel::timerEvent(QTimerEvent *e)
     }
 }
 
+//! returns true, if the given object is a popup widget or the window of a popup widget
+bool ToolTipLabel::isPopupWindow(QObject *o) const
+{
+    Qt::WindowFlags flags;
+
+    if (const QWindow *window = qobject_cast<const QWindow*>(o))
+    {
+        flags = window->flags();
+    }
+    else if (const QWidget *widget = qobject_cast<const QWidget*>(o))
+    {
+        flags = widget->windowFlags();
+    }
+    else
+    {
+        return false;
+    }
+
+    return (flags & Qt::WindowType_Mask) == Qt::Popup;
+}
+
 bool ToolTipLabel::eventFilter(QObject *o, QEvent *e)
 {
     switch (e->type()) {
@@ -251,7 +273,12 @@ bool ToolTipLabel::eventFilter(QObject *o, QEvent *e)
         // For QTBUG-55523 (QQC) specifically: Hide tooltip when windows are closed,
         // unless the close event is for the this tooltip, in which case we don't
         // recursively hide/close again.
-        if (o != (QObject*)windowHandle() && o != this)
+        //
+        // Popup windows (e.g. the list of the code completion) are excluded:
+        // their focus-out and close events are delivered asynchronously and
+        // would otherwise hide a tooltip (e.g. a calltip), that has just been
+        // shown after the popup has been closed.
+        if (o != (QObject*)windowHandle() && o != this && !isPopupWindow(o))
             hideTipImmediately();
         break;
     case QEvent::MouseButtonPress:

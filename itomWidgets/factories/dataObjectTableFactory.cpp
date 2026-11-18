@@ -29,7 +29,6 @@
 DataObjectTableFactory::DataObjectTableFactory(QObject *parent)
     : QObject(parent)
 {
-    initialized = false;
 }
 
 void DataObjectTableFactory::initialize(QDesignerFormEditorInterface * /*core*/)

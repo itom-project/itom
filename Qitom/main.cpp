@@ -19,6 +19,7 @@
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
+#include <qfileinfo.h>
 #include "mainApplication.h"
 #include "main.h"
 #include "AppManagement.h"
@@ -236,7 +237,7 @@ int main(int argc, char *argv[])
 
     //  possible arguments are:
 
-    //      *.py : opens the given python file in the script editor
+    //      *.py : opens the given python file in the script editor (other existing text files like *.json, *.yaml, *.txt are opened in the script editor, too)
     //      log : writes all messages sent via qDebug, qWarning... to the logfile itomlog.txt
     //              in the itom application directory.
     //      name=anyUsername : tries to start itom with the given username (different setting file)
@@ -454,8 +455,10 @@ int main(int argc, char *argv[])
         //check if args contains entries with .py at the end, these files should be opened as scripts at startup
         QStringList scriptsToOpen;
         QStringList scriptsToExecute;
-        foreach(const QString &a, args)
+        for (int argIdx = 0; argIdx < args.size(); ++argIdx)
         {
+            const QString a = args.at(argIdx);
+
             if (a.endsWith(".py", Qt::CaseInsensitive))
             {
                 if (a.startsWith("run="))
@@ -466,6 +469,12 @@ int main(int argc, char *argv[])
                 {
                     scriptsToOpen << a;
                 }
+            }
+            else if (argIdx > 0 && !a.startsWith("run=") && QFileInfo(a).isFile())
+            {
+                // (argument 0 is the executable itself) other existing files (json, yaml, txt, ...) are also opened in the script editor
+                // if they are supported (this is checked, when the script is opened).
+                scriptsToOpen << a;
             }
         }
 

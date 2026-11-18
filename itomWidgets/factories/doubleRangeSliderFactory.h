@@ -48,7 +48,7 @@ public:
     void initialize(QDesignerFormEditorInterface *core);
 
 private:
-    bool initialized;
+    bool initialized = false;
 };
 
 #endif // DOUBLERANGESLIDERFACTORY_H

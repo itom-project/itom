@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>389</width>
+    <width>356</width>
     <height>223</height>
    </rect>
   </property>
@@ -49,7 +49,10 @@
    <item>
     <widget class="QLabel" name="label">
      <property name="text">
-      <string>These features require the Python packages jedi and parso.</string>
+      <string>These features are provided by the active language assistance backend (configured in Editor - General). For Jedi, the Python packages jedi and parso are required.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
      </property>
     </widget>
    </item>

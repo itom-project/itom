@@ -35,7 +35,7 @@ points to the directory::
 of your **itom** installation (or build-folder if self-compiled). Place a copy of the matplotlib config file **matplotlibrc** into
 this directory and modify the variable **backend** to **module://mpl_itom.backend_itomagg**.
 
-A template for the configuration file can be either found in the Python subfolder **[PythonDir]/Lib/site-packages/matplotlib/mpl-data** or under http://matplotlib.org/_static/matplotlibrc.
+A template for the configuration file can be either found in the Python subfolder **[PythonDir]/Lib/site-packages/matplotlib/mpl-data** or under https://matplotlib.org/stable/users/explain/customizing.html#the-matplotlibrc-file.
 
 This is the part you need to change::
 
@@ -130,10 +130,10 @@ Embedding a matplotlib figure in your own user interface
     :scale: 100%
     :align: center
 
-|itom| not only provides stand-alone windows for showing the result of the *matplotlib*, but it is also possible to integrate a *matplotlib* canvas into own user interfaces created by the
-QtDesigner and scripted with |python|. For more information how to do this, see :ref:`qtdesigner`.
+|itom| not only provides stand-alone windows for showing the result of the *matplotlib*, but it is also possible to integrate a *matplotlib* canvas into user interfaces created by
+Qt Designer and scripted with |python|. For more information how to do this, see :ref:`qtdesigner`.
 
-In the widget library of QtDesigner there is the widget **MatplotlibPlot** in the section **itom Plugins** (under the consumption that the corresponding designer plugin library is contained in the folder *designer* of the root directory of |itom|). Drag&Drop an instance of this widget onto your user interface.
+In the widget library of Qt Designer there is the widget **MatplotlibPlot** in the section **itom Plugins** (under the condition that the corresponding designer plugin library is contained in the folder *designer* of the root directory of |itom|). Drag & drop an instance of this widget onto your user interface.
 
 In the following example, a new main window is created where a *MatplotlibPlot* widget (name: *plot*) is placed on the left side while two buttons (name: *btnDroppedSpines* and *btnSine*) are placed on the right side:
 
@@ -239,12 +239,12 @@ The you have the reference to the figure-instance of *matplotlib* and can go one
 .. note::
 
     Usually, *matplotlib* is allowed changing the size of the output window. The window is then forced to have a new size that can afterwards
-    be manually resized. If your output widget is embedded in an user interface, this behaviour might be undesired. Then disable it by setting
+    be manually resized. If your output widget is embedded in a user interface, this behaviour might be undesired. Then disable it by setting
     the property **forceWindowResize** to **False**. In the example above this can be done by::
 
         gui.plot["forceWindowResize"] = False
 
-    or by directlly setting the corresponding property when designing the user interface in QtDesigner.
+    or by directly setting the corresponding property when designing the user interface in Qt Designer.
 
 This example is contained in the **demo/ui/embeddedMatplotlib** folder.
 
@@ -297,14 +297,14 @@ searching for a cache file, use the following snippet:
     from matplotlib import get_cachedir
     print(get_cachedir())
 
-(See also: http://stackoverflow.com/questions/26085867/matplotlib-font-not-found)
+(See also: https://stackoverflow.com/questions/26085867/matplotlib-font-not-found)
 
 
 Creating an animation via Matplotlib
 =====================================
 
-Matplotlib can be used to create animation and save it as a *mp4* file. The **ffmpeg codec** is required for this feature and needs to be installed on your computer. A detailed description for the installation of the ffmpeg codec can be found `here <http://www.adaptivesamples.com/how-to-install-ffmpeg-on-windows>`__. The build version of the ffmpeg codec can be downloaded `here
-<http://ffmpeg.zeranoe.com/builds>`_. Download and unzip the build files to your harddrive.
+Matplotlib can be used to create animation and save it as a *mp4* file. The **ffmpeg codec** is required for this feature and needs to be installed on your computer. A detailed description for the installation of the ffmpeg codec can be found `here <https://blog.gregzaal.com/how-to-install-ffmpeg-on-windows/>`__. The build version of the ffmpeg codec can be downloaded `here
+<https://www.gyan.dev/ffmpeg/builds/>`_. Download and unzip the build files to your harddrive.
 
 Typically the folder is like::
 

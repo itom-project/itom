@@ -175,7 +175,7 @@ for buildername in buildernames:
                 with open(qhpName, "rt") as fp:
                     content = fp.read()
                     newContent = re.sub(
-                        "<file>/([a-zA-Z0-9\._\-]*)</file>",
+                        r"<file>/([a-zA-Z0-9\._\-]*)</file>",
                         r"<file>\1</file>",
                         content,
                         flags=re.M,

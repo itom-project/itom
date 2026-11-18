@@ -65,6 +65,17 @@ public:
 
     void scriptEditorOrganizerAvailable();
 
+    //! keeps the current layout of all docked toolboxes and script editors for the next session
+    /*!
+        Has to be called while all script editors are still open, since they are closed
+        before the main window is destroyed. The kept layout is written to the settings
+        file in the destructor of the main window.
+    */
+    void keepLayoutStateForNextSession();
+
+    //! discards a layout kept by keepLayoutStateForNextSession, e.g. if closing itom was cancelled
+    void discardKeptLayoutState();
+
 protected:
     void closeEvent(QCloseEvent *event);
     void resizeEvent(QResizeEvent * event);
@@ -146,6 +157,17 @@ private:
 
     QMap<QString, QPointer<WidgetInfoBox> > m_infoBoxWidgets;
 
+    //! version of the saved dock / toolbar layout (QMainWindow::saveState).
+    /*!
+        Increase this number, if built-in dock widgets or toolbars are added, removed or
+        renamed. Saved layouts with another version are then ignored and the default
+        layout is used, instead of restoring an outdated and possibly scrambled layout.
+    */
+    static const int LayoutStateVersion = 1;
+
+    QByteArray m_defaultLayoutState; /*!< layout after the creation of all built-in docks, used to reset the layout */
+    QByteArray m_keptLayoutState;    /*!< layout kept for the next session, see keepLayoutStateForNextSession */
+
 signals:
     void mainWindowCloseRequest(bool considerPythonBusy);  /*!<  signal emitted if user would like to close the main window and therefore the entire application */
     void pythonDebugCommand(tPythonDbgCmd cmd); /*!<  will be received by PythonThread, directly */
@@ -198,6 +220,7 @@ private slots:
     void mnuCloseAllPlots();
     void mnuShowAllPlots();
     void mnuMinimizeAllPlots();
+    void mnuResetLayout();
 
     void mnuScriptStop();
     void mnuScriptContinue();

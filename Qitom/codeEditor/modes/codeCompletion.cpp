@@ -43,6 +43,7 @@
 #include "AppManagement.h"
 
 #include "../../python/pythonEngine.h"
+#include "../../languageServer/languageServerManager.h"
 #include "../../widgets/scriptEditorWidget.h"
 #include "../../helper/compatHelper.h"
 
@@ -88,7 +89,7 @@ void SubsequenceSortFilterProxyModel::setPrefix(const QString &prefix)
 
         m_filterPatterns.append(regExp);
 
-        ptrn = QString("%1.*%1").arg(prefix.left(i), prefix.mid(i));
+        ptrn = QString("%1.*%2").arg(prefix.left(i), prefix.mid(i));
         regExp.setPattern(ptrn);
 
         if (m_caseSensitivity)
@@ -244,6 +245,7 @@ CodeCompletionMode::CodeCompletionMode(const QString &name, const QString &descr
     m_lastCursorLine(-1),
     m_lastCursorColumn(-1),
     m_showTooltips(false),
+    m_pConnectedBackend(nullptr),
     m_requestId(0),
     m_lastRequestId(0),
     m_tooltipsMaxLength(300),
@@ -316,8 +318,27 @@ void CodeCompletionMode::onStateChanged(bool state)
 void CodeCompletionMode::onInstall(CodeEditor *editor)
 {
     createCompleter();
-    m_pCompleter->setModel(new QStandardItemModel(this));
+    setCompleterModel(new QStandardItemModel(this));
     Mode::onInstall(editor);
+}
+
+//-------------------------------------------------------------------
+/*
+QCompleter::setModel is not virtual, hence the filter proxy model of the
+SubsequenceCompleter would be bypassed, if setModel is called via a QCompleter pointer.
+*/
+void CodeCompletionMode::setCompleterModel(QAbstractItemModel *model)
+{
+    SubsequenceCompleter *subsequenceCompleter = dynamic_cast<SubsequenceCompleter*>(m_pCompleter);
+
+    if (subsequenceCompleter)
+    {
+        subsequenceCompleter->setModel(model);
+    }
+    else
+    {
+        m_pCompleter->setModel(model);
+    }
 }
 
 //-------------------------------------------------------------------
@@ -616,7 +637,7 @@ void CodeCompletionMode::insertCompletion(const QString &completion)
 }
 
 //-------------------------------------------------------------------
-void CodeCompletionMode::onJediCompletionResultAvailable(int line, int col, int requestId, QVector<ito::JediCompletion> completions)
+void CodeCompletionMode::onCompletionResultAvailable(int line, int col, int requestId, QVector<ito::CompletionItem> completions)
 {
     m_lastRequestId = requestId;
 
@@ -653,6 +674,8 @@ void CodeCompletionMode::resetSyncDataAndHidePopup()
 //-------------------------------------------------------------------
 bool CodeCompletionMode::requestCompletion()
 {
+    m_completionPrefix = editor()->wordUnderCursor(false).selectedText();
+
     int line = editor()->currentLineNumber();
     int col = editor()->currentColumnNumber() - m_completionPrefix.size();
     bool sameContext = (line == m_lastCursorLine && col == m_lastCursorColumn);
@@ -676,56 +699,103 @@ bool CodeCompletionMode::requestCompletion()
     }
     else
     {
-        PythonEngine *pyEng = (PythonEngine*)m_pPythonEngine;
-        if (pyEng)
+        ILanguageServerBackend *backend = LanguageServerManager::getInstance()->activeBackend();
+
+        if (!backend)
+        {
+            if (!m_waitingForBackend)
+            {
+                m_waitingForBackend = true;
+                LanguageServerManager::getInstance()->runWhenBackendReady(
+                    this,
+                    [this](ILanguageServerBackend *readyBackend)
+                {
+                    m_waitingForBackend = false;
+
+                    if (readyBackend && editor() && editor()->hasFocus())
+                    {
+                        requestCompletion();
+                    }
+                });
+            }
+
+            return true;
+        }
+
+        if (backend)
         {
             QString filename;
 
-            ScriptEditorWidget *sew = qobject_cast<ScriptEditorWidget*>(editor());
+            AbstractCodeEditorWidget *acew = qobject_cast<AbstractCodeEditorWidget*>(editor());
 
-            if (sew)
+            if (acew)
             {
-                filename = sew->getFilename();
+                filename = acew->getLanguageServerFilename();
             }
 
-            if (filename == "")
+            connectToBackend(backend);
+
+            // line and col might be changed if code is a virtual code (e.g. for command line, containing all its history)
+            QString code = editor()->codeText(line, col);
+
+            ito::CompletionRequest request;
+            request.m_source = code;
+            request.m_line = line;
+            request.m_col = col;
+            request.m_path = filename;
+            request.m_prefix = m_completionPrefix;
+            request.m_requestId = m_requestId;
+
+            int id = backend->requestCompletion(request);
+
+            if (id >= 0)
             {
-                filename = QDir::cleanPath(QDir::current().absoluteFilePath("__temporaryfile__.py"));
-            }
-
-            if (pyEng->tryToLoadJediIfNotYetDone())
-            {
-                // line and col might be changed if code is a virtual code (e.g. for command line, containing all its history)
-                QString code = editor()->codeText(line, col);
-
-                ito::JediCompletionRequest request;
-                request.m_source = code;
-                request.m_line = line;
-                request.m_col = col;
-                request.m_path = filename;
-                request.m_prefix = m_completionPrefix;
-                request.m_requestId = m_requestId;
-                request.m_callbackFctName = "onJediCompletionResultAvailable";
-                request.m_sender = this;
-
-                pyEng->enqueueJediCompletionRequest(request);
-
                 m_lastCursorColumn = col;
                 m_lastCursorLine = line;
-                m_requestId += 1;
-
-                if (m_requestId == INT_MAX)
-                {
-                    m_requestId = 0;
-                }
-            }
-            else
-            {
-                onStateChanged(false);
+                m_requestId = id + 1;
             }
         }
 
         return true;
+    }
+}
+
+//-------------------------------------------------------------------
+void CodeCompletionMode::connectToBackend(ILanguageServerBackend *backend)
+{
+    if (backend == m_pConnectedBackend)
+    {
+        return;
+    }
+
+    if (m_pConnectedBackend)
+    {
+        disconnect(
+            m_pConnectedBackend, &ILanguageServerBackend::completionReady,
+            this, &CodeCompletionMode::onCompletionReady);
+    }
+
+    connect(
+        backend, &ILanguageServerBackend::completionReady,
+        this, &CodeCompletionMode::onCompletionReady);
+
+    m_pConnectedBackend = backend;
+}
+
+//-------------------------------------------------------------------
+void CodeCompletionMode::onCompletionReady(int requestId, QList<ito::CompletionItem> completions)
+{
+    // only the result of the latest request is considered
+    if (requestId < 0 || requestId != m_requestId - 1)
+    {
+        return;
+    }
+
+    m_lastRequestId = requestId;
+
+    if (editor())
+    {
+        showCompletions(QVector<ito::CompletionItem>(completions.begin(), completions.end()));
     }
 }
 
@@ -812,6 +882,7 @@ Shows the popup at the specified index.
 void CodeCompletionMode::showPopup(int index /*= 0*/)
 {
     QString fullPrefix = editor()->wordUnderCursor(false).selectedText();
+    m_completionPrefix = fullPrefix;
 
     if (m_caseSensitive)
     {
@@ -855,7 +926,7 @@ void CodeCompletionMode::showPopup(int index /*= 0*/)
 //--------------------------------------------------------------------
 /*
 */
-void CodeCompletionMode::showCompletions(const QVector<JediCompletion> &completions)
+void CodeCompletionMode::showCompletions(const QVector<CompletionItem> &completions)
 {
     updateModel(completions);
     showPopup();
@@ -907,7 +978,7 @@ models for the QCompleter
 
 :param completionPrefix:
 */
-QStandardItemModel* CodeCompletionMode::updateModel(const QVector<JediCompletion> &completions)
+QStandardItemModel* CodeCompletionMode::updateModel(const QVector<CompletionItem> &completions)
 {
     // build the completion model
     QStandardItemModel* cc_model = new QStandardItemModel(this);
@@ -916,7 +987,7 @@ QStandardItemModel* CodeCompletionMode::updateModel(const QVector<JediCompletion
     QStandardItem *item;
     QIcon icon;
 
-    foreach (const JediCompletion &completion, completions)
+    foreach (const CompletionItem &completion, completions)
     {
         name = completion.m_name;
         item = new QStandardItem();
@@ -970,7 +1041,7 @@ QStandardItemModel* CodeCompletionMode::updateModel(const QVector<JediCompletion
         createCompleter();
     }
 
-    m_pCompleter->setModel(cc_model);
+    setCompleterModel(cc_model);
 
     return cc_model;
 }

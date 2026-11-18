@@ -7,7 +7,7 @@ Main Window
 
 During the startup of |itom| a splash screen shows the current state of the load process. After having finished, the |itom| main window appears like in the following screenshot:
 
-.. figure:: images/iTOM.png
+.. figure:: images/iTOM.PNG
     :scale: 100%
     :align: center
 
@@ -157,7 +157,7 @@ All available toolboxes are listed in the menu **View >> Toolboxes**, where hidd
 Additionally, a right click to any place in the toolbar opens the following context menu where the first items also access
 the loaded toolboxes. The items after the separator correspond to the toolbars, such that they can be hidden or shown:
 
-.. figure:: images/toolboxmenu.png
+.. figure:: images/toolboxmenu.PNG
     :scale: 100%
     :align: center
 

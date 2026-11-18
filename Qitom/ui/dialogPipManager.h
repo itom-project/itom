@@ -49,14 +49,15 @@ public:
     DialogPipManager(QWidget *parent = NULL, bool standalone = false);
     ~DialogPipManager();
 
-    QColor colorMessage() { return m_colorMessage; }
+    QColor colorMessage() const { return effectiveColorMessage(); }
     void setColorMessage(const QColor &color);
 
-    QColor colorError() { return m_colorError; }
+    QColor colorError() const { return effectiveColorError(); }
     void setColorError(const QColor &color);
 
 protected:
     void closeEvent(QCloseEvent *e);
+    void changeEvent(QEvent *e);
     PipGeneralOptions createOptions() const;
 
     void installOrUpdatePackage(bool update = false);
@@ -71,8 +72,11 @@ private:
     int m_lastLogEntry; //-1: nothing yet, 0: standard text, 1: error text
     bool m_outputSilent;
     bool m_standalone;
-    QColor m_colorMessage;
-    QColor m_colorError;
+    QColor m_colorMessage; //!< invalid: derive from palette (see effectiveColorMessage)
+    QColor m_colorError;   //!< invalid: derive from palette (see effectiveColorError)
+
+    QColor effectiveColorMessage() const;
+    QColor effectiveColorError() const;
 
     static QString invisiblePwStr;
 

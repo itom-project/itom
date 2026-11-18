@@ -66,11 +66,10 @@ Adds a mode to the editor.
 
 :param mode: The mode instance to append.
 */
-Mode::Ptr ModesManager::append(Mode::Ptr mode)
+void ModesManager::append(Mode::Ptr mode)
 {
     m_modes[mode->name()] = mode;
     mode->onInstall(editor());
-    return mode;
 }
 
 
@@ -79,20 +78,21 @@ Mode::Ptr ModesManager::append(Mode::Ptr mode)
 Removes a mode from the editor.
 
 :param name_or_klass: The name (or class) of the mode to remove.
-:returns: The removed mode.
 */
-Mode::Ptr ModesManager::remove(Mode::Ptr mode)
+void ModesManager::remove(Mode::Ptr mode)
 {
-    Mode::Ptr out;
-    if (m_modes.contains(mode->name()))
+    if (!mode)
     {
-        Mode::Ptr &m = m_modes[mode->name()];
-        m->onUninstall();
-        m_modes.remove(m->name());
-        out = m;
+        return;
     }
 
-    return out;
+    if (m_modes.contains(mode->name()))
+    {
+        // Keep a local strong reference first. After remove(), references to the map item are invalid.
+        Mode::Ptr m = m_modes[mode->name()];
+        m->onUninstall();
+        m_modes.remove(m->name());
+    }
 }
 
 //---------------------------------------------------------------------

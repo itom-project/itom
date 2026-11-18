@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2024, Institut für Technische Optik (ITO),
+    Copyright (C) 2026, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of itom.
@@ -20,8 +20,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef SCRIPTEDITORWIDGET_H
-#define SCRIPTEDITORWIDGET_H
+#pragma once
 
 #include "../models/breakPointModel.h"
 
@@ -54,6 +53,8 @@
 #include "../models/outlineItem.h"
 #include "../models/bookmarkModel.h"
 #include "../helper/IOHelper.h"
+#include "../helper/editorFileType.h"
+#include "../helper/lineEnding.h"
 #include "../ui/dialogScriptCharsetEncoding.h"
 
 #include <QtPrintSupport/qprinter.h>
@@ -112,8 +113,16 @@ public:
     inline QString getFilename() const {return m_filename; }
     inline bool hasNoFilename() const { return m_filename.isNull(); }
     inline int getUID() const { return m_uid; }
+
+    //! type of the document (python or any other text-like file). Python files are the only ones that can be run, debugged or checked.
+    inline EditorFileType::Type fileType() const { return m_fileType; }
+    inline bool isPythonFile() const { return m_fileType == EditorFileType::Python; }
     bool getCanCopy() const;
     inline QString getUntitledName() const { return tr("Untitled%1").arg(m_uid); }
+
+    //!< returns the filename, that is passed to the language server. For scripts without
+    //!< filename, a unique, non-existing and stable filename is returned.
+    QString getLanguageServerFilename() const override;
 
     RetVal setCursorPosAndEnsureVisible(const int line, bool errorMessageClick = false, bool showSelectedCallstackLine = false);
     RetVal showLineAndHighlightWord(
@@ -143,16 +152,32 @@ public:
     //!< returns true if the current line can be a trigger to insert a template docstring
     //!< for a possible method / function, this line belongs to.
     bool currentLineCanHaveDocstring() const;
+    IOHelper::CharsetEncodingItem charsetEncoding() const
+    {
+        return m_charsetEncoding;
+    }
 
-    IOHelper::CharsetEncodingItem charsetEncoding() const { return m_charsetEncoding; }
+    //! line ending of the file ("\n" or "\r\n"), see ito::LineEnding
+    LineEnding::Type lineEnding() const
+    {
+        return m_lineEnding;
+    }
+
+    //! changes the line ending, that is used when the file is saved (marks the document as modified)
+    void setLineEnding(LineEnding::Type lineEnding);
+
+    //! true if the file is bigger than the large file threshold and the costly features are disabled
+    bool largeFileMode() const
+    {
+        return m_largeFileMode;
+    }
 
     //!< the replacement will be handled as one undo-action. The script will be marked as modified afterwards.
-    void replaceOccurencesInCurrentScript(const QString &newValue, const QVector<ito::FileRenameItem> &renameItems);
+    void replaceOccurencesInCurrentScript(const QString &newValue, const QVector<ito::RenameTextItem> &renameItems);
 
     static QString filenameFromUID(int UID, bool &found);
 
 protected:
-
     bool canInsertFromMimeData(const QMimeData *source) const;
     void insertFromMimeData(const QMimeData *source);
 
@@ -177,6 +202,12 @@ protected:
 
     void paintEvent(QPaintEvent* e);
 
+    ito::RetVal formatPythonCode(int progressDialogShowDelayMs = 0);
+    void pyCodeFormatterDone(bool success, QString codeOrErrorString, QEventLoop& loop);
+
+    //!< write file content to disk (used by both sync and async save paths)
+    RetVal writeFileContent(const QString& filename);
+
 private:
     enum markerType
     {
@@ -190,11 +221,15 @@ private:
 
     bool lineAcceptsBPs(int line);
 
+    void changeFileSaveEncoding(const IOHelper::CharsetEncodingItem& encoding);
+
     RetVal changeFilename(const QString &newFilename);
 
-    IOHelper::CharsetEncodingItem guessEncoding(const QByteArray &content) const;
+    void updateFileType(const QString &filename);
+    void applyFileType();
+    void applyLargeFileMode();
 
-    void changeFileSaveEncoding(const IOHelper::CharsetEncodingItem &encoding);
+    IOHelper::CharsetEncodingItem guessEncoding(const QByteArray &content) const;
 
     QFileSystemWatcher *m_pFileSysWatcher;
 
@@ -209,6 +244,7 @@ private:
     std::map<QString,QAction*> m_editorMenuActions;
 
     QString m_filename; //!< canonical filename of the script or empty if no script name has been given yet
+    mutable QString m_untitledLanguageServerFilename; //!< virtual filename for the language server, if m_filename is empty
     int m_uid;
 
     //go back navigation features
@@ -218,9 +254,15 @@ private:
     bool m_pythonBusy; //!< true: python is executing or debugging a script, a command...
     bool m_pythonExecutable;
 
+    EditorFileType::Type m_fileType = EditorFileType::Python; //!< new, unsaved scripts are python scripts
+
     //!< to accept drop events of other files dropped onto this file, the script
     //!< must not be readonly. Therefore a readonly script will be temporary set in a read/write mode
     bool m_wasReadonly;
+
+    //! large file mode: features with O(file size) costs are disabled (see applyLargeFileMode)
+    bool m_largeFileMode;
+    qint64 m_largeFileThresholdBytes;
     bool m_canCopy;
     bool m_keepIndentationOnPaste;
     int m_textBlockLineIdxAboutToBeDeleted; //!< if != -1, a TextBlockUserData in the line index is about to be removed.
@@ -237,10 +279,13 @@ private:
     //!< the current command string for the python imports sorting (or empty, if this pre-step is not enabled)
     QString m_autoCodeFormatPreCmd;
 
+    bool m_autoCodeFormatOnSave;
+
     //!< this is the encoding of this script, hence,
     //!< the encoding that was used to load this script from
     //!< a file and will also be used to store it in a file.
     IOHelper::CharsetEncodingItem m_charsetEncoding;
+    LineEnding::Type m_lineEnding;
     bool m_charsetDefined;
     bool m_charsetEncodingAutoGuess;
 
@@ -274,15 +319,18 @@ private:
     QSharedPointer<OutlineItem> checkBlockForOutlineItem(int startLineIdx, int endLineIdx) const;
 
 signals:
-    void pythonRunFile(QString filename);
     void pythonRunSelection(QString selectionText);
-    void pythonDebugFile(QString filename);
+    void pythonRunFileRequest(QString filename); /*!<  will be received by scriptEditorOrganizer, in
+                                                    order to save all unsaved changes first */
+    void pythonDebugFileRequest(QString filename); /*!<  will be received by scriptEditorOrganizer,
+                                                      in order to save all unsaved changes first */
     void closeRequest(ScriptEditorWidget* sew, bool ignoreModifications); //signal emitted if this tab should be closed without considering any save-state
     void marginChanged();
     void outlineModelChanged(ScriptEditorWidget *editor, QSharedPointer<OutlineItem> rootItem);
     void addGoBackNavigationItem(const GoBackNavigationItem &item);
     void tabChangeRequested();
     void findSymbolsShowRequested();
+    void formatAndSaveCompleted();
 
 public slots:
     void triggerCodeChecker();
@@ -313,6 +361,8 @@ public slots:
     bool menuPyCodeReferenceRenaming();
     void menuGenerateDocstring();
     void menuScriptCharsetEncoding();
+    void menuScriptLineEndingLF();
+    void menuScriptLineEndingCRLF();
 
     void pythonStateChanged(tPythonTransitions pyTransition);
     void pythonDebugPositionChanged(QString filename, int lineno);
@@ -323,6 +373,8 @@ public slots:
 
     void updateSyntaxCheck();
     void print();
+
+    // void pyCodeFormatterDone(bool success, QString codeOrErrorString);
 
 private slots:
     void toggleBookmarkRequested(int line);
@@ -352,10 +404,6 @@ private slots:
     void onCursorPositionChanged();
     void onTextChanged();
     void tabChangeRequest();
-
-    void pyCodeFormatterDone(bool success, QString code);
 };
 
 } //end namespace ito
-
-#endif

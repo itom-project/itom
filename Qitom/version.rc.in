@@ -1,5 +1,7 @@
 #include <windows.h>
 
+#pragma code_page(65001) // UTF-8
+
 VS_VERSION_INFO     VERSIONINFO
 FILEVERSION         ${itom_VERSION_MAJOR}, ${itom_VERSION_MINOR}, ${itom_VERSION_PATCH}, 0
 PRODUCTVERSION      ${itom_VERSION_MAJOR}, ${itom_VERSION_MINOR}, 0, 0

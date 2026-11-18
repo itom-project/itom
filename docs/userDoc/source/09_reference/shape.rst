@@ -27,7 +27,7 @@ Examples for the creation of shapes are:
     ellipse = shape(shape.Ellipse, (-50,-70), (-20, 0)) #top-left, bottom-right
     circle = shape(shape.Circle, (-30, 100), 40) #center, side-length
 
-If the optional transformation matrix (2x3 float64 matrix) is set, the shape can be translated and/or rotated. Please consider, that any
+If the optional transformation matrix (2x3 float64 matrix) is set, the shape can be translated and/or rotated. Please note that any
 rotation is currently not supported in any plot. Rectangles, squares, ellipses or circles are always defined, such that their main axes
 are parallel to the x- and y-axis. Use the rotation to choose another principal orientation. The base points of the shape are never affected
 by any transformation matrix. Only the contour points can be requested with the applied coordinate transformation (if desired).

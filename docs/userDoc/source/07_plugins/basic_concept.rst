@@ -12,7 +12,7 @@ In order to provide a fast access to these devices, it is necessary to link to t
 via plugins in |itom|, hence every hardware device is wrapped by an |itom| plugin that is loaded at startup.
 Nevertheless, it is not desired to have plugins with arbitrary interfaces, such that one has to find the right command
 set and communication strategy that differs from camera to camera (this is maybe a little bit the case in Matlab or
-LabView, where every manufacturer can implement its plugin with its own function-set and communication strategy).
+LabVIEW, where every manufacturer can implement its plugin with its own function-set and communication strategy).
 |itom| provides a unified interface for the three device categories: **dataIO** (for all grabbers and other input/output
 devices), **actuator** (for actuators and stages) as well as an interface for algorithm plugins that allow a fast
 implementation using C/C++, CUDA, OpenMP, OpenCL or other 3rd Party libraries. This interface is either callable by

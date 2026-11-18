@@ -48,6 +48,12 @@ public:
         return tabBar();
     };
 
+    //! installs a custom tab bar. Must be called before the first tab is added.
+    inline void setCustomTabBar(QTabBar* tabBar)
+    {
+        setTabBar(tabBar);
+    }
+
 protected:
     void contextMenuEvent(QContextMenuEvent* event)
     {

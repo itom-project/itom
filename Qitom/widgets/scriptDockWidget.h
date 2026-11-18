@@ -110,6 +110,15 @@ public:
 
     ScriptEditorWidget* getCurrentEditor() const;
 
+    // access for the drag and drop of tabs and windows (see DockDragDropController)
+    ScriptEditorWidget* editorAtIndex(int index) const;
+    int indexOfEditor(const ScriptEditorWidget* editor) const;
+    void moveEditorTab(int from, int to);
+    QString tabTitle(int index) const;
+    QRect tabBarGlobalRect() const; //!< tab bar in global coordinates (empty if it is not visible)
+    QRect contentGlobalRect() const; //!< the entire widget (docked) or window (undocked) in global coordinates
+    int tabInsertIndexAt(const QPoint& globalPos) const; //!< index at which a dropped tab is inserted
+
     bool activateTabByFilename(const QString& filename, int currentDebugLine = -1, int UID = -1);
     bool activeTabEnsureLineVisible(
         const int lineNr, bool errorMessageClick = false, bool showSelectedCallstackLine = false);
@@ -144,6 +153,7 @@ protected:
     void closeEvent(QCloseEvent* event);
     virtual void mousePressEvent(QMouseEvent* e);
     virtual void windowStateChanged(bool windowNotToolbox);
+    virtual void undockedWindowDragged();
 
     RetVal closeTab(int index, bool saveFirst = true, bool closeScriptWidgetIfLastTabClosed = true);
     RetVal saveTab(int index, bool forceSaveAs = false, bool askFirst = true);
@@ -236,12 +246,15 @@ private:
     QToolBar* m_bookmarkToolBar;
 
     QString m_autoCodeFormatCmd;
+    bool m_autoCodeFormatOnSave;
 
     // ClassNavigator
     QWidget* m_classMenuBar;
     QComboBox* m_classBox;
     QComboBox* m_methodBox;
     bool m_outlineShowNavigation;
+    bool m_pythonActionsVisible; /*!< false if the current tab is a text file (python actions hidden) */
+    bool m_scriptToolBarHiddenByUser; /*!< visibility of the script toolbar before it was hidden for a text file */
 
     void fillNavigationClassComboBox(
         const QSharedPointer<OutlineItem>& parent, const QString& prefix);
@@ -279,10 +292,7 @@ signals:
             false); /*!<  signal emitted if tab with given index of given ScriptDockWidget should be
                        undocked in an undocked ScriptDockWidget */
 
-    void pythonRunFileRequest(QString filename); /*!<  will be received by scriptEditorOrganizer, in
-                                                    order to save all unsaved changes first */
-    void pythonDebugFileRequest(QString filename); /*!<  will be received by scriptEditorOrganizer,
-                                                      in order to save all unsaved changes first */
+
     void pythonInterruptExecution(); /*!<  will be received by PythonThread, directly */
     void pythonDebugCommand(tPythonDbgCmd cmd); /*!<  will be received by PythonThread, directly */
     void pythonRunSelection(
@@ -328,10 +338,10 @@ private slots:
 
     void updateEditorActions();
     void updatePythonActions();
+    void setPythonActionsVisible(bool visible);
     void updateTabContextActions();
 
     void mnuOpenIconBrowser();
-
     void mnuTabMoveLeft();
     void mnuTabMoveRight();
     void mnuTabMoveFirst();

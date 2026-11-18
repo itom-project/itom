@@ -33,6 +33,7 @@
 #include <qurl.h>
 #include <qsettings.h>
 #include <qfileinfo.h>
+#include <qdir.h>
 
 #include <qevent.h>
 #include <qdebug.h>
@@ -53,6 +54,10 @@ namespace ito
 const QString ConsoleWidget::lineBreak = QString("\n");
 const QString ConsoleWidget::longLineWrapPrefix = QString("... ");
 const QString ConsoleWidget::newCommandPrefix = QString(">>");
+
+//!< Maximum number of relevant command-line code lines that are forwarded
+//!< to language-assistance backends as completion context.
+constexpr int commandLineCompletionContextLineLimit = 150;
 
 //-------------------------------------------------------------------------------------
 ConsoleWidget::ConsoleWidget(QWidget* parent) :
@@ -1287,38 +1292,73 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
 }
 
 //-------------------------------------------------------------------------------------
-/*virtual*/ QString ConsoleWidget::codeText(int &line, int &column) const
+/*virtual*/ QString ConsoleWidget::getLanguageServerFilename() const
 {
-    QStringList textLines;
-    const ito::TextBlockUserData *userData = NULL;
-    QString temp;
-
-    for (int lineIdx = 0; lineIdx < lineCount(); ++lineIdx)
+    if (m_languageServerFilename.isEmpty())
     {
-        userData = getConstTextBlockUserData(lineIdx);
-        if (userData == NULL || userData->m_syntaxStyle == ito::TextBlockUserData::StylePython)
-        {
-            temp = lineText(lineIdx);
-
-            if (temp.startsWith(ConsoleWidget::newCommandPrefix))
-            {
-                temp = temp.mid(ConsoleWidget::newCommandPrefix.size());
-                if (line == lineIdx)
-                {
-                    column -= ConsoleWidget::newCommandPrefix.size();
-                    line = textLines.size();
-                }
-            }
-            else if (line == lineIdx)
-            {
-                line = textLines.size();
-            }
-
-            textLines.append(temp);
-        }
+        // the path is kept stable, even if the current directory is changed afterwards.
+        m_languageServerFilename =
+            QDir::cleanPath(QDir::current().absoluteFilePath("__console_temp__.py"));
     }
 
-    return textLines.join(ConsoleWidget::lineBreak);
+    return m_languageServerFilename;
+}
+
+//-------------------------------------------------------------------------------------
+/*virtual*/ QString ConsoleWidget::codeText(int &line, int &column) const
+{
+	QStringList textLines;
+	const ito::TextBlockUserData *userData = NULL;
+	QString temp;
+
+	int mappedLine = -1;
+
+	for (int lineIdx = 0; lineIdx < lineCount(); ++lineIdx)
+	{
+		userData = getConstTextBlockUserData(lineIdx);
+		if (userData == NULL || userData->m_syntaxStyle == ito::TextBlockUserData::StylePython)
+		{
+			temp = lineText(lineIdx);
+
+			if (temp.startsWith(ConsoleWidget::newCommandPrefix))
+			{
+				temp = temp.mid(ConsoleWidget::newCommandPrefix.size());
+				if (line == lineIdx)
+				{
+					column -= ConsoleWidget::newCommandPrefix.size();
+				}
+			}
+
+			if (line == lineIdx)
+			{
+				mappedLine = textLines.size();
+			}
+
+			textLines.append(temp);
+		}
+	}
+
+	if (mappedLine < 0)
+	{
+		mappedLine = textLines.size() - 1;
+	}
+
+	if (mappedLine >= 0 && textLines.size() > commandLineCompletionContextLineLimit)
+	{
+		const int firstContextLine = std::max(
+			0,
+			mappedLine - commandLineCompletionContextLineLimit + 1);
+
+		if (firstContextLine > 0)
+		{
+			textLines = textLines.mid(firstContextLine);
+			mappedLine -= firstContextLine;
+		}
+	}
+
+	line = std::max(0, mappedLine);
+
+	return textLines.join(ConsoleWidget::lineBreak);
 }
 
 //-------------------------------------------------------------------------------------

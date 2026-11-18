@@ -109,7 +109,15 @@ Some icons have two different representations, one for bright themes and
 one for dark themes. It is possible to switch between both themes by the drop-down box.
 Set this value to automatic, if the icon theme should be chosen automatically
 based on the selected style. If the basic background color is rather dark, the dark
-theme is chosen, else the bright theme.
+theme is chosen, else the bright theme. If one of the modern styles (modernLight or modernDark)
+is selected, the refined icons are chosen, too.
+
+Besides the classic icons, a refined version of the same icons is available for bright and dark
+backgrounds, or with an automatic selection of the variant. The motifs and colors are the same, but the
+gloss of the icons is reduced, the colors are calmer and, for dark backgrounds, black glyphs are lifted
+to stay visible. For the complete modern look,
+select the style modernDark or modernLight above and import the matching editor theme
+(ModernDark or ModernLight) in the section editor styles.
 
 Changes to style-sheets and icons are only effectuated after a restart of |itom|.
 
@@ -208,8 +216,10 @@ The editor section covers all properties, that are related to the
 General
 ----------------------
 
-In this tab, you can mainly set all settings that are related to indentation:
+In this tab, you can set general script editor options including the language assistance backend and indentation behavior:
 
+* **Language assistance backend** selects whether |itom| should prefer **ZubanLS** (recommended) or **Jedi** (legacy fallback).
+* **ZubanLS executable path** optionally defines the absolute path to the ZubanLS executable. If empty, |itom| searches the executable in the system path.
 * **Auto indentation** automatically indents the next block after a colon at the
   end of a line, like after a "if (...):" statement, a method definition or a
   for loop (among others).
@@ -441,8 +451,9 @@ with the information string, if it could be fetched.
 
 .. note::
 
-    These features can only be checked, if both the Python packages **jedi**
-    (version >= 0.12) and **parso** are installed.
+    These features are provided by the active language assistance backend (configured in
+    **Editor -> General**). If **Jedi** is selected, the Python packages **jedi**
+    (version >= 0.12) and **parso** must be installed.
 
 .. _gui-prop-auto-completion:
 
@@ -494,8 +505,9 @@ a dot.:
 
 .. note::
 
-    Auto completion hints can only be checked and displayed, if both the Python
-    packages **jedi** (version >= 0.12) and **parso** are installed.
+    Auto completion hints are provided by the active language assistance backend
+    (configured in **Editor -> General**). If **Jedi** is selected, the Python
+    packages **jedi** (version >= 0.12) and **parso** must be installed.
 
 .. _gui-prop-auto-code-format:
 

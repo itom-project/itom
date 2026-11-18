@@ -43,8 +43,8 @@
 #include "../ui/widgetInfoBox.h"
 #include "scriptDockWidget.h"
 
-#include "../helper/versionHelper.h"
 #include "../helper/guiHelper.h"
+#include "../helper/versionHelper.h"
 
 #include <qapplication.h>
 #include <qdir.h>
@@ -53,7 +53,7 @@
 #include <qstatusbar.h>
 
 #include "../organizer/scriptEditorOrganizer.h"
-
+#include "../languageServer/languageServerManager.h"
 
 
 #ifdef ITOM_USEHELPVIEWER
@@ -62,15 +62,15 @@
 
 namespace ito {
 
-const QScreen* guiApplicationScreenAt(const QPoint &point)
+const QScreen* guiApplicationScreenAt(const QPoint& point)
 {
-#if (QT_VERSION >= QT_VERSION_CHECK(5,10,0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
     return QGuiApplication::screenAt(point);
 #else
     // this is a copy of the future implementation of the screenAt method.
     QVarLengthArray<const QScreen*, 8> visitedScreens;
 
-    for (const QScreen *scr : QGuiApplication::screens())
+    for (const QScreen* scr : QGuiApplication::screens())
     {
         if (visitedScreens.contains(scr))
         {
@@ -78,7 +78,7 @@ const QScreen* guiApplicationScreenAt(const QPoint &point)
         }
 
         // The virtual siblings include the screen itself, so iterate directly
-        for (QScreen *sibling : scr->virtualSiblings())
+        for (QScreen* sibling : scr->virtualSiblings())
         {
             if (sibling->geometry().contains(point))
             {
@@ -104,13 +104,16 @@ MainWindow::MainWindow() :
     m_globalWorkspaceDock(nullptr), m_localWorkspaceDock(nullptr), m_callStackDock(nullptr),
     m_fileSystemDock(nullptr), m_pAIManagerWidget(nullptr), m_appFileNew(nullptr),
     m_appFileOpen(nullptr), m_aboutQt(nullptr), m_aboutQitom(nullptr), m_copyLog(nullptr),
-    m_pMenuFigure(nullptr), m_pMenuHelp(nullptr), m_pMenuFile(nullptr),
-    m_pMenuPython(nullptr), m_pMenuReloadModule(nullptr), m_pMenuView(nullptr),
-    m_pHelpSystem(nullptr), m_pStatusLblCurrentDir(nullptr), m_pStatusLblScriptInfo(nullptr),
+    m_pMenuFigure(nullptr), m_pMenuHelp(nullptr), m_pMenuFile(nullptr), m_pMenuPython(nullptr),
+    m_pMenuReloadModule(nullptr), m_pMenuView(nullptr), m_pHelpSystem(nullptr),
+    m_pStatusLblCurrentDir(nullptr), m_pStatusLblScriptInfo(nullptr),
     m_pStatusLblPythonBusy(nullptr), m_pythonBusy(false), m_pythonDebugMode(false),
     m_pythonInWaitingMode(false), m_isFullscreen(false), m_userDefinedActionCounter(0),
     m_plastFilesMenu(nullptr)
 {
+    // script tabs can be dropped to the main window (see DockDragDropController)
+    setAcceptDrops(true);
+
     // qDebug() << "mainWindow. Thread: " << QThread::currentThreadId ();
 #ifdef __APPLE__
     // Setting high res icon for OS X
@@ -140,6 +143,12 @@ MainWindow::MainWindow() :
     setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
     setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
     setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
+
+    // allow to split docking areas (nested docks) and to tabify dock widgets.
+    // GroupedDragging is not enabled, since floating tab groups are not compatible with the
+    // window mode of AbstractDockWidget (floatingWindow).
+    setDockOptions(QMainWindow::AnimatedDocks | QMainWindow::AllowNestedDocks |
+                   QMainWindow::AllowTabbedDocks);
 
     // content
     m_contentLayout = new QVBoxLayout();
@@ -391,8 +400,16 @@ MainWindow::MainWindow() :
 
         if (m_console)
         {
-            connect(pyEngine, &PythonEngine::clearCommandLine, m_console, &ConsoleWidget::clearCommandLine);
-            connect(pyEngine, &PythonEngine::interruptCommandInput, m_console, &ConsoleWidget::interruptCommandInput);
+            connect(
+                pyEngine,
+                &PythonEngine::clearCommandLine,
+                m_console,
+                &ConsoleWidget::clearCommandLine);
+            connect(
+                pyEngine,
+                &PythonEngine::interruptCommandInput,
+                m_console,
+                &ConsoleWidget::interruptCommandInput);
             connect(
                 pyEngine,
                 SIGNAL(startInputCommandLine(QSharedPointer<QByteArray>, ItomSharedSemaphore*)),
@@ -402,9 +419,10 @@ MainWindow::MainWindow() :
     }
     else
     {
-        showInfoMessageLine(tr("Python could not be started. itom cannot be used in the desired "
-                               "way. \nStart itom again with the argument 'log' and look-up the "
-                               "error message in the file itomlog.txt."));
+        showInfoMessageLine(
+            tr("Python could not be started. itom cannot be used in the desired "
+               "way. \nStart itom again with the argument 'log' and look-up the "
+               "error message in the file itomlog.txt."));
         if (m_console)
         {
             m_console->setReadOnly(true);
@@ -475,8 +493,8 @@ MainWindow::MainWindow() :
     if (geometry != mainScreen) // check if valid
     {
         // check whether top/left and bottom/right lie in any available desktop
-        const QScreen *screen1 = guiApplicationScreenAt(geometry.topLeft());
-        const QScreen *screen2 = guiApplicationScreenAt(geometry.bottomRight());
+        const QScreen* screen1 = guiApplicationScreenAt(geometry.topLeft());
+        const QScreen* screen2 = guiApplicationScreenAt(geometry.bottomRight());
         QRect r1;
         QRect r2;
 
@@ -500,7 +518,18 @@ MainWindow::MainWindow() :
         }
     }
 
-    restoreState(settings.value("state", "").toByteArray());
+    // the layout after the creation of all built-in docks is the default layout (see mnuResetLayout)
+    m_defaultLayoutState = saveState(LayoutStateVersion);
+
+    AbstractDockWidget::setLayoutRestoring(true);
+    const bool layoutRestored =
+        restoreState(settings.value("state", "").toByteArray(), LayoutStateVersion);
+    AbstractDockWidget::setLayoutRestoring(false);
+
+    if (!layoutRestored)
+    {
+        qDebug(".. no saved layout with the current layout version found. The default layout is used.");
+    }
 
     settings.endGroup();
 
@@ -576,7 +605,9 @@ MainWindow::~MainWindow()
     settings->setValue("maximized", isMaximized());
     settings->setValue("geometry", m_geometryNormalState);
 
-    QByteArray state = saveState();
+    // the layout, kept while the script editors were still open, also contains their positions
+    QByteArray state =
+        m_keptLayoutState.isEmpty() ? saveState(LayoutStateVersion) : m_keptLayoutState;
     settings->setValue("state", state);
     settings->endGroup();
 
@@ -747,25 +778,20 @@ void MainWindow::addAbstractDock(
 
         if (sdw)
         {
-            connect(sdw, &ScriptDockWidget::dockStateChanged, [=](bool docked)
+            connect(sdw, &ScriptDockWidget::dockStateChanged, [=](bool docked) {
+                if (docked)
                 {
-                    if (docked)
-                    {
-                        connect(
-                            sdw,
-                            &ScriptDockWidget::statusBarInformationChanged,
-                            this,
-                            &MainWindow::scriptStatusBarInformationChanged
-                        );
-                    }
-                    else
-                    {
-                        disconnect(sdw, &ScriptDockWidget::statusBarInformationChanged, this, 0);
-                    }
+                    connect(
+                        sdw,
+                        &ScriptDockWidget::statusBarInformationChanged,
+                        this,
+                        &MainWindow::scriptStatusBarInformationChanged);
                 }
-            );
-
-
+                else
+                {
+                    disconnect(sdw, &ScriptDockWidget::statusBarInformationChanged, this, 0);
+                }
+            });
         }
 
         if (area == Qt::NoDockWidgetArea)
@@ -775,21 +801,35 @@ void MainWindow::addAbstractDock(
         }
         else
         {
-            addDockWidget(area, dockWidget);
+            // Script editors are put to their position of the last session, if the saved layout
+            // contains a dock widget with the same object name. restoreDockWidget has to be called
+            // before addDockWidget, else the dock widget stays in the given area.
+            AbstractDockWidget::setLayoutRestoring(true);
+            bool restored = sdw && restoreDockWidget(dockWidget);
+            AbstractDockWidget::setLayoutRestoring(false);
+
+            if (!restored)
+            {
+                addDockWidget(area, dockWidget);
+            }
+
             dockWidget->setFloating(false);
-            // qDebug() << "restoreDockWidget:" << restoreDockWidget(dockWidget); //does not work
-            // until now, since the state of docked script windows is not saved. they are deleted
-            // before destructing the main window.
+
+            if (restored)
+            {
+                // restoreDockWidget hides the dock widget
+                dockWidget->show();
+            }
 
             if (sdw)
             {
-                // make the connection right here, since dockStateChanged is only called after the next change
+                // make the connection right here, since dockStateChanged is only called after the
+                // next change
                 connect(
                     sdw,
                     &ScriptDockWidget::statusBarInformationChanged,
                     this,
-                    &MainWindow::scriptStatusBarInformationChanged
-                );
+                    &MainWindow::scriptStatusBarInformationChanged);
             }
         }
     }
@@ -821,6 +861,74 @@ void MainWindow::removeAbstractDock(AbstractDockWidget* dockWidget)
 }
 
 //-------------------------------------------------------------------------------------
+void MainWindow::keepLayoutStateForNextSession()
+{
+    m_keptLayoutState = saveState(LayoutStateVersion);
+}
+
+//-------------------------------------------------------------------------------------
+void MainWindow::discardKeptLayoutState()
+{
+    m_keptLayoutState.clear();
+}
+
+//-------------------------------------------------------------------------------------
+//! resets the position and visibility of all toolboxes and toolbars to the default layout
+/*!
+    Undocked built-in toolboxes are docked again. Script editors, that are docked, are
+    moved to the top docking area and tabified. Undocked script editors and figures
+    are not changed.
+*/
+void MainWindow::mnuResetLayout()
+{
+    const QList<AbstractDockWidget*> builtInDocks = {
+        m_fileSystemDock, m_breakPointDock, m_bookmarkDock, m_lastCommandDock,
+        m_helpDock, m_globalWorkspaceDock, m_localWorkspaceDock, m_callStackDock,
+        m_pAIManagerWidget};
+
+    foreach (AbstractDockWidget* dock, builtInDocks)
+    {
+        if (dock && !dock->docked())
+        {
+            dock->dockWidget();
+        }
+    }
+
+    AbstractDockWidget::setLayoutRestoring(true);
+    const bool defaultLayoutRestored = restoreState(m_defaultLayoutState, LayoutStateVersion);
+    AbstractDockWidget::setLayoutRestoring(false);
+
+    if (!defaultLayoutRestored)
+    {
+        qDebug() << "the default layout could not be restored";
+        return;
+    }
+
+    // script editors are not part of the default layout
+    ScriptDockWidget* firstScriptDock = nullptr;
+
+    foreach (ScriptDockWidget* sdw, findChildren<ScriptDockWidget*>())
+    {
+        if (sdw->docked())
+        {
+            removeDockWidget(sdw);
+            addDockWidget(Qt::TopDockWidgetArea, sdw);
+
+            if (firstScriptDock)
+            {
+                tabifyDockWidget(firstScriptDock, sdw);
+            }
+            else
+            {
+                firstScriptDock = sdw;
+            }
+
+            sdw->show();
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------
 void MainWindow::scriptStatusBarInformationChanged(
     const QPointer<ScriptDockWidget> sourceDockWidget,
     const QString& encoding,
@@ -830,7 +938,7 @@ void MainWindow::scriptStatusBarInformationChanged(
     if (m_pStatusLblScriptInfo)
     {
         QObject* widget = QApplication::focusWidget();
-        ScriptDockWidget *focussedDockWidget = nullptr;
+        ScriptDockWidget* focussedDockWidget = nullptr;
 
         while (widget)
         {
@@ -853,7 +961,8 @@ void MainWindow::scriptStatusBarInformationChanged(
 
         if (line >= 0 && column >= 0)
         {
-            m_pStatusLblScriptInfo->setText(tr("Ln %1, Col %2, %3 ").arg(line).arg(column).arg(encoding));
+            m_pStatusLblScriptInfo->setText(
+                tr("Ln %1, Col %2, %3 ").arg(line).arg(column).arg(encoding));
         }
         else
         {
@@ -966,6 +1075,11 @@ void MainWindow::createActions()
     a = m_actions["show_all_plots"] = new QAction(
         QIcon(":/application/icons/showAllPlots.svg"), tr("Show All Floatable Figures"), this);
     connect(m_actions["show_all_plots"], SIGNAL(triggered(bool)), this, SLOT(mnuShowAllPlots()));
+
+    m_actions["reset_layout"] = new QAction(tr("Reset Layout"), this);
+    m_actions["reset_layout"]->setStatusTip(
+        tr("Restores the default position and visibility of all toolboxes and toolbars."));
+    connect(m_actions["reset_layout"], &QAction::triggered, this, &MainWindow::mnuResetLayout);
 
     a = m_actions["minimize_all_plots"] = new QAction(
         QIcon(":/application/icons/hideAllPlots"), tr("Minimize All Floatable Figures"), this);
@@ -1222,7 +1336,8 @@ void MainWindow::createMenus()
     menuBar()->setNativeMenuBar(false);
 #else // __APPLE__
     // OS X: without the native menu bar option, the menu bar is displayed within the window which
-    // might be irritating. The menu bar is not embedded in the system menu bar for unclear reasons, therefore the option is set to off.
+    // might be irritating. The menu bar is not embedded in the system menu bar for unclear reasons,
+    // therefore the option is set to off.
     menuBar()->setNativeMenuBar(false);
 #endif // __APPLE__
 }
@@ -1347,6 +1462,15 @@ void MainWindow::mnuViewAboutToShow()
                 QIcon(":/application/icons/preferences-general.svg"));
             dockWidgets->menuAction()->setText(tr("Toolboxes"));
             m_pMenuView->addMenu(dockWidgets);
+        }
+
+        if (m_actions.contains("reset_layout"))
+        {
+            m_pMenuView->addAction(m_actions["reset_layout"]);
+        }
+
+        if (dockWidgets || m_actions.contains("reset_layout"))
+        {
             m_pMenuView->addSeparator();
         }
 
@@ -1590,8 +1714,9 @@ void MainWindow::mnuOpenFile()
     QString fileName;
     RetVal retValue(retOk);
 
-    QString filter = IOHelper::getFileFilters(IOHelper::IOFilters(
-        IOHelper::IOInput | IOHelper::IOPlugin | IOHelper::IOAllFiles | IOHelper::IOMimeAll));
+    QString filter = IOHelper::getFileFilters(
+        IOHelper::IOFilters(
+            IOHelper::IOInput | IOHelper::IOPlugin | IOHelper::IOAllFiles | IOHelper::IOMimeAll));
     static QString
         selectedFilter; // since this variable is static, it will remember the last set filter.
     fileName = QFileDialog::getOpenFileName(
@@ -2610,6 +2735,8 @@ void MainWindow::currentDirectoryChanged()
     {
         m_fileSystemDock->changeBaseDirectory(cd, true);
     }
+
+    LanguageServerManager::notifyCurrentDirectoryChanged(cd);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

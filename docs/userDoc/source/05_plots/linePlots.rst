@@ -47,7 +47,7 @@ setting the property **xData** to an existing plot. To plot an N x M
 dataObject, the x-vector has to be a 1 x M dataObject.
 For the y axis and x axis label the valueDescription and valueUnit definitions are taken accordingly.
 
-.. figure:: images/spiral.png
+.. figure:: images/spiral.PNG
     :scale: 100%
     :align: center
 
@@ -210,7 +210,7 @@ For accessing the properties via the user interface the line properties widget
 can be used. Additional to the properties listed above the legend name, the
 legend visibility and the symbol color can be set.
 
-.. figure:: images/curveProperties.png
+.. figure:: images/curveProperties.PNG
     :scale: 100%
     :align: center
 
@@ -260,7 +260,7 @@ Properties
 .. py:attribute:: axisScale : ItomQwtPlotEnums::ScaleEngine
     :noindex:
 
-    linear or logarithmic scale (various bases) can be chosen for the horizontal axis (x-axis). Please consider, that a logarithmic scale can only display values > 1e-100.
+    linear or logarithmic scale (various bases) can be chosen for the horizontal axis (x-axis). Please note that a logarithmic scale can only display values > 1e-100.
 
     The type 'ItomQwtPlotEnums::ScaleEngine' is an enumeration that can have one of the following values (str or int):
 
@@ -275,7 +275,7 @@ Properties
 .. py:attribute:: valueScale : ItomQwtPlotEnums::ScaleEngine
     :noindex:
 
-    linear or logarithmic scale (various bases) can be chosen for the vertical axis (y-axis). Please consider, that a logarithmic scale can only display values > 1e-100 while the lower limit for the double-logarithmic scale is 1+1e-100.
+    linear or logarithmic scale (various bases) can be chosen for the vertical axis (y-axis). Please note that a logarithmic scale can only display values > 1e-100 while the lower limit for the double-logarithmic scale is 1+1e-100.
 
     The type 'ItomQwtPlotEnums::ScaleEngine' is an enumeration that can have one of the following values (str or int):
 

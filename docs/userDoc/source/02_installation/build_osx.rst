@@ -17,7 +17,7 @@ Once Xcode has been installed, run Xcode and then open the preferences. Select t
 CMake
 -----
 
-Go to **http://www.cmake.org** to download and install the current stable release of CMake. It is recommended to download a release that looks like **cmake-x.y.z-Darwin-x86_64.dmg**
+Go to **https://cmake.org** to download and install the current stable release of CMake. It is recommended to download a release that looks like **cmake-x.y.z-Darwin-x86_64.dmg**
 
 Homebrew
 --------
@@ -36,7 +36,7 @@ Run the following command once before installing anything
 
     brew doctor
 
-Homebrew can also be installed as described at http://brew.sh .
+Homebrew can also be installed as described at https://brew.sh/ .
 
 Dependencies
 ------------

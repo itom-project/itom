@@ -65,7 +65,9 @@ public:
     typedef QList<TextDecoration::Ptr>::iterator iterator;
 
     bool append(TextDecoration::Ptr decoration);
+    int append(const QList<TextDecoration::Ptr>& decorations);
     bool remove(TextDecoration::Ptr decoration);
+    int remove(const QList<TextDecoration::Ptr>& decorations);
     void clear();
 
     bool contains(const TextDecoration::Ptr &deco)
