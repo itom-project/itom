@@ -1049,7 +1049,7 @@ void AIManagerWidget::mnuShowLiveImage()
     {
         ito::AddInBase* ais = (ito::AddInBase*)index.internalPointer();
 
-        if (ais && ais->inherits("ito::AddInGrabber"))
+        if (ais && ais->inherits("ito::AbstractAddInGrabber"))
         {
             UiOrganizer* uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
             QString defaultPlotClassName;
@@ -1107,7 +1107,7 @@ void AIManagerWidget::mnuSnapDialog()
     {
         ito::AddInBase* ais = (ito::AddInBase*)index.internalPointer();
 
-        if (ais && ais->inherits("ito::AddInGrabber"))
+        if (ais && ais->inherits("ito::AbstractAddInGrabber"))
         {
             ito::RetVal retval = ito::retOk;
             QPointer<ito::AddInDataIO> aisPointer((ito::AddInDataIO*)ais);

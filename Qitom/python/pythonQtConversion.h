@@ -149,6 +149,8 @@ public:
     static PyObject* QVariantMapToPyObject(const QVariantMap& m);
     static PyObject* QVariantListToPyObject(const QVariantList& l);
 
+    static PyObject* QMapToPyObject(const QMap <QString, ito::DataObject>& m);
+
 #if ITOM_POINTCLOUDLIBRARY > 0
     static PyObject* PCLPointCloudToPyObject(const ito::PCLPointCloud& c);
     static PyObject* PCLPointToPyObject(const ito::PCLPoint& c);

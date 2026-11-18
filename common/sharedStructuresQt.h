@@ -50,6 +50,7 @@
 
 typedef QMap<QString, ito::Param> ParamMap;
 typedef ParamMap::iterator ParamMapIterator;
+typedef ParamMap::const_iterator ParamMapConstIterator;
 
 //namespace ito
 //{
